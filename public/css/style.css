@@ -258,7 +258,7 @@
 	.carousel-caption {
 		left: 15px;
 		right: 15px;
-		/*top: 50%;*/
+		top: 150px;
 		font-size: 15px;
 		text-align: left;
 		color: #fff;
@@ -578,6 +578,11 @@
 	#about-us .about-us h4{
 		margin-top: 0;
 		margin-bottom: 30px;
+	}
+	
+	#about-us .about-us p{
+		font-size: 25px;
+
 	}
 
 	#about-us .about-us .btn-send{

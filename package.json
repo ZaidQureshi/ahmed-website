@@ -28,7 +28,10 @@
     "deep-equal": "^1.0.1",
     "defined": "^1.0.0",
     "director": "^1.2.8",
+<<<<<<< HEAD
     "ejs": "^2.5.2",
+=======
+>>>>>>> 0c5ff50306a4e587ff57f7555f307864d75b428c
     "event-stream": "^3.3.4",
     "eventemitter2": "^2.1.3",
     "expand-brackets": "^0.1.5",
@@ -72,7 +75,10 @@
     "minimatch": "^3.0.3",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
+<<<<<<< HEAD
     "mongojs": "^2.4.0",
+=======
+>>>>>>> 0c5ff50306a4e587ff57f7555f307864d75b428c
     "mute-stream": "0.0.6",
     "nconf": "^0.8.4",
     "ncp": "^2.0.0",

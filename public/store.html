@@ -109,19 +109,9 @@
 					
 					<div class="portfolio-items">
 		
-						<div class="col-md-4 col-sm-6 work-grid Catalog {{template.category}}" ng-repeat="template in templates">
-							<div class="portfolio-content">
-								<img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
-								<div class="portfolio-overlay">
-									<a href="images/works/{{template.icon}}"><i class="fa fa-image"></i></a>
-									<h5>{{template.name}}</h5>
-									<p>Price: ${{template.price}}</p>
-									<button type="button" class= "bg-primary" ng-click="view(template._id)">View</button>
-									<button type="button" class= "bg-primary" ng-click="addCart(template._id)">Add To Cart</button>
-								</div>
-							</div>	
-						</div>
+		
 						
+					
 						<div class="col-md-4 col-sm-6 work-grid Flyer">
 							<div class="portfolio-content">
 								<img class="img-responsive" src="images/works/ex2.jpg" alt="">
@@ -132,6 +122,9 @@
 								</div>
 							</div>	
 						</div>
+						
+						
+						
 						
 						<div class="col-md-4 col-sm-6 work-grid Menu">
 							<div class="portfolio-content">
@@ -144,6 +137,7 @@
 							</div>	
 						</div>
 						
+						
 						<div class="col-md-4 col-sm-6 work-grid Brochure">
 							<div class="portfolio-content">
 								<img class="img-responsive" src="images/works/ex4.jpg" alt="">
@@ -151,6 +145,19 @@
 									<a href="images/works/portfolio-4.jpg"><i class="fa fa-camera-retro"></i></a>
 									<h5>Brochure Template</h5>
 									<p>Design, Develop</p>
+								</div>
+							</div>	
+						</div>
+						
+						<div class="col-md-4 col-sm-6 work-grid Catalog {{template.category}}" ng-repeat="template in templates">
+							<div class="portfolio-content">
+								<img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
+								<div class="portfolio-overlay">
+									<a href="images/works/{{template.icon}}"><i class="fa fa-image"></i></a>
+									<h5>{{template.name}}</h5>
+									<p>Price: ${{template.price}}</p>
+									<button type="button" class= "bg-primary" ng-click="view(template._id)">View</button>
+									<button type="button" class= "bg-primary" ng-click="addCart(template._id)">Add To Cart</button>
 								</div>
 							</div>	
 						</div>
@@ -166,6 +173,8 @@
 							</div>	
 						</div>
 						
+						
+						
 						<div class="col-md-4 col-sm-6 work-grid Flyer">
 							<div class="portfolio-content">
 								<img class="img-responsive" src="images/works/ex6.jpg" alt="">
@@ -176,6 +185,10 @@
 								</div>
 							</div>	
 						</div>
+						
+						
+						
+						
 						
 					</div>	
 				</div>

@@ -11,11 +11,22 @@ var ejs = require('ejs');
 
 // Require mongojs modules to interact with database
 var mongojs = require('mongojs');
-var db = mongojs('templates', ['templates']); 
+// Authenticate into the database in the server
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+
 
 var app = express();
+
+var bodyParser = require('body-parser');
 // Allow public files (html, css, javascript) to be run on the server
 app.use(express.static(__dirname + "/public"));	
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+   extended: true
+}));
+
 
 
 
@@ -31,6 +42,12 @@ app.get('/templates', function(req, res){
 	});
 });
 
+app.get('/templates/:id', function (req, res){
+	var id = req.params.id;
+	db.templates.findOne({_id: mongojs.ObjectId(id)}, function(err, doc){
+	res.json(doc);
+	});
+});
 
 
 

@@ -27,14 +27,22 @@ myApp.controller('AppControl', ['$scope', '$http',
 			});
 		}
 		
-		$scope.view = function(){
-			// To be completed
+		
+		var temp = "";
+		$scope.view = function(id){
+			console.log(id);
+			$http.get('/templates/' + id).success(function(response){
+				console.log(response);
+				temp = response;
+				console.log(temp);
 			});
-		}
+		};
+		console.log(temp);
+		
 		$scope.addCart = function(){
 			// To be completed
-			});
-		}
+			};
+		
 		
 		
 		// Generate the intial data on page load

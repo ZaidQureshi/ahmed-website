@@ -11,10 +11,7 @@ var ejs = require('ejs');
 
 // Require mongojs modules to interact with database
 var mongojs = require('mongojs');
-<<<<<<< HEAD
 
-=======
->>>>>>> d8884ee112c32f310d36e6a836c49a2675725596
 // Authenticate into the database in the server
 //var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
 var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 

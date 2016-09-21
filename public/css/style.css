@@ -7,7 +7,8 @@
 
 
 /* TABLE OF CONTENTS
-
+	
+	0. Personal styles
 	1. Import section
 	2. Basic styles
 	3. BUTTONS
@@ -27,6 +28,12 @@
 
 */
 
+
+
+/* 0. Personal Styles */
+	.button-container form { 
+		display: inline-block; 
+	}
 
 
 /* 1. IMPORT SECTION */
@@ -440,6 +447,7 @@
 		margin-top: 28px;
 		overflow: hidden;
 	}
+
 
 	.portfolio-wrapper ul.filter li{
 		float: left;

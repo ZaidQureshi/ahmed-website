@@ -27,14 +27,23 @@ myApp.controller('AppControl', ['$scope', '$http',
 			});
 		}
 		
-		$scope.view = function(){
-			// To be completed
+		
+		var temp = "";
+		$scope.view = function(id){
+			console.log(id);
+			$http.get('/templates/' + id).success(function(response){
+				console.log(response);
+				temp = response;
+				console.log(temp);
+				$scope.template = response;
 			});
-		}
+		};
+		console.log(temp);
+		
+		
 		$scope.addCart = function(){
 			// To be completed
-			});
-		}
+			};
 		
 		
 		// Generate the intial data on page load
@@ -87,4 +96,26 @@ myApp.controller('AppControl', ['$scope', '$http',
 		};
 		*/
 
+	}]);
+
+	
+	
+myApp.controller('AppControl2', ['$scope', '$http',
+	function($scope, $http){
+		console.log("Hello World from controller2");
+		
+		// Send a request to get data from the database
+		$scope.refresh = function(){
+			// Request data from the server
+			$http.get('/templates123').success(function(response){
+				console.log("I got the data I requested");
+				
+				// $scope to use the templates in the html
+				$scope.template = response;
+			
+			});
+		}
+		
+		// Generate the intial data on page load
+		$scope.refresh();
 	}]);

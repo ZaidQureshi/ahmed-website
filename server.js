@@ -48,6 +48,9 @@ app.get('/view', function (req, res){
 });
 
 
+
+
+
 // Sends back to the controller the GET data requested
 app.get('/templates', function(req, res){
 	console.log("I received a GET request");
@@ -59,12 +62,6 @@ app.get('/templates', function(req, res){
 	});
 });
 
-app.get('/templates/:id', function (req, res){
-	var id = req.params.id;
-	db.templates.findOne({_id: mongojs.ObjectId(id)}, function(err, doc){
-	res.json(doc);
-	});
-});
 
 // Store ID of template clicked on
 var template_id = 0;

@@ -29,7 +29,6 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-<<<<<<< HEAD
 
 // Redirect to links requested from GET
 app.get('/', function (req, res){
@@ -47,11 +46,6 @@ app.get('/view', function (req, res){
 		res.json(docs);
 		});
 });
-
-
-=======
->>>>>>> d8884ee112c32f310d36e6a836c49a2675725596
-
 
 
 // Sends back to the controller the GET data requested

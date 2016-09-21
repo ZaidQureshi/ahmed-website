@@ -35,15 +35,25 @@ myApp.controller('AppControl', ['$scope', '$http',
 				console.log(response);
 				temp = response;
 				console.log(temp);
+<<<<<<< HEAD
 				$scope.template = response;
+=======
+>>>>>>> d8884ee112c32f310d36e6a836c49a2675725596
 			});
 		};
 		console.log(temp);
 		
+<<<<<<< HEAD
 		
 		$scope.addCart = function(){
 			// To be completed
 			};
+=======
+		$scope.addCart = function(){
+			// To be completed
+			};
+		
+>>>>>>> d8884ee112c32f310d36e6a836c49a2675725596
 		
 		
 		// Generate the intial data on page load

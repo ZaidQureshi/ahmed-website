@@ -11,7 +11,10 @@ var ejs = require('ejs');
 
 // Require mongojs modules to interact with database
 var mongojs = require('mongojs');
+<<<<<<< HEAD
 
+=======
+>>>>>>> d8884ee112c32f310d36e6a836c49a2675725596
 // Authenticate into the database in the server
 //var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
 var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
@@ -29,6 +32,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 
+<<<<<<< HEAD
 
 // Redirect to links requested from GET
 app.get('/', function (req, res){
@@ -48,6 +52,8 @@ app.get('/view', function (req, res){
 });
 
 
+=======
+>>>>>>> d8884ee112c32f310d36e6a836c49a2675725596
 
 
 
@@ -62,6 +68,12 @@ app.get('/templates', function(req, res){
 	});
 });
 
+app.get('/templates/:id', function (req, res){
+	var id = req.params.id;
+	db.templates.findOne({_id: mongojs.ObjectId(id)}, function(err, doc){
+	res.json(doc);
+	});
+});
 
 // Store ID of template clicked on
 var template_id = 0;

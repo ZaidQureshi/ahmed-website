@@ -7,13 +7,13 @@ var passport = require('passport');
 var path = require('path');
 
 //  Bring in the data model
-require('./app_api/models/db');
+//require('./app_api/models/db');
 
 //  Bring in the Passport config after model is defined
-require('./app_api/config/passport');
+//require('./app_api/config/passport');
 
 //  Bring in the routes for the API (delete the default routes)
-var routesApi = require('./app_api/routes/index');
+//var routesApi = require('./app_api/routes/index');
 
 
 // Require express modules to be used
@@ -42,8 +42,8 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-app.use(passport.initialize());
-app.use('/api', routesApi);
+//app.use(passport.initialize());
+//app.use('/api', routesApi);
 
 
 

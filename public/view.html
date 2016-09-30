@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="myApp">
+<html lang="en" ng-app="Lates">
 <head>
 	<meta charset="UTF-8">
 
@@ -29,8 +29,7 @@
 	<![endif]-->
 	
 </head>
-<body ng-controller="AppControl2">
-
+<body ng-controller="ViewController as viewCtrl">
 	<!-- PRELOADER -->
 	<div id="st-preloader">
 		<div id="pre-status">
@@ -52,7 +51,7 @@
 				    	<span class="icon-bar"></span>
 				    	<span class="icon-bar"></span>
 					</button>
-					<a class="logo" href="index.html">Lates<img src="" alt=""></a>
+					<a class="logo" href="/">Lates<img src="" alt=""></a>
 				</div>
 
 				<div class="collapse navbar-collapse" id="st-navbar-collapse">
@@ -79,7 +78,7 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="section-title">
-						<h1>{{template.name}}</h1>
+						<h1>{{viewCtrl.template.name}}</h1>
 						<span class="st-border"></span>
 					</div>
 				</div>
@@ -99,15 +98,15 @@
 					
 					<div class="single-blog">
 						<article>
-							<div class="post-thumb"><img class="img-responsive" ng-src="images/works/{{template.icon}}" alt=""></div>
-							<h4 class="post-title"><a href="">{{template.caption}}Template Caption</a></h4>
+							<div class="post-thumb"><img class="img-responsive" ng-src="images/works/{{viewCtrl.template.icon}}" alt=""></div>
+							<h4 class="post-title"><a href="">{{viewCtrl.template.caption}}Template Caption</a></h4>
 							<div class="post-meta text-uppercase">
-								<span>Date Posted: {{template.date}}September, 21, 2016</span>
-								<span>Price ${{template.price}}</span>
-								<span>Category: {{template.category}}</span>
+								<span>Date Posted: {{viewCtrl.template.date}}September, 21, 2016</span>
+								<span>Price {{viewCtrl.template.price | currency}}</span>
+								<span>Category: {{viewCtrl.template.category}}</span>
 							</div>
 							<div class="post-article">
-								{{template.description}}Template Description
+								{{viewCtrl.template.description}}Template Description
 							</div>
 							<a href="" class="btn btn-info">Read More</a>
 							<a href="" class="btn btn-primary">Add To Cart</a>
@@ -141,10 +140,10 @@
 					</div>
 					<div class="sidebar-widget">
 						<h4 class="sidebar-title">Similar Layouts</h4>
-						<ul class="content-flickr" ng-controller="AppControl">
-							<li ng-repeat="template in templates">
+						<ul class="content-flickr" ng-controller="TemplatesController as templateCtrl">
+							<li ng-repeat="template in templateCtrl.templates">
                                 <a href="view.html" title="" ng-click="view(template._id)">
-                                    <img class="img-responsive" src="images/works/{{template.icon}}" alt="">
+                                    <img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
                                 </a>
                             </li>
                             <!-- <li>
@@ -178,7 +177,7 @@
 						<h4 class="sidebar-title">Tags</h4>
 						<div class="tagcloud">
 							<a href="">design</a>
-							<a href="">{{template.category}}</a>
+							<a href="">{{viewCtrl.template.category}}</a>
 							<a href="">html</a>
 							<a href="">php</a>
 							<a href="">wordpress</a>
@@ -237,8 +236,9 @@
 	
 	<!-- Angular JS Content Delivery Network -->
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
 	<!-- Controllers -->
-	<script src="/controllers/controller.js"></script>
+	<script src="/controllers/app.js"></script>
 
 
 </body>

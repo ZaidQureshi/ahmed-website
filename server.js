@@ -3,6 +3,19 @@ Nodejs server
 - Express model used for organizing web contact, allowing public files to be viewed
 */
 
+var passport = require('passport');
+var path = require('path');
+
+//  Bring in the data model
+require('./app_api/models/db');
+
+//  Bring in the Passport config after model is defined
+require('./app_api/config/passport');
+
+//  Bring in the routes for the API (delete the default routes)
+var routesApi = require('./app_api/routes/index');
+
+
 // Require express modules to be used
 var express = require('express');
 
@@ -29,6 +42,22 @@ app.use(bodyParser.urlencoded({
 }));
 
 
+app.use(passport.initialize());
+app.use('/api', routesApi);
+
+
+
+/* Set the app_client folder to serve static resources
+app.use(express.static(path.join(__dirname, 'app_client')));
+
+
+// [SH] Otherwise render the index.html page for the Angular SPA
+// [SH] This means we don't have to map all of the SPA routes in Express
+app.use(function(req, res) {
+  res.sendFile(path.join(__dirname, 'app_client', 'index.html'));
+});*/
+
+
 
 // Redirect to links requested from GET
 app.get('/', function (req, res){
@@ -49,8 +78,6 @@ app.get('/view', function (req, res){
 
 
 
-
-
 // Sends back to the controller the GET data requested
 app.get('/templates', function(req, res){
 	console.log("I received a GET request");
@@ -67,6 +94,7 @@ app.get('/templates', function(req, res){
 var template_id = 0;
 app.get('/templates/:id', function (req, res){
 	template_id = req.params.id;
+	console.log("The templates id: " + template_id);
 	db.templates.findOne({_id: mongojs.ObjectId(template_id)}, function(err, doc){
 		console.log(doc);
 		res.json(doc);
@@ -75,7 +103,7 @@ app.get('/templates/:id', function (req, res){
 
 app.get('/templates123', function(req, res){
 	console.log("I received a GET request");
-	
+	console.log("The templates id: " + template_id);
 	// Get the data from the database
 	db.templates.findOne({_id: mongojs.ObjectId(template_id)}, function(err, doc){
 		console.log(doc);
@@ -98,6 +126,7 @@ app.post("/", function (req, res) {
 <input type="submit" value="Submit">
 </form>
 */
+
 
 
 app.listen(3000);

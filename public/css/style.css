@@ -1156,7 +1156,7 @@
 	}
 	.login .account-wall
 	{
-		margin-top: 100px;
+		margin-top: 50px;
 		margin-bottom: 100px;
 		padding: 40px 0px 20px 0px;
 		background-color: #f7f7f7;
@@ -1170,6 +1170,7 @@
 		font-size: 18px;
 		font-weight: 400;
 		display: block;
+		margin-top: 100px;
 	}
 	.login .profile-img
 	{
@@ -1188,14 +1189,18 @@
 	.login .new-account
 	{
 		display: block;
-		margin-top: 10px;
+		margin-top: -50px;
+		margin-bottom: 50px;
+	}
+	.login .new-account:hover
+	{
+		color: green;
+		font-weight: 40px;
+		font-size: 20px;
 	}
 
 
 /* 18. REGISTER */
-
-
-	
 
 	.register .main{
 		margin-top: 70px;

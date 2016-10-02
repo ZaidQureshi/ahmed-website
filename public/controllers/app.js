@@ -1,6 +1,6 @@
 (function(){
 	
-var app = angular.module('Lates', ['ngCookies']); 
+var app = angular.module('Lates', ['ngCookies', 'ngRoute']); 
 app.config(['$locationProvider', function AppConfig($locationProvider) {
 	
 	/*
@@ -90,6 +90,27 @@ app.controller('ViewController', ['$http', '$cookies', '$location', function($ht
 				vm.template = response;
 				//console.log(vm.template);
 			});
+}]);
+
+
+app.controller('RegisterController', ['$http', '$cookies', '$location', '$route', '$window', function($http, $cookies, $location, $route, $window){
+	var vm = this;
+	
+	
+	vm.submitForm = function(){
+		var json = angular.toJson(vm); 
+		console.log(json);
+		console.log("Making POST request");
+		$http.post('/templates', vm).success(function(response){
+				//vm.template = response;
+				console.log(response);
+				$location.path('/register');
+				$route.reload();
+				alert("Success");
+				$window.location.reload();
+			});
+	};
+	
 }]);
 
 

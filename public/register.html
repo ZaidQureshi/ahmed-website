@@ -40,7 +40,6 @@
 	<!-- /PRELOADER -->
 
 	
-
 	<!-- HEADER -->
 	<header id="header">
 		<nav class="navbar st-navbar navbar-fixed-top">
@@ -61,114 +60,98 @@
 				    	<li><a href="/#services">Services</a></li>
 				    	<li><a href="/#our-works">Samples</a></li>
 				    	<li><a href="/#pricing">Pricing</a></li>
-				    	<li><a href="/#our-team">Team</a></li>
+				    	<li><a href="/#our-team">About Me</a></li>
 				    	<li><a href="/#contact">Contact</a></li>
-				    	<li><a href="#header">Store</a></li>
+						<li><a href="/store">Store</a></li>
 						<li><a href="login.html">Log In</a></li>
+						
 					</ul>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->
 		</nav>
 	</header>
 	<!-- /HEADER -->
-	
-	
-	
-	<!-- PAGE HEADER -->
-	<section id="page-header">
+
+
+	<!-- REGISTER -->
+
+	<section class="register">
 		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<div class="section-title">
-						<h1>Store</h1>
-						<span class="st-border"></span>
-					</div>
+			<div class="row main">
+				<div class="panel-heading">
+	               <div class="panel-title text-center">
+	               		<h1 class="title">LATES</h1>
+	               		<hr />
+	               	</div>
+	            </div> 
+				<div class="main-login main-center">
+					<form class="form-horizontal" method="post" action="#">
+						
+						<div class="form-group">
+							<label for="name" class="cols-sm-2 control-label">Your Name</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="name" id="name"  placeholder="Enter your Name"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="email" class="cols-sm-2 control-label">Your Email</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="email" id="email"  placeholder="Enter your Email"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="username" class="cols-sm-2 control-label">Username</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="username" id="username"  placeholder="Enter your Username"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="password" class="cols-sm-2 control-label">Password</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+									<input type="password" class="form-control" name="password" id="password"  placeholder="Enter your Password"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="confirm" class="cols-sm-2 control-label">Confirm Password</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+									<input type="password" class="form-control" name="confirm" id="confirm"  placeholder="Confirm your Password"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group ">
+							<button type="button" class="btn btn-primary btn-lg btn-block login-button">Register</button>
+						</div>
+						<div class="login-register">
+				            <a href="login.html">Login</a>
+				         </div>
+					</form>
 				</div>
 			</div>
 		</div>
 	</section>
-	<!-- /PAGE HEADER -->
-	
-	
-		<!-- STORE -->
-	<section id="store">
-		<div class="container">
-			<div class="row">
 
-				<div class="portfolio-wrapper" >
-					<div class="col-md-12">
-						<h4 class="sidebar-title">Categories</h4>
-						<ul class="filter">  			
-							<li><a class="active" href="#" data-filter="*">All</a></li>	
-							<li><a href="#" data-filter=".Flyer">Flyer</a></li>
-							<li><a href="#" data-filter=".Catalog">Catalog</a></li>
-							<li><a href="#" data-filter=".Menu">Menu</a></li>
-							<li><a href="#" data-filter=".Brochure">Brochure</a></li>
-							<li><a href="#" data-filter=".Card">Card</a></li>
-						</ul><!--/#portfolio-filter-->
-					</div>
-					
-					
-					
-					<div class="portfolio-items" ng-controller="TemplatesController as templatesCtrl">
-						
 
-						<div class="col-md-4 Catalog {{template.category}}" id = "{{template.id}}"  ng-repeat="template in templatesCtrl.templates">
-							<div class="portfolio-content">
-								<img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
-								<div class="portfolio-overlay">
-									
-									<a href="images/works/{{template.icon}}"><i class="fa fa-image"> Full Screen</i></a>
-									<h5>{{template.name}}</h5>
-									<p>Price: ${{template.price}}</p>
-									
-									<div class="button-container">
-										<form action="/view" method="GET" >
-											<input type="hidden" name="id" value="{{template._id}}" />
-											<input class="btn btn-primary" ng-click="templatesCtrl.view(template._id)" type="submit" value="View"/>
-										</form>
-										
-										<form action="/">
-											<input class="btn btn-primary" ng-click="addCart(template._id)" type="submit" value="Add To Cart"/>
-										</form>
-									</div>
-											
-								</div>
-							</div>					
-						</div>
-						
-						<div class="col-md-4 Catalog {{template.category}}" id = "{{template.id}}"  ng-repeat="template in templatesCtrl.templates">
-							<div class="portfolio-content">
-								<img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
-								<div class="portfolio-overlay">
-									
-									<a href="images/works/{{template.icon}}"><i class="fa fa-image"> Full Screen</i></a>
-									<h5>{{template.name}}</h5>
-									<p>Price: ${{template.price}}</p>
-									
-									<div class="button-container">
-										<form action="/view" method="GET" >
-											<input type="hidden" name="id" value="{{template._id}}" />
-											<input class="btn btn-primary" ng-click="templatesCtrl.view(template._id)" type="submit" value="View"/>
-										</form>
-										
-										<form action="/">
-											<input class="btn btn-primary" ng-click="addCart(template._id)" type="submit" value="Add To Cart"/>
-										</form>
-									</div>
-											
-								</div>
-							</div>					
-						</div>
-						
-						
-					</div>	
-				</div>
 
-			</div>
-		</div>
-	</section>
-	
+
 
 	<!-- FOOTER -->
 	<footer id="footer">
@@ -191,10 +174,12 @@
 	</footer>
 	<!-- /FOOTER -->
 
+
 	<!-- Scroll-up -->
 	<div class="scroll-up">
 		<ul><li><a href="#header"><i class="fa fa-angle-up"></i></a></li></ul>
 	</div>
+
 	
 	<!-- JS -->
 	<script type="text/javascript" src="js/jquery.min.js"></script><!-- jQuery -->
@@ -213,7 +198,6 @@
 	<!-- Angular JS Content Delivery Network -->
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
-	
 	<!-- Controllers -->
 	<script src="/controllers/app.js"></script>
 

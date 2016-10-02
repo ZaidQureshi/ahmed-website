@@ -1,7 +1,47 @@
 (function(){
 	
 var app = angular.module('Lates', ['ngCookies']); 
+app.config(['$locationProvider', function AppConfig($locationProvider) {
+	
+	/*
+    $routeProvider
+        .when(
+        '/', {
+            redirectTo: '/home'
+        })
+        .when('/home', {
+            templateUrl: 'templates/home.html'
+        })
+        .when('/login', {
+            templateUrl: 'templates/login.html'
+        })
+        .when('/news', {
+            templateUrl: 'templates/news.html'
+        })
+        .when('/news/archive', {
+            templateUrl: 'templates/newsarchive.html'
+        })
+        // removed other routes ... *snip
+        .otherwise({
+            redirectTo: '/home'
+        }
+    );
+	*/
+	
+    // enable html5Mode for pushstate ('#'-less URLs)
+    //$locationProvider.html5Mode(true);
+	$locationProvider.html5Mode({
+			enabled: true,
+			requireBase: false,
+			rewriteLinks: false
+	});
+    $locationProvider.hashPrefix('!');
+	//$locationProvider.html5Mode(true).hashPrefix('*');
 
+
+}]);
+
+/*
 app.service('sharedProperties', function() {
     var templateID = 0;
 	
@@ -14,6 +54,8 @@ app.service('sharedProperties', function() {
         }
     }
 });
+*/
+
 
 
 app.controller('TemplatesController', ['$http', '$cookies', function($http, $cookies){
@@ -29,20 +71,30 @@ app.controller('TemplatesController', ['$http', '$cookies', function($http, $coo
 	vm.view = function(id){
 			console.log(id);
 			// Setting a cookie
-			$cookies.put('templateID', id);
+			//$cookies.put('templateID', id);
 		};
 }]);
 
-app.controller('ViewController', ['$http', '$cookies', function($http, $cookies){
+
+
+app.controller('ViewController', ['$http', '$cookies', '$location', function($http, $cookies, $location){
 	var vm = this;
 	vm.template = [];
-	vm.id = $cookies.get('templateID');
+	//vm.id = $cookies.get('templateID');
+	
+	var x = $location.search();
+	//console.log(x['id']);
+	vm.id = x['id'];
 	
 	$http.get('/templates/' + vm.id).success(function(response){
 				vm.template = response;
-				console.log(vm.template);
+				//console.log(vm.template);
 			});
 }]);
+
+
+
+
 
 
 /*

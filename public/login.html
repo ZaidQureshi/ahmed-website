@@ -40,7 +40,6 @@
 	<!-- /PRELOADER -->
 
 	
-
 	<!-- HEADER -->
 	<header id="header">
 		<nav class="navbar st-navbar navbar-fixed-top">
@@ -61,113 +60,48 @@
 				    	<li><a href="/#services">Services</a></li>
 				    	<li><a href="/#our-works">Samples</a></li>
 				    	<li><a href="/#pricing">Pricing</a></li>
-				    	<li><a href="/#our-team">Team</a></li>
+				    	<li><a href="/#our-team">About Me</a></li>
 				    	<li><a href="/#contact">Contact</a></li>
-				    	<li><a href="#header">Store</a></li>
-						<li><a href="login.html">Log In</a></li>
+						<li><a href="/store">Store</a></li>
+						<li><a href="register.html">Register</a></li>
+						
 					</ul>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->
 		</nav>
 	</header>
 	<!-- /HEADER -->
-	
-	
-	
-	<!-- PAGE HEADER -->
-	<section id="page-header">
+
+
+	<!-- LOG IN -->
+	<section class="login">
 		<div class="container">
 			<div class="row">
-				<div class="col-md-12">
-					<div class="section-title">
-						<h1>Store</h1>
-						<span class="st-border"></span>
+				<div class="col-sm-6 col-md-4 col-md-offset-4">
+					<h1 class="text-center login-title">Sign in to continue to Bootsnipp</h1>
+					<div class="account-wall">
+						<img class="profile-img" src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=120"
+							alt="">
+						<form class="form-signin">
+						<input type="text" class="form-control" placeholder="Email" required autofocus>
+						<input type="password" class="form-control" placeholder="Password" required>
+						<button class="btn btn-lg btn-primary btn-block" type="submit">
+							Sign in</button>
+						<label class="checkbox pull-left">
+							<input type="checkbox" value="remember-me">
+							Remember me
+						</label>
+						<a href="#" class="pull-right need-help">Need help? </a><span class="clearfix"></span>
+						</form>
 					</div>
+					<a href="register.html" class="text-center new-account">Register for an account </a>
 				</div>
 			</div>
 		</div>
 	</section>
-	<!-- /PAGE HEADER -->
-	
-	
-		<!-- STORE -->
-	<section id="store">
-		<div class="container">
-			<div class="row">
-
-				<div class="portfolio-wrapper" >
-					<div class="col-md-12">
-						<h4 class="sidebar-title">Categories</h4>
-						<ul class="filter">  			
-							<li><a class="active" href="#" data-filter="*">All</a></li>	
-							<li><a href="#" data-filter=".Flyer">Flyer</a></li>
-							<li><a href="#" data-filter=".Catalog">Catalog</a></li>
-							<li><a href="#" data-filter=".Menu">Menu</a></li>
-							<li><a href="#" data-filter=".Brochure">Brochure</a></li>
-							<li><a href="#" data-filter=".Card">Card</a></li>
-						</ul><!--/#portfolio-filter-->
-					</div>
 					
-					
-					
-					<div class="portfolio-items" ng-controller="TemplatesController as templatesCtrl">
-						
 
-						<div class="col-md-4 Catalog {{template.category}}" id = "{{template.id}}"  ng-repeat="template in templatesCtrl.templates">
-							<div class="portfolio-content">
-								<img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
-								<div class="portfolio-overlay">
-									
-									<a href="images/works/{{template.icon}}"><i class="fa fa-image"> Full Screen</i></a>
-									<h5>{{template.name}}</h5>
-									<p>Price: ${{template.price}}</p>
-									
-									<div class="button-container">
-										<form action="/view" method="GET" >
-											<input type="hidden" name="id" value="{{template._id}}" />
-											<input class="btn btn-primary" ng-click="templatesCtrl.view(template._id)" type="submit" value="View"/>
-										</form>
-										
-										<form action="/">
-											<input class="btn btn-primary" ng-click="addCart(template._id)" type="submit" value="Add To Cart"/>
-										</form>
-									</div>
-											
-								</div>
-							</div>					
-						</div>
-						
-						<div class="col-md-4 Catalog {{template.category}}" id = "{{template.id}}"  ng-repeat="template in templatesCtrl.templates">
-							<div class="portfolio-content">
-								<img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
-								<div class="portfolio-overlay">
-									
-									<a href="images/works/{{template.icon}}"><i class="fa fa-image"> Full Screen</i></a>
-									<h5>{{template.name}}</h5>
-									<p>Price: ${{template.price}}</p>
-									
-									<div class="button-container">
-										<form action="/view" method="GET" >
-											<input type="hidden" name="id" value="{{template._id}}" />
-											<input class="btn btn-primary" ng-click="templatesCtrl.view(template._id)" type="submit" value="View"/>
-										</form>
-										
-										<form action="/">
-											<input class="btn btn-primary" ng-click="addCart(template._id)" type="submit" value="Add To Cart"/>
-										</form>
-									</div>
-											
-								</div>
-							</div>					
-						</div>
-						
-						
-					</div>	
-				</div>
 
-			</div>
-		</div>
-	</section>
 	
 
 	<!-- FOOTER -->
@@ -191,10 +125,12 @@
 	</footer>
 	<!-- /FOOTER -->
 
+
 	<!-- Scroll-up -->
 	<div class="scroll-up">
 		<ul><li><a href="#header"><i class="fa fa-angle-up"></i></a></li></ul>
 	</div>
+
 	
 	<!-- JS -->
 	<script type="text/javascript" src="js/jquery.min.js"></script><!-- jQuery -->
@@ -213,7 +149,6 @@
 	<!-- Angular JS Content Delivery Network -->
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
-	
 	<!-- Controllers -->
 	<script src="/controllers/app.js"></script>
 

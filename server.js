@@ -3,18 +3,18 @@ Nodejs server
 - Express model used for organizing web contact, allowing public files to be viewed
 */
 
-var passport = require('passport');
-var path = require('path');
+/*var passport = require('passport');
+//var path = require('path');
 
 //  Bring in the data model
-require('./app_api/models/db');
+//require('./app_api/models/db');
 
 //  Bring in the Passport config after model is defined
-require('./app_api/config/passport');
+//require('./app_api/config/passport');
 
 //  Bring in the routes for the API (delete the default routes)
 var routesApi = require('./app_api/routes/index');
-
+*/
 
 // Require express modules to be used
 var express = require('express');
@@ -42,8 +42,8 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-app.use(passport.initialize());
-app.use('/api', routesApi);
+//app.use(passport.initialize());
+//app.use('/api', routesApi);
 
 
 
@@ -63,17 +63,15 @@ app.use(function(req, res) {
 app.get('/', function (req, res){
     res.sendfile('public/index.html');
 });
-
+	
 app.get('/store', function (req, res){
     res.sendfile('public/store.html');
 });
 
 app.get('/view', function (req, res){
-    //res.sendfile('public/view.html');
-	db.templates.findOne({_id: mongojs.ObjectId(template_id)}, function(err, docs){
-		console.log(docs);
-		res.json(docs);
-		});
+    res.sendfile('public/view.html');
+	//var template_id = req.params.id;
+	
 });
 
 
@@ -91,20 +89,10 @@ app.get('/templates', function(req, res){
 
 
 // Store ID of template clicked on
-var template_id = 0;
+//var template_id = 0;
 app.get('/templates/:id', function (req, res){
-	template_id = req.params.id;
+	var template_id = req.params.id;
 	console.log("The templates id: " + template_id);
-	db.templates.findOne({_id: mongojs.ObjectId(template_id)}, function(err, doc){
-		console.log(doc);
-		res.json(doc);
-		});
-});
-
-app.get('/templates123', function(req, res){
-	console.log("I received a GET request");
-	console.log("The templates id: " + template_id);
-	// Get the data from the database
 	db.templates.findOne({_id: mongojs.ObjectId(template_id)}, function(err, doc){
 		console.log(doc);
 		res.json(doc);

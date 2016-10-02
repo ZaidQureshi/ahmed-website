@@ -63,6 +63,7 @@
 				    	<li><a href="#our-team">About Me</a></li>
 				    	<li><a href="#contact">Contact</a></li>
 						<li><a href="/store">Store</a></li>
+						<li><a href="login.html">Log In</a></li>
 						
 					</ul>
 				</div><!-- /.navbar-collapse -->
@@ -189,6 +190,34 @@
 						</ul><!--/#portfolio-filter-->
 					</div>
 					
+					<div class="portfolio-items" ng-controller="TemplatesController as templatesCtrl">
+						
+					
+					 <div class="col-md-4 Catalog {{template.category}}" id = "{{template.id}}"  ng-repeat="template in templatesCtrl.templates">
+							<div class="portfolio-content">
+								<img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
+								<div class="portfolio-overlay">
+									
+									<a href="images/works/{{template.icon}}"><i class="fa fa-image"> Full Screen</i></a>
+									<h5>{{template.name}}</h5>
+									<p>Price: ${{template.price}}</p>
+									
+									<div class="button-container">
+										<form action="/view" method="GET" >
+											<input type="hidden" name="id" value="{{template._id}}" />
+											<input class="btn btn-primary" ng-click="templatesCtrl.view(template._id)" type="submit" value="View"/>
+										</form>
+										
+										<form action="/">
+											<input class="btn btn-primary" ng-click="addCart(template._id)" type="submit" value="Add To Cart"/>
+										</form>
+									</div>
+											
+								</div>
+							</div>					
+						</div>
+					
+					<!--		
 					<div class="portfolio-items">
 						
 						<div class="col-md-4 col-sm-6 work-grid catalog graphic">
@@ -256,6 +285,7 @@
 								</div>
 							</div>	
 						</div>
+						-->
 						
 					</div>				
 				</div>
@@ -266,6 +296,50 @@
 	<!-- /OUR WORKS -->
 
 	
+	<!-- About Me -->
+	<section id="about-us">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="section-title">
+						<h1>About Me</h1>
+						<span class="st-border"></span>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-4">
+						<div class="team-member">
+							<div class="member-image">
+								<img class="img-responsive" src="images/members/team1.jpg" alt="">
+								<div class="member-social">
+									<a href=""><i class="fa fa-facebook"></i></a>
+									<a href=""><i class="fa fa-twitter"></i></a>
+									<a href=""><i class="fa fa-google-plus"></i></a>
+									<a href=""><i class="fa fa-linkedin"></i></a>
+								</div>
+							</div>
+							<div class="member-info">
+								<h4>Ahmed Atieh</h4>
+								<span>Founder</span>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-md-8 ">
+						<div class="about-us text-center">
+							<h4>Lates</h4>
+							<p>Lates offers you customizable layouts for catalogs, flyers, menus, brochures, cards. Choose from various desingers and add your own flavor to the design! Add images, texts and other components to customize your layout. Once customized, download your template as a pdf. Some instructions on how to use the site. Maybe some kind of information regarding pricing.</p>
+							<a href="" class="btn btn-send">Learn More</a>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</section>
+	<!-- /PRICING -->
+
 	<!-- PRICING -->
 	<section id="pricing">
 		<div class="container">
@@ -329,20 +403,31 @@
 		</div>
 	</section>
 	<!-- /PRICING -->
-
-
-	<!-- OUR TEAM -->
-	<center><section id="our-team">
-		<div class="container">
+		
+	
+	
+	<!-- ABOUT US 
+	<section id="about-us">
+		<div class="container-fluid bg-info">
 			<div class="row">
-				<div class="col-md-12">
+				<div class="col-sm-6">
 					<div class="section-title">
 						<h1>About Me</h1>
 						<span class="st-border"></span>
 					</div>
+					<div class="about-us text-center">
+						<h2>Lates</h2>
+						<p>Lates offers you customizable layouts for catalogs, flyers, menus, brochures, cards. Choose from various desingers and add your own flavor to the design! Add images, texts and other components to customize your layout. Once customized, download your template as a pdf. Some instructions on how to use the site. Maybe some kind of information regarding pricing.</p>
+						<a href="" class="btn btn-send">Learn More</a>
+					</div>
 				</div>
-
-				<div class="col-md-6 col-md-offset-3">
+				<div class="col-sm-6">
+					<div class="section-title">
+						<h1>About Me</h1>
+						<span class="st-border"></span>
+					</div>
+					
+					<div class="col-md-6 col-md-offset-4">
 					<div class="team-member">
 						<div class="member-image">
 							<img class="img-responsive" src="images/members/team1.jpg" alt="">
@@ -358,42 +443,7 @@
 							<span>Founder</span>
 						</div>
 					</div>
-				</div>
-
-			</div>
-		</div>
-	</section></center>
-	<!-- /OUR TEAM -->
-	
-	
-	<!-- ABOUT US -->
-	<section id="about-us">
-		<div class="container-fluid bg-info">
-			<div class="row">
-				<div class="col-sm-6">
-					<div class="about-us text-center">
-						<h2>Lates</h2>
-						<p>Lates offers you customizable layouts for catalogs, flyers, menus, brochures, cards. Choose from various desingers and add your own flavor to the design! Add images, texts and other components to customize your layout. Once customized, download your template as a pdf. Some instructions on how to use the site. Maybe some kind of information regarding pricing.</p>
-						<a href="" class="btn btn-send">Learn More</a>
-					</div>
-				</div>
-				<div class="col-sm-6 our-office">
-					<div id="office-carousel" class="carousel slide" data-ride="carousel">			
-						<div class="carousel-inner">
-							<div class="item active">
-								<img src="images/office/ex2.jpg" alt="">
-							</div>
-							<div class="item">
-								<img src="images/office/ex5.jpg" alt="">			
-							</div>
-							<div class="item">
-								<img src="images/office/ex1.jpg" alt="">			
-							</div>
-							
-							<a class="office-carousel-left" href="#office-carousel" data-slide="prev"><i class="fa fa-angle-left"></i></a>
-							<a class="office-carousel-right" href="#office-carousel" data-slide="next"><i class="fa fa-angle-right"></i></a>
-						</div>		
-					</div> <!--/#office-carousel--> 
+				</div> <!--/#office-carousel-> 
 				</div>
 			</div>
 		</div>
@@ -492,6 +542,12 @@
 	<script type="text/javascript" src="js/jquery.isotope.min.js"></script><!-- isotope -->
 	<script type="text/javascript" src="js/jquery.magnific-popup.min.js"></script><!-- magnific-popup -->
 	<script type="text/javascript" src="js/scripts.js"></script><!-- Scripts -->
+	
+	<!-- Angular JS Content Delivery Network -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
+	<!-- Controllers -->
+	<script src="/controllers/app.js"></script>
 
 
 </body>

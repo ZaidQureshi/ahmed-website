@@ -3,6 +3,20 @@ Nodejs server
 - Express model used for organizing web contact, allowing public files to be viewed
 */
 
+<<<<<<< HEAD
+=======
+var passport = require('passport');
+var path = require('path');
+
+//  Bring in the data model
+//require('./app_api/models/db');
+
+//  Bring in the Passport config after model is defined
+//require('./app_api/config/passport');
+
+//  Bring in the routes for the API (delete the default routes)
+//var routesApi = require('./app_api/routes/index');
+>>>>>>> 69df6a0f607802700b7c44734c2ee8934831667d
 
 
 // Require express modules to be used
@@ -31,6 +45,11 @@ app.use(bodyParser.urlencoded({
 }));
 
 
+<<<<<<< HEAD
+=======
+//app.use(passport.initialize());
+//app.use('/api', routesApi);
+>>>>>>> 69df6a0f607802700b7c44734c2ee8934831667d
 
 
 

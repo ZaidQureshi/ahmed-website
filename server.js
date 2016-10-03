@@ -7,6 +7,11 @@ Nodejs server
 
 // Require express modules to be used
 var express = require('express');
+var app = express();
+
+var expressValidator = require('express-validator');
+var expressJwt = require('express-jwt');
+app.use('/private/*', expressJwt({secret: 'supersecret'}));
 
 // Require ejs modules to be used for live binding to html page
 var ejs = require('ejs');
@@ -18,8 +23,9 @@ var mongojs = require('mongojs');
 //var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
 var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
+//var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
-var app = express();
+
 
 var bodyParser = require('body-parser');
 // Allow public files (html, css, javascript) to be run on the server
@@ -38,8 +44,8 @@ app.use(bodyParser.urlencoded({
 var mongoose = require('mongoose');
 
 // Build the connection string
-//var dbURI = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin'; 
-var dbURI = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
+var dbURI = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin'; 
+//var dbURI = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 
 // Create the database connection
 mongoose.connect(dbURI);
@@ -144,8 +150,23 @@ app.post('/templates', function(req, res){
             }
         });
    // }
-	
 });
+
+
+app.post('/login', function (req, res, next) {
+
+    Users.getAuthenticated(req.body, function (err, token) {
+        if (err) {
+            console.log(err.message);
+            res.status(400).send(err.message);
+        } else {
+            res.send(token);
+        }
+    });
+});
+
+
+
 
 
 

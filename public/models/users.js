@@ -18,6 +18,7 @@ var UserSchema = new mongoose.Schema({
 
 /**
  * Pre-save hooks
+ * Hash Password before saving into the database
  */
 UserSchema.pre('save', function (next) {
   var user = this;

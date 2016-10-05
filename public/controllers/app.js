@@ -37,6 +37,7 @@ app.config(['$locationProvider', function AppConfig($locationProvider) {
 	});
     $locationProvider.hashPrefix('!');
 	//$locationProvider.html5Mode(true).hashPrefix('*');
+	//$httpProvider.interceptors.push('authInterceptor');
 
 
 }]);
@@ -95,6 +96,7 @@ app.controller('RegisterController', ['$http', '$cookies', '$location', '$route'
 	var vm = this;
 	var password = document.getElementById("password");
 	var confirm = document.getElementById("confirm");
+	var username = document.getElementById("username");
 
 	function validatePassword(){
 	  if(password.value != confirm.value) {
@@ -104,31 +106,31 @@ app.controller('RegisterController', ['$http', '$cookies', '$location', '$route'
 	  }
 	}
 	
-	/*
-	var username = document.getElementById("username");
 	function validateUsername(){
-		console.log("kgahkgakah");
-		$http.get('/templates/' + username).success(function(response){
-				console.log(response);
+		console.log(vm.username);
+		$http.post('/users', vm).success(function(response){
+				//console.log(response);
+				if(response){
+					username.setCustomValidity('');
+				}
+				else{
+					username.setCustomValidity("Username exists already");
+				}
 			});
 	}
-	username.onchange = validateUsername;
-	*/
-	
-	
+		
 	password.onchange = validatePassword;
 	confirm.onkeyup = validatePassword;
+	username.onchange = validateUsername;
 	
 	
 	vm.submitForm = function(){
-		//var json = angular.toJson(vm); 
-		//console.log(json);
-		//console.log("Making POST request");
 		$http.post('/templates', vm).success(function(response){
 				//vm.template = response;
 				console.log(response);
+				$window.alert("Congratulations! Registration was successful, please log in to continue.");
 				$location.path('/login');
-				$route.reload();
+				//$route.reload();
 				$window.location.reload();
 				
 			});
@@ -137,16 +139,25 @@ app.controller('RegisterController', ['$http', '$cookies', '$location', '$route'
 }]);
 
 
+/*			 $window.alert("Invalid Username or Password");
+			$location.path('/login');
+			//$route.reload();
+			$window.location.reload();	*/
 
 app.controller('LoginController', ['$http', 'authService', '$location','$window',
   function ($http, authService, $location, $window) {
     var vm = this;
+	vm.invalid = false;
 	
 
 	vm.submit = function () {
+		vm.invalid = false;
       $http.post('/login', vm)
         .then(function (response) {
-
+		console.log("Response is: " + response);
+		console.log(response.data);
+		if(response.data != false){
+			console.log("authenticated");
           // save json web token in session storage
           authService.saveToken(response.data);
 
@@ -154,11 +165,22 @@ app.controller('LoginController', ['$http', 'authService', '$location','$window'
           $location.path('/');
 		  $window.location.reload();
 
-        }, function () {
+		}
+		else{
+			$location.path('/login');
+			//$window.location.reload();
+			vm.invalid = true;
+		}
+		
+		}
+		 , function () {
           // wipe out the stored token
           authService.logout();
         })
+		
+		
     };
+
 }]);
 
 app.controller('NavController', ['authService', '$scope', '$location',

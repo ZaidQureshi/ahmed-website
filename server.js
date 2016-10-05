@@ -4,7 +4,7 @@ Nodejs server
 */
 
 
-
+var path = require('path');
 // Require express modules to be used
 var express = require('express');
 var app = express();
@@ -44,8 +44,8 @@ app.use(bodyParser.urlencoded({
 var mongoose = require('mongoose');
 
 // Build the connection string
-var dbURI = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin'; 
-//var dbURI = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
+//var dbURI = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin'; 
+var dbURI = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 
 // Create the database connection
 mongoose.connect(dbURI);
@@ -83,25 +83,30 @@ var Users = require('./public/models/users');
 
 // Redirect to links requested from GET
 app.get('/', function (req, res){
-    res.sendfile('public/index.html');
+    //res.sendfile('public/index.html');
+	res.sendFile('public/index.html', { root: __dirname });
 });
 	
 app.get('/store', function (req, res){
-    res.sendfile('public/store.html');
+    //res.sendfile('public/store.html');
+	res.sendFile('public/store.html', { root: __dirname });
 });
 
 app.get('/view', function (req, res){
-    res.sendfile('public/view.html');
+    //res.sendfile('public/view.html');
 	//var template_id = req.params.id;
+	res.sendFile('public/view.html', { root: __dirname });
 	
 });
 
 app.get('/register', function (req, res){
-    res.sendfile('public/register.html');
+    //res.sendfile('public/register.html');
+	res.sendFile('public/register.html', { root: __dirname });
 });
 	
 app.get('/login', function (req, res){
-    res.sendfile('public/login.html');
+    //res.sendfile('public/login.html');
+	res.sendFile('public/login.html', { root: __dirname });
 });
 
 
@@ -153,13 +158,36 @@ app.post('/templates', function(req, res){
 });
 
 
-app.post('/login', function (req, res, next) {
+// Check if username already exists in database during registration form
+app.post('/users', function(req, res){
+	var username = req.body.username;
+	console.log("Got POST request");
+	//console.log(username);
+	
+
+    Users.usernameAvailable(username, function (err, response) {
+            if (err) {
+                res.send(err.message);
+            } else {
+				console.log(response);
+                res.send(response);
+            }
+        });
+   // }
+});
+
+
+app.post('/login', function (req, res) {
 
     Users.getAuthenticated(req.body, function (err, token) {
         if (err) {
             console.log(err.message);
-            res.status(400).send(err.message);
+			console.log("The token is: " + token);
+			//res.send(false);
+            //res.status(400).send(err.message);
+			res.send(false);
         } else {
+			//console.log(token);
             res.send(token);
         }
     });

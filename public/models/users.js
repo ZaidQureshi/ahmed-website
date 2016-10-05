@@ -5,7 +5,6 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var jsonwebtoken = require('jsonwebtoken');
 var SALT_WORK_FACTOR = 12;
-
 /**
  * User schema
  */
@@ -58,6 +57,7 @@ UserSchema.methods.comparePassword = function (candidatePassword, callback) {
 
 UserSchema.statics.getAuthenticated = function (user, callback) {
   console.log('getAuthenticated', user);
+  var emptyToken = '';
   this.findOne({username: user.username}, function (err, doc) {
     if (err) {
       console.log(err);
@@ -67,7 +67,7 @@ UserSchema.statics.getAuthenticated = function (user, callback) {
     // make sure the user exists
     else if (!doc) {
       console.log('No user found,');
-      return callback(new Error('Invalid username or password.', 401), null);
+      return callback(new Error('Invalid username or password.', 401), emptyToken);
     }
     else {
       // test for a matching password
@@ -93,7 +93,7 @@ UserSchema.statics.getAuthenticated = function (user, callback) {
           return callback(null, token, user);
         }
         else {
-          return callback(new Error('Invalid username or password.'), null);
+          return callback(new Error('Invalid username or password.'), emptyToken);
 
         }
       });
@@ -111,11 +111,11 @@ UserSchema.statics.Create = function (user, callback) {
     }
     // already exists
     if (doc) {
-      return callback(new Error('Username Already Exists'), null);
+      return callback(new Error('Username Already Exists'), false);
     } else {
 
       if (user.password != user.confirm) {
-        return callback(new Error('Passwords do not match.'), null);
+        return callback(new Error('Passwords do not match.'), false);
       }
 
       // if there is no user with that username
@@ -141,6 +141,45 @@ UserSchema.statics.Create = function (user, callback) {
   });
 };
 
+UserSchema.statics.usernameAvailable = function (username, callback) {
+  // find a user in Mongo with provided username
+  console.log("Username: " + username);
+  console.log(username);
+  this.findOne({'username': username}, function (err, doc) {
+    
+	console.log(err);
+	console.log(doc);
+	// In case of any error return
+    if (err) {
+      return callback(err);
+    }	
+	
+    // already exists
+    if (doc) {
+      //return callback(new Error('Username Already Exists'), false);
+	  return callback(null, false);
+    } 
+	
+	// username doesn't exist
+	else {
+		return callback(null, true);
+
+    }
+  });
+};
+
+/*
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) { return done(null, false); }
+      if (!user.verifyPassword(password)) { return done(null, false); }
+      return done(null, user);
+    });
+  }
+));
+*/
 
 /**
  * Register UserSchema

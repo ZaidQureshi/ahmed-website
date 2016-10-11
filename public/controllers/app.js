@@ -139,11 +139,6 @@ app.controller('RegisterController', ['$http', '$cookies', '$location', '$route'
 }]);
 
 
-/*			 $window.alert("Invalid Username or Password");
-			$location.path('/login');
-			//$route.reload();
-			$window.location.reload();	*/
-
 app.controller('LoginController', ['$http', 'authService', '$location','$window',
   function ($http, authService, $location, $window) {
     var vm = this;
@@ -203,6 +198,33 @@ app.controller('NavController', ['authService', '$scope', '$location',
     };
 
   }]);
+  
+app.controller('CartController', ['authService', '$scope', '$location',
+  function (authService, $scope, $location) {
+
+    
+	$scope.addToCart = function () {
+		$scope.added = true;
+	}
+	$scope.removeFromCart = function () {
+		$scope.added = false;
+	}
+	
+	//access token from user
+    authService.observeUser().then(null, null, function(user){
+      $scope.user  = user;
+    });
+	
+	$scope.loggedin = authService.isAuthed();
+	console.log($scope.user);
+	console.log($scope.loggedin);
+
+    $scope.logout = function () {
+      authService.logout();
+      $location.path('/');
+    };
+
+}]);
 
 
 
@@ -290,68 +312,5 @@ app.factory('authInterceptor', ['$q', '$location', 'authService', function ($q, 
   };
 }]);
 
-/*
-app.controller('AppControl', ['$scope', '$http', '$cookies',	
-	function($scope, $http, $cookies){
-		console.log("Hello World from controller");
-		console.log($cookies.get('template'));
-		// Send a request to get data from the database
-		$scope.refresh = function(){
-			// Request data from the server	
-			$http.get('/templates').success(function(response){
-				console.log("I got the data I requested");
-				
-				// $scope to use the templates in the html
-				$scope.templates = response;
-			
-			});
-		}
-		
-		
-		var temp = "";
-		$scope.view = function(id){
-			console.log(id);
-			$http.get('/templates/' + id).success(function(response){
-				console.log(response);
-				temp = response;
-				console.log(temp);
-				$scope.template = response;
-			});
-		};
-		console.log(temp);
-		
-		
-		$scope.addCart = function(){
-			// To be completed
-			};
-		
-		
-		// Generate the intial data on page load
-		$scope.refresh();
-			
-			
 
-	}]);
-
-	
-	
-app.controller('AppControl2', ['$scope', '$http',
-	function($scope, $http){
-		console.log("Hello World from controller2");
-		
-		// Send a request to get data from the database
-		$scope.refresh = function(){
-			// Request data from the server
-			$http.get('/templates123').success(function(response){
-				console.log("I got the data I requested");
-				
-				// $scope to use the templates in the html
-				$scope.template = response;
-			
-			});
-		}
-		
-		// Generate the intial data on page load
-		$scope.refresh();
-	}]);*/
 })();

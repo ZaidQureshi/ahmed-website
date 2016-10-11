@@ -13,8 +13,6 @@ var expressValidator = require('express-validator');
 var expressJwt = require('express-jwt');
 app.use('/private/*', expressJwt({secret: 'supersecret'}));
 
-// Require ejs modules to be used for live binding to html page
-var ejs = require('ejs');
 
 // Require mongojs modules to interact with database
 var mongojs = require('mongojs');
@@ -35,7 +33,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
    extended: true
 }));
-
 
 
 
@@ -66,13 +63,7 @@ mongoose.connection.on('disconnected', function () {
     console.log('Mongoose default connection disconnected');
 });
 
-// BRING IN YOUR SCHEMAS & MODELS
-//require('/models/users');
-
-//var Users = mongoose.model('User', UserSchema);
-
-//var Users = mongoose.model('User', UserSchema);
-
+// BRING IN  SCHEMAS & MODELS
 var Users = require('./public/models/users');
 
 
@@ -108,7 +99,6 @@ app.get('/login', function (req, res){
     //res.sendfile('public/login.html');
 	res.sendFile('public/login.html', { root: __dirname });
 });
-
 
 
 

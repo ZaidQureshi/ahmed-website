@@ -109,6 +109,23 @@
 							</div>
 							<a href="" class="btn btn-info">Read More</a>
 							<a href="" class="btn btn-primary">Add To Cart</a>
+							
+							<form method="post" action="https://www.paypal.com/cgi-bin/webscr">
+								<fieldset>
+									<input type="hidden" name="cmd" value="_cart">
+									<input type="hidden" name="add" value="1">
+									<input type="hidden" name="business" value="npg230@nyu.edu">
+									<input type="hidden" name="item_name" value="{{viewCtrl.template.name}}">
+									<input type="hidden" name="item_number" value="{{viewCtrl.template.category}}">
+									<input type="hidden" name="amount" value="{{viewCtrl.template.price}}">
+									<input type="hidden" name="currency_code" value="USD">
+									<input type="hidden" name="return" value="">
+									<input type="hidden" name="cancel_return" value="">
+									<input type="hidden" name="undefined_quantity" value="1">
+									<input type="image" src="http://www.paypalobjects.com/en_US/i/btn/x-click-but22.gif" border="0" name="submit" width="87" height="23" alt="Make payments with PayPal - it's fast, free and secure!">
+								</fieldset>
+							</form>
+										
 						</article>
 					</div>
 					<hr>
@@ -116,31 +133,7 @@
 				
 				<div class="col-md-3">
 				
-				<!--
-					<div class="sidebar-widget">
-						<div class="blog-search">
-                            <form>
-                                <input type="text" name="search">
-                                <span>
-                                	<button id="submit_btn" class="search-submit" type="submit">
-                                    <i class="fa fa-search"></i>
-                                    </button>
-                                </span>
-                            </form>
-                        </div>
-					</div>
-					
-					<div class="sidebar-widget">
-						<h4 class="sidebar-title">Categories</h4>
-						<ul>
-							<li><a href="">Web Design</a></li>
-							<li><a href="">Web Development</a></li>
-							<li><a href="">Video</a></li>
-							<li><a href="">HTML</a></li>
-							<li><a href="">CSS</a></li>
-						</ul>
-					</div>
-					-->
+			
 					
 					<div class="sidebar-widget">
 						<h4 class="sidebar-title">Similar Layouts</h4>
@@ -150,31 +143,7 @@
                                     <img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
                                 </a>
                             </li>
-                            <!-- <li>
-                                <a href="#">
-                                    <img class="img-responsive" src="images/img2.png" alt="">
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <img class="img-responsive" src="images/img3.png" alt="">
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <img class="img-responsive" src="images/img4.png" alt="">
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <img class="img-responsive" src="images/img5.png" alt="">
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <img class="img-responsive" src="images/img6.png" alt="">
-                                </a>
-                            </li> -->
+                   
 						</ul>
 					</div>
 					<div class="sidebar-widget">
@@ -244,6 +213,18 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
 	<!-- Controllers -->
 	<script src="/controllers/app.js"></script>
+	
+	<script type="text/javascript" src="/js/minicart.js"></script>
+	<script>
+		//paypal.minicart.render();
+		paypal.minicart.render({
+            action: 'https://www.paypal.com/cgi-bin/webscr'
+        });
+		
+		if (~window.location.search.indexOf('reset=true')) {
+            paypal.minicart.reset();
+        }
+	</script>
 
 
 </body>

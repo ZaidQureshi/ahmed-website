@@ -66,7 +66,17 @@
 				    	<li><a href="#contact">Contact</a></li>
 						<li><a href="/store">Store</a></li>
 						<li><a href="/login" ng-hide="loggedin">Log In</a></li>
-						<li><a href="/" ng-show="loggedin" ng-click="logout()">Log Out {{user.name}}</a></li>
+						
+						 <li class="dropdown" ng-show="loggedin">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">Profile
+							<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+							  <li><a href="#">Welcome {{user.name}}</a></li>
+							  <li><a href="/create">Create a Template</a></li>
+							  <li><a href="/" ng-click="logout()">Log out</a></li> 
+							</ul>
+						 </li>
+						<!--<li><a href="/" ng-show="loggedin" ng-click="logout()">Log Out {{user.name}}</a></li>-->
 					</ul>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->
@@ -471,7 +481,7 @@
 	<script src="/controllers/app.js"></script>
 	
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-	<script type="text/javascript" src="/js/minicart.js"></script>
+	<script type="text/javascript" src="js/minicart.js"></script>
 	<script>
 		//paypal.minicart.render();
 		paypal.minicart.render({

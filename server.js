@@ -70,8 +70,6 @@ var Users = require('./public/models/users');
 
 
 
-
-
 // Redirect to links requested from GET
 app.get('/', function (req, res){
     //res.sendfile('public/index.html');
@@ -99,6 +97,12 @@ app.get('/login', function (req, res){
     //res.sendfile('public/login.html');
 	res.sendFile('public/login.html', { root: __dirname });
 });
+
+app.get('/create', function (req, res){
+    //res.sendfile('public/login.html');
+	res.sendFile('public/create.html', { root: __dirname });
+});
+
 
 
 
@@ -201,7 +205,6 @@ app.post("/", function (req, res) {
 <input type="submit" value="Submit">
 </form>
 */
-
 
 
 app.listen(3000);

@@ -227,7 +227,60 @@ app.controller('CartController', ['authService', '$scope', '$location',
 }]);
 
 
+app.controller('CreateTemplateController', ['$http', '$cookies', '$location', '$route', '$window', function($http, $cookies, $location, $route, $window){
+	var vm = this;
+	
+	//window.onbeforeunload = function (e) { return 'Are you sure?'; };	
+	
+	/*
+	var password = document.getElementById("password");
+	var confirm = document.getElementById("confirm");
+	var username = document.getElementById("username");
 
+	function validatePassword(){
+	  if(password.value != confirm.value) {
+		confirm.setCustomValidity("Passwords Don't Match");
+	  } else {
+		confirm.setCustomValidity('');
+	  }
+	}
+	
+	function validateUsername(){
+		console.log(vm.username);
+		$http.post('/users', vm).success(function(response){
+				//console.log(response);
+				if(response){
+					username.setCustomValidity('');
+				}
+				else{
+					username.setCustomValidity("Username exists already");
+				}
+			});
+	}
+		
+	password.onchange = validatePassword;
+	confirm.onkeyup = validatePassword;
+	username.onchange = validateUsername;
+	
+	
+	vm.submitForm = function(){
+		$http.post('/templates', vm).success(function(response){
+				//vm.template = response;
+				console.log(response);
+				$window.alert("Congratulations! Registration was successful, please log in to continue.");
+				$location.path('/login');
+				//$route.reload();
+				$window.location.reload();
+				
+			});
+	};*/
+	
+}]);
+
+
+
+
+// Handles JSON Web Token (JWT) functionalities 
 app.service('authService', ['$window', '$q', function ($window, $q) {
 
   var self = this;

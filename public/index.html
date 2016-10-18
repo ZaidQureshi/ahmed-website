@@ -28,7 +28,7 @@
 	  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-	<script type="text/javascript" src="/js/jquery.shop.js"></script>
+	
 	
 </head>
 <body>
@@ -207,10 +207,10 @@
 				
 						<div class="col-md-4 Catalog {{template.category}}" id = "{{template.id}}"  ng-repeat="template in templatesCtrl.templates">
 							<div class="portfolio-content">
-								<img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
+								<img class="img-responsive" ng-src="{{template.icon}}" alt="">
 								<div class="portfolio-overlay">
 									
-									<a href="images/works/{{template.icon}}"><i class="fa fa-image"> Full Screen</i></a>
+									<a href="{{template.icon}}"><i class="fa fa-image"> Full Screen</i></a>
 									<h5>{{template.name}}</h5>
 									<p>Price: ${{template.price}}</p>
 									
@@ -482,7 +482,7 @@
 	
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script type="text/javascript" src="js/minicart.js"></script>
-	<script>
+	<script
 		//paypal.minicart.render();
 		paypal.minicart.render({
             action: 'https://www.paypal.com/cgi-bin/webscr'
@@ -493,7 +493,7 @@
 		if (~window.location.search.indexOf('reset=true')) {
             paypal.minicart.reset();
         }
-	</script>
+	>
 
 </body>
 </html>

@@ -65,7 +65,16 @@
 				    	<li><a href="/#contact">Contact</a></li>
 				    	<li><a href="#header">Store</a></li>
 						<li><a href="/login" ng-hide="loggedin">Log In</a></li>
-						<li><a href="/" ng-show="loggedin" ng-click="logout()">Log Out</a></li>
+						
+						 <li class="dropdown" ng-show="loggedin">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">Profile
+							<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+							  <li><a href="#">Welcome {{user.name}}</a></li>
+							  <li><a href="/create">Create a Template</a></li>
+							  <li><a href="/" ng-click="logout()">Log out</a></li> 
+							</ul>
+						 </li>
 					</ul>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->
@@ -116,10 +125,10 @@
 						
 						<div class="col-md-4 Catalog {{template.category}}" id = "{{template.id}}"  ng-repeat="template in templatesCtrl.templates">
 							<div class="portfolio-content">
-								<img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
+								<img class="img-responsive" ng-src="{{template.icon}}" alt="">
 								<div class="portfolio-overlay">
 									
-									<a href="images/works/{{template.icon}}"><i class="fa fa-image"> Full Screen</i></a>
+									<a href="{{template.icon}}"><i class="fa fa-image"> Full Screen</i></a>
 									<h5>{{template.name}}</h5>
 									<p>Price: ${{template.price}}</p>
 									

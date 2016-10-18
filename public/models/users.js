@@ -8,12 +8,26 @@ var SALT_WORK_FACTOR = 12;
 /**
  * User schema
  */
+ 
+ 
+var TemplateSchema = new mongoose.Schema({
+  name: {type: String, required: true},
+  category: {type: String, required: true},
+  icon: {type: String, required: true, index: {unique: true}},
+  price: {type: Number, required: true},
+  author: {type: String, required: true}
+});
+
+
+ 
 var UserSchema = new mongoose.Schema({
   name: {type: String, required: true},
   email: {type: String, required: true},
   username: {type: String, required: true, index: {unique: true}},
-  password: {type: String, required: true}
+  password: {type: String, required: true},
+  template: [TemplateSchema]
 });
+
 
 /**
  * Pre-save hooks
@@ -50,6 +64,7 @@ UserSchema.methods.comparePassword = function (candidatePassword, callback) {
     return callback(null, isMatch);
   });
 };
+
 
 /**
  * Statics
@@ -168,6 +183,45 @@ UserSchema.statics.usernameAvailable = function (username, callback) {
   });
 };
 
+//Submit user entered information and store it into database
+UserSchema.statics.CreateTemplate = function (template, callback) {
+
+	// Call the model and schema
+	var Template = mongoose.model('Template', TemplateSchema);
+	// Create instance of Template following the schema
+	var newTemplate = new Template({
+		name: template.name,
+        category: template.category,
+        icon: template.icon,
+        price: template.price,
+		author: template.author
+	});
+
+	this.findOne({'username': template.author}, function (err, user) { 
+	if(err) {
+		return callback(err);
+	}
+	else{		
+		console.log("This is the user" + user + "\n");
+		user.template.push(newTemplate);
+		console.log("This is the user's template" + user.template + "\n" + "This is the user as a whole" + user + "\n");
+		user.save(function(err) {
+			if(err) { return callbacl(err); }
+			
+			else {
+				return callback(null, user);
+			}
+		});
+		
+	}	 	  
+	});
+};
+
+
+
+
+
+
 /*
 passport.use(new LocalStrategy(
   function(username, password, done) {
@@ -184,6 +238,13 @@ passport.use(new LocalStrategy(
 /**
  * Register UserSchema
  */
+ 
+// Create a model to use the Schema
+var Template = mongoose.model('Template', TemplateSchema); 
+
+// Make this available to our users in our Node applications
+module.exports = Template;
+ 
  
 // Create a model to use the Schema
 var User = mongoose.model('User', UserSchema); 

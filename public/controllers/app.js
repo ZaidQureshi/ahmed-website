@@ -63,9 +63,13 @@ app.controller('TemplatesController', ['$http', '$cookies', function($http, $coo
 	var vm = this;
 	vm.templates = [];
 	
-	$http.get('/templates').success(function(response){
-		vm.templates = response; 
+	$http.get('/templates').success(function(response){ 
+		console.log(response);
+		vm.templates = response;
+			
 	});
+	
+
 	
 	// Function to store the template id inside of a cookie
 	// Cookie will be used later to look up the template via id in the database store and display the result
@@ -87,7 +91,14 @@ app.controller('ViewController', ['$http', '$location', function($http, $locatio
 	vm.id = x['id'];
 	
 	$http.get('/templates/' + vm.id).success(function(response){
-				vm.template = response;
+				console.log(response);
+				for(i = 0; i < response.length; i++){
+					console.log(response[i]);
+					if(response[i]._id == vm.id){
+						vm.template = response[i];
+						break;
+					}
+				}
 			});
 }]);
 
@@ -125,7 +136,7 @@ app.controller('RegisterController', ['$http', '$cookies', '$location', '$route'
 	
 	
 	vm.submitForm = function(){
-		$http.post('/templates', vm).success(function(response){
+		$http.post('/registration', vm).success(function(response){
 				//vm.template = response;
 				console.log(response);
 				$window.alert("Congratulations! Registration was successful, please log in to continue.");
@@ -227,53 +238,30 @@ app.controller('CartController', ['authService', '$scope', '$location',
 }]);
 
 
-app.controller('CreateTemplateController', ['$http', '$cookies', '$location', '$route', '$window', function($http, $cookies, $location, $route, $window){
+app.controller('CreateTemplateController', ['$http', '$cookies', '$location', '$route', '$window', 'authService', function($http, $cookies, $location, $route, $window, authService){
 	var vm = this;
+	var user;
+	
+	//Get the current user's username and store it into the templates author
+	vm.author = authService.getUser().username;
+	console.log(vm.author);
+	
+	vm.submitForm = function(){
+		$http.post('/user_templates', vm).success(function(response){
+				//vm.template = response;
+				console.log(response);
+				//$window.alert("Congratulations! Registration was successful, please log in to continue.");
+				//$location.path('/login');
+				//$route.reload();
+				//$window.location.reload();
+				
+			});
+	};
+	
+	
 	
 	//window.onbeforeunload = function (e) { return 'Are you sure?'; };	
 	
-	/*
-	var password = document.getElementById("password");
-	var confirm = document.getElementById("confirm");
-	var username = document.getElementById("username");
-
-	function validatePassword(){
-	  if(password.value != confirm.value) {
-		confirm.setCustomValidity("Passwords Don't Match");
-	  } else {
-		confirm.setCustomValidity('');
-	  }
-	}
-	
-	function validateUsername(){
-		console.log(vm.username);
-		$http.post('/users', vm).success(function(response){
-				//console.log(response);
-				if(response){
-					username.setCustomValidity('');
-				}
-				else{
-					username.setCustomValidity("Username exists already");
-				}
-			});
-	}
-		
-	password.onchange = validatePassword;
-	confirm.onkeyup = validatePassword;
-	username.onchange = validateUsername;
-	
-	
-	vm.submitForm = function(){
-		$http.post('/templates', vm).success(function(response){
-				//vm.template = response;
-				console.log(response);
-				$window.alert("Congratulations! Registration was successful, please log in to continue.");
-				$location.path('/login');
-				//$route.reload();
-				$window.location.reload();
-				
-			});
-	};*/
 	
 }]);
 

@@ -64,7 +64,16 @@
 				    	<li><a href="/#contact">Contact</a></li>
 				    	<li><a href="/store">Store</a></li>
 						<li><a href="/login" ng-hide="loggedin">Log In</a></li>
-						<li><a href="/" ng-show="loggedin" ng-click="logout()">Log Out</a></li>
+						
+						 <li class="dropdown" ng-show="loggedin">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#">Profile
+							<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+							  <li><a href="#">Welcome {{user.name}}</a></li>
+							  <li><a href="/create">Create a Template</a></li>
+							  <li><a href="/" ng-click="logout()">Log out</a></li> 
+							</ul>
+						 </li>
 					</ul>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->
@@ -97,7 +106,7 @@
 					<div class="create-template">
 						<div class="template-form">
 						
-						<form method="post" action="">
+						<form ng-submit="createCtrl.submitForm()">
 						<label for="name" class="cols-sm-2 control-label">Enter the name for your Template</label>
 						<input type="text" placeholder="Template One" name ="name" id="name" ng-model="createCtrl.name" maxlength="20" required>
 						
@@ -119,12 +128,11 @@
 						<br>
 						
 						<label for="icon" class="cols-sm-2 control-label">Enter the url of the icon for your Template</label>
-						<input type="url" placeholder="" name="icon" id="icon" ng-model="createCtrl.icon" required>
+						<input type="text" placeholder="" name="icon" id="icon" ng-model="createCtrl.icon" required>
 						
 						<br>
 						
-						
-						
+						<button type="submit" value="submit" class="btn btn-primary btn-lg btn-block">Create Template</button>
 						</form>		
 						
 						</div>
@@ -260,6 +268,7 @@
 								<span>Date Posted: {{viewCtrl.template.date}}September, 21, 2016</span>
 								<span>Price {{createCtrl.price | currency}}</span>
 								<span>Category: {{createCtrl.category}}</span>
+								<span>Author: {{createCtrl.author}}</span>
 							</div>
 							<div class="post-article">
 								{{viewCtrl.template.description}}Template Description
@@ -297,7 +306,7 @@
 						<ul class="content-flickr" ng-controller="TemplatesController as templateCtrl">
 							<li ng-repeat="template in templateCtrl.templates">
                                 <a href="/view?id={{template._id}}" title="" ng-click="templateCtrl.view(template._id)">
-                                    <img class="img-responsive" ng-src="images/works/{{template.icon}}" alt="">
+                                    <img class="img-responsive" ng-src="{{template.icon}}" alt="">
                                 </a>
                             </li>
                    

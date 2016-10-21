@@ -100,13 +100,14 @@ app.controller('ViewController', ['$http', '$location', function($http, $locatio
 	
 	$http.get('/templates/' + vm.id).success(function(response){
 				console.log(response);
-				for(i = 0; i < response.length; i++){
+				/*for(i = 0; i < response.length; i++){
 					console.log(response[i]);
 					if(response[i]._id == vm.id){
 						vm.template = response[i];
 						break;
 					}
-				}
+				}*/
+				vm.template = response;
 			});
 }]);
 
@@ -252,7 +253,7 @@ app.controller('CreateTemplateController', ['$http', '$cookies', '$location', '$
 	
 	//Get the current user's username and store it into the templates author
 	//vm.author = authService.getUser().username;
-	console.log(vm.author);
+	//console.log(vm.author);
 	
 	vm.submitForm = function(){
 		$http.post('/user_templates', vm).success(function(response){

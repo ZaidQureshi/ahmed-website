@@ -28,8 +28,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -51,8 +51,8 @@ app.use(bodyParser.urlencoded({
 var mongoose = require('mongoose');
 
 // Build the connection string
-var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin'; 
-//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
+//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin'; 
+var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 //var dbURI3 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin,127.0.0.1:27017/templates?authSource=admin'; 
 
 var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
@@ -258,12 +258,24 @@ app.get('/templates/:id', function (req, res){
 });
 	*/
 	
-	Users.findOne( {'template._id':template_id}, 'template',  function(err, doc){
-		console.log("\n This is the resule of the query" + doc + "\n");
-		res.json(doc.template);
-		});	
-
+	Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
+		//console.log("\n This is the resule of the query" + doc + "\n");
+		console.log(doc._id);
 		
+		//console.log(doc.template);
+		//res.json(doc.template);
+		Users.findOne({'_id': doc._id}, function (err, user) { 
+			if(err) {
+				return callback(err);
+			}
+			else{		
+				console.log("This is the user" + user + "\n");
+				console.log(user.template.id(template_id));
+				res.json(user.template.id(template_id));
+				
+			}
+		});	
+	})
 });
 
 
@@ -381,5 +393,3 @@ app.post("/", function (req, res) {
 
 app.listen(3000);
 console.log("Server running on port 3000");
-
-

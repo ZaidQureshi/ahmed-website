@@ -222,6 +222,8 @@ UserSchema.statics.CreateTemplate = function (template, callback) {
 
 
 
+
+
 /*
 passport.use(new LocalStrategy(
   function(username, password, done) {

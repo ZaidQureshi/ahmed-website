@@ -56,7 +56,18 @@
 	
 	.account-wall h5{
 		text-align: center;
+		padding-top: 50px;
+		padding-bottom: -40px;
 		color: red;
+	}
+	
+	.big-icon {
+		font-size: 140px;
+		text-align: center;
+	}
+	.login {
+		padding-top: 30px;
+		
 	}
 
 /* 1. IMPORT SECTION */
@@ -1088,14 +1099,15 @@ body {
 /* 15. FOOTER */
 
 	#footer{
+		
 		background-color: #262626;
 		padding-top: 40px;
 		padding-bottom: 40px;
 		color: rgba(255, 255, 255, 0.4);
 		position: absolute;
-		right: 0;
 		bottom: 0;
 		left: 0;
+		right: 0;
 	}
 
 	#footer a{
@@ -1238,10 +1250,18 @@ body {
 		display: block;
 		margin-top: -50px;
 		margin-bottom: 50px;
+		font-size: 20px;
 	}
 	.login .new-account:hover
 	{
 		color: green;
+		font-weight: 40px;
+		font-size: 30px;
+	}
+	
+	.form-horizontal .login-register:hover
+	{
+		color: blue;
 		font-weight: 40px;
 		font-size: 20px;
 	}

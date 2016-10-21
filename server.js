@@ -7,7 +7,17 @@ Nodejs server
 var path = require('path');
 // Require express modules to be used
 var express = require('express');
+var session = require('express-session');
+var exphbs  = require('express-handlebars');
 var app = express();
+
+//app.use(session({ secret: 'ssshhhh'})); 
+app.use(session({
+  secret: 'ssshhhh',
+  resave: false,
+  saveUninitialized: true
+}))
+
 
 var expressValidator = require('express-validator');
 var expressJwt = require('express-jwt');
@@ -18,8 +28,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -41,8 +51,8 @@ app.use(bodyParser.urlencoded({
 var mongoose = require('mongoose');
 
 // Build the connection string
-//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin'; 
-var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
+var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin'; 
+//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 //var dbURI3 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin,127.0.0.1:27017/templates?authSource=admin'; 
 
 var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
@@ -85,10 +95,90 @@ Users.remove({}, function(err) {
 
 
 
+
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+
+app.get('/', function (req, res) {
+    res.render('home', {
+		layout: false, 
+		username: req.session.username});
+});
+
+app.get('/store', function (req, res){
+    res.render('store', {
+		layout: false,
+		username: req.session.username});
+});
+
+app.get('/view', function (req, res){
+    res.render('view', {
+		layout: false,
+		username: req.session.username});
+});
+
+app.get('/register', function (req, res){
+    
+	if(!req.session.username){
+		res.render('register', {
+			layout: false,
+			username: req.session.username});
+	}
+	else{
+		// return since it is an asynchronous call
+		return res.redirect('/');
+	}
+});
+	
+app.get('/login', function (req, res){
+	if(!req.session.username){
+		res.render('login', {
+			layout: false,
+			username: req.session.username});
+	}
+	else{
+		// return since it is an asynchronous call
+		return res.redirect('/');
+	}
+	
+});
+
+app.get('/create', function (req, res){
+    
+	if(req.session.username){
+		res.render('create', {
+			layout: false,
+			username: req.session.username});
+	}
+	else{
+		// return since it is an asynchronous call
+		return res.redirect('/');
+	}
+});
+
+app.get('/logout',function(req,res){
+	if(req.session.username){
+		req.session.destroy(function(err) {
+		  if(err) {
+			console.log(err);
+		  } else {
+			return res.redirect('/');
+		  }
+		});
+	}
+	else{
+		return res.redirect('/');
+	}
+});
+
+
+
 // Redirect to links requested from GET
 app.get('/', function (req, res){
     //res.sendfile('public/index.html');
-	res.sendFile('public/index.html', { root: __dirname });
+	console.log("Hello World");
+	console.log("The username is: " + req.session.username);
+	res.sendFile('public/home.html', { root: __dirname });
 });
 	
 app.get('/store', function (req, res){
@@ -176,9 +266,12 @@ app.get('/templates/:id', function (req, res){
 		
 });
 
+
 app.post('/registration', function(req, res){
 	console.log("Got POST request");
 	console.log(req.body);
+	sess.req.session;
+	sess.name = req.body.name;
 	
 	//req.check('username').isAlphanumeric(); // check to see if not empty
 
@@ -197,6 +290,7 @@ app.post('/registration', function(req, res){
         });
    // }
 });
+
 
 
 // Check if username already exists in database during registration form
@@ -219,7 +313,10 @@ app.post('/users', function(req, res){
 
 
 app.post('/login', function (req, res) {
-
+	sess = req.session;
+	console.log(sess);
+	
+	
     Users.getAuthenticated(req.body, function (err, token) {
         if (err) {
             console.log(err.message);
@@ -227,20 +324,29 @@ app.post('/login', function (req, res) {
 			//res.send(false);
             //res.status(400).send(err.message);
 			res.send(false);
+			//res.status(400).send(err.message);
         } else {
 			//console.log(token);
-            res.send(token);
+            //res.send(token);
+			req.session.username = req.body.username;
+			console.log(req.session.username);
+			res.redirect('/');
         }
     });
 });
 
 
+
+
+
+
+
+
 // Store the user created template into the document of templates
-app.post('/user_templates', function(req, res){
+app.post('/create', function(req, res){
 	console.log("Got POST request");
-	//console.log(req.body);
-	
-	
+	console.log(req.body);
+	console.log(req.body.author);
 		Users.CreateTemplate(req.body, function (err, response){
 			if(err) {
 				res.send(err.message);

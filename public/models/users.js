@@ -206,7 +206,7 @@ UserSchema.statics.CreateTemplate = function (template, callback) {
 		user.template.push(newTemplate);
 		console.log("This is the user's template" + user.template + "\n" + "This is the user as a whole" + user + "\n");
 		user.save(function(err) {
-			if(err) { return callbacl(err); }
+			if(err) { return callback(err); }
 			
 			else {
 				return callback(null, user);

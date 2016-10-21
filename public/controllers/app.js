@@ -1,6 +1,14 @@
 (function(){
 	
 var app = angular.module('Lates', ['ngCookies', 'ngRoute']); 
+
+
+app.config(function($interpolateProvider) {
+  $interpolateProvider.startSymbol('{[{');
+  $interpolateProvider.endSymbol('}]}');
+});
+
+
 app.config(['$locationProvider', function AppConfig($locationProvider) {
 	
 	/*
@@ -157,7 +165,7 @@ app.controller('LoginController', ['$http', 'authService', '$location','$window'
 	
 
 	vm.submit = function () {
-		vm.invalid = false;
+	  vm.invalid = false;
       $http.post('/login', vm)
         .then(function (response) {
 		console.log("Response is: " + response);
@@ -165,11 +173,11 @@ app.controller('LoginController', ['$http', 'authService', '$location','$window'
 		if(response.data != false){
 			console.log("authenticated");
           // save json web token in session storage
-          authService.saveToken(response.data);
+          //authService.saveToken(response.data);
 
           // redirect to projects page
-          $location.path('/');
-		  $window.location.reload();
+          //$location.path('/');
+		  //$window.location.reload();
 
 		}
 		else{
@@ -192,19 +200,19 @@ app.controller('LoginController', ['$http', 'authService', '$location','$window'
 app.controller('NavController', ['authService', '$scope', '$location',
   function (authService, $scope, $location) {
 
-    $scope.user = authService.getUser();
+    //$scope.user = authService.getUser();
 
-	//access token from user
+	/*access token from user
     authService.observeUser().then(null, null, function(user){
       $scope.user  = user;
-    });
+    });*/
 	
-	$scope.loggedin = authService.isAuthed();
-	console.log($scope.user);
-	console.log($scope.loggedin);
+	//$scope.loggedin = authService.isAuthed();
+	//console.log($scope.user);
+	//console.log($scope.loggedin);
 
     $scope.logout = function () {
-      authService.logout();
+      //authService.logout();
       $location.path('/');
     };
 
@@ -226,9 +234,9 @@ app.controller('CartController', ['authService', '$scope', '$location',
       $scope.user  = user;
     });
 	
-	$scope.loggedin = authService.isAuthed();
-	console.log($scope.user);
-	console.log($scope.loggedin);
+	//$scope.loggedin = authService.isAuthed();
+	//console.log($scope.user);
+	//console.log($scope.loggedin);
 
     $scope.logout = function () {
       authService.logout();
@@ -243,7 +251,7 @@ app.controller('CreateTemplateController', ['$http', '$cookies', '$location', '$
 	var user;
 	
 	//Get the current user's username and store it into the templates author
-	vm.author = authService.getUser().username;
+	//vm.author = authService.getUser().username;
 	console.log(vm.author);
 	
 	vm.submitForm = function(){

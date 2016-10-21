@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="Lates">
+<head>
+	<meta charset="UTF-8">
+
+	<title>Lates - Customizable Layouts</title>
+	
+	<!-- Main CSS file -->
+	<link rel="stylesheet" href="css/bootstrap.min.css" />
+	<link rel="stylesheet" href="css/owl.carousel.css" />
+	<link rel="stylesheet" href="css/magnific-popup.css" />
+	<link rel="stylesheet" href="css/font-awesome.css" />
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/responsive.css" />
+
+	
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="images/icon/favicon.png">
+	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icon/apple-touch-icon-144-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icon/apple-touch-icon-114-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icon/apple-touch-icon-72-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" href="images/icon/apple-touch-icon-57-precomposed.png">
+	
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body>
+
+	<!-- PRELOADER -->
+	<div id="st-preloader">
+		<div id="pre-status">
+			<div class="preload-placeholder"></div>
+		</div>
+	</div>
+	<!-- /PRELOADER -->
+
+	
+	<!-- HEADER -->
+	<header id="header">
+		<nav class="navbar st-navbar navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#st-navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+				    	<span class="icon-bar"></span>
+				    	<span class="icon-bar"></span>
+				    	<span class="icon-bar"></span>
+					</button>
+					<a class="logo" href="/">Lates<img src="" alt=""></a>
+				</div>
+
+				<div class="collapse navbar-collapse" id="st-navbar-collapse" ng-controller="NavController">
+					<ul class="nav navbar-nav navbar-right">	
+				    	<li><a href="#header">Home</a></li>
+				    	<li><a href="#services">Services</a></li>
+				    	<li><a href="#our-works">Samples</a></li>
+				    	<li><a href="#about-us">About Me</a></li>
+						<li><a href="#pricing">Pricing</a></li>
+				    	<li><a href="#contact">Contact</a></li>
+						<li><a href="/store">Store</a></li>
+						{{#unless username}}
+							<li><a href="/login" >Log In</a></li>
+						{{else}}						
+							 <li class="dropdown">
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#">Profile
+								<span class="caret"></span></a>
+								<ul class="dropdown-menu">
+								  <li><a href="#">Welcome {{username}}</a></li>
+								  <li><a href="/create">Create a Template</a></li>
+								  <li><a href="/logout">Log out</a></li> 
+								</ul>
+							 </li>
+						<!--<li><a href="/" ng-show="loggedin" ng-click="logout()">Log Out {[{user.name}]}</a></li>-->
+						{{/unless}}
+					</ul>
+				</div><!-- /.navbar-collapse -->
+			</div><!-- /.container -->
+		</nav>
+	</header>
+	<!-- /HEADER -->
+
+
+	<!-- SLIDER -->
+	<section id="slider">
+		<div id="home-carousel" class="carousel slide" data-ride="carousel">			
+			<div class="carousel-inner">
+				<div class="item active" style="background-image: url(images/slider/ex1.jpg)">
+					<div class="carousel-caption container">
+						<div class="row">
+							<div class="col-sm-7">
+								<h1>Make</h1>
+								<h2>Catalogs, Flyers, <p></p>Menus, Brochures, Cards</h2>
+								<h1>WITH OUR TEMPLATES</h1>
+							</div>
+						</div>
+					</div>					
+				</div>
+				<div class="item" style="background-image: url(images/slider/ex2.jpg)">
+					<div class="carousel-caption container">
+						<div class="row">
+							<div class="col-sm-7">
+								<h1>Design</h1>
+								<h2>Catalogs, Flyers, <p></p>Menus, Brochures, Cards</h2>
+								<h1>WITH OUR TEMPLATES</h1>
+							</div>
+						</div>
+					</div>					
+				</div>
+				<div class="item" style="background-image: url(images/slider/ex3.png)">
+					<div class="carousel-caption container">
+						<div class="row">
+							<div class="col-sm-7">
+								<h1>Sell</h1>
+								<h2>Catalogs, Flyers, <p></p>Menus, Brochures, Cards</h2>
+								<h1>WITH OUR TEMPLATES</h1>
+							</div>
+						</div>
+					</div>					
+				</div>
+				
+				<a class="home-carousel-left" href="#home-carousel" data-slide="prev"><i class="fa fa-angle-left"></i></a>
+				<a class="home-carousel-right" href="#home-carousel" data-slide="next"><i class="fa fa-angle-right"></i></a>
+			</div>		
+		</div> <!--/#home-carousel--> 
+    </section>
+	<!-- /SLIDER -->
+
+	
+	
+	
+	<!-- SERVICES -->
+	<section id="services">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="section-title">
+						<h1>Services</h1>
+						<span class="st-border"></span>
+					</div>
+				</div>
+
+				<div class="col-md-4 col-sm-6 st-service">
+					<h2><i class="fa fa-folder"></i> Catalogs  </h2>
+					<p>Make and Design Catalogs with our simple and easy templates. Sell your Catalog templates as well.</p>
+				</div>
+
+				<div class="col-md-4 col-sm-6 st-service">
+					<h2><i class="fa fa-folder-o"></i> Flyers </h2>
+					<p>Make and Design Flyers with our simple and easy templates. Sell your Flyers templates as well.</p>
+				</div>
+
+				<div class="col-md-4 col-sm-6 st-service">
+					<h2><i class="fa fa-folder-open"></i> Menus </h2>
+					<p>Make and Design Menus with our simple and easy templates. Sell your Menus templates as well.</p>
+				</div>
+
+				<div class="col-md-4 col-sm-6 st-service">
+					<h2><i class="fa fa-folder-open-o"></i> Brochures </h2>
+					<p>Make and Design Brochures with our simple and easy templates. Sell your Brochures templates as well.</p>
+				</div>
+
+				<div class="col-md-4 col-sm-6 st-service">
+					<h2><i class="fa fa-credit-card"></i> Cards</h2>
+					<p>Make and Design Cards with our simple and easy templates. Sell your Cards templates as well.</p>
+				</div>
+
+				<div class="col-md-4 col-sm-6 st-service">
+					<h2><i class="fa fa-money"></i> Sell </h2>
+					<p>Upload your design for consumers and companies to purchase! Become your own brand and showcase your portfolio. Receive exposure on designs from thousands of viewers.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- /SERVICES -->
+
+
+	<!-- OUR WORKS -->
+	<section id="our-works">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="section-title">
+						<h1>Our Template Samples</h1>
+						<span class="st-border"></span>
+					</div>
+				</div>
+
+				<div class="portfolio-wrapper" >
+					<div class="col-md-12">
+						<h4 class="sidebar-title">Categories</h4>
+						<ul class="filter">  			
+							<li><a class="active" href="#" data-filter="*">All</a></li>	
+							<li><a href="#" data-filter=".Flyer">Flyer</a></li>
+							<li><a href="#" data-filter=".Catalog">Catalog</a></li>
+							<li><a href="#" data-filter=".Menu">Menu</a></li>
+							<li><a href="#" data-filter=".Brochure">Brochure</a></li>
+							<li><a href="#" data-filter=".Card">Card</a></li>
+						</ul><!--/#portfolio-filter-->
+					</div>
+					
+					<div class="portfolio-items" ng-controller="TemplatesController as templatesCtrl">
+				
+						<div class="col-md-4 Catalog {[{template.category}]}" id = "{[{template.id}]}"  ng-repeat="template in templatesCtrl.templates">
+							<div class="portfolio-content">
+								<img class="img-responsive" ng-src="{[{template.icon}]}" alt="">
+								<div class="portfolio-overlay">
+									
+									<a href="{[{template.icon}]}"><i class="fa fa-image"> Full Screen</i></a>
+									<h5>{[{template.name}]}</h5>
+									<p>Price: ${[{template.price}]}</p>
+									
+									<div id="site">
+									<div class="button-container product-description" ng-controller="CartController">
+										<form action="/view" method="GET" >
+											<input type="hidden" name="id" value="{[{template._id}]}" />
+											<input class="btn btn-primary" ng-click="templatesCtrl.view(template._id)" type="submit" value="View"/>
+										</form>
+										
+										<form class="add-to-cart" method="GET">
+											<input class="btn btn-primary" ng-hide="added" ng-click="addToCart()" type="submit" value="Add To Cart"/>					
+											
+										</form>
+										
+										<form  method="GET">
+											<input class="btn btn-success" ng-show="added"  type="submit" value="Checkout"/>
+											
+										</form>
+										
+							
+										<form method="post" action="https://www.paypal.com/cgi-bin/webscr">
+											<fieldset>
+												<input type="hidden" name="cmd" value="_cart">
+												<input type="hidden" name="add" value="1">
+												<input type="hidden" name="business" value="npg230@nyu.edu">
+												<input type="hidden" name="item_name" value="{[{template.name}]}">
+												<input type="hidden" name="item_number" value="{[{template.category}]}">
+												<input type="hidden" name="amount" value="{[{template.price}]}">
+												<!--<input type="hidden" name="shipping" value="1.00">
+												<input type="hidden" name="shipping2" value="0.50">
+												<input type="hidden" name="handling" value="2.00 ">-->
+												<input type="hidden" name="currency_code" value="USD">
+												<input type="hidden" name="return" value="">
+												<input type="hidden" name="cancel_return" value="">
+												<input type="hidden" name="undefined_quantity" value="1">
+												<input type="image" src="http://www.paypalobjects.com/en_US/i/btn/x-click-but22.gif" border="0" name="submit" width="87" height="23" alt="Make payments with PayPal - it's fast, free and secure!">
+											</fieldset>
+										</form>
+										
+										
+									</div>
+									</div>
+											
+								</div>
+							</div>					
+						</div>
+						
+					</div>		
+			
+						
+					</div>				
+				</div>
+
+			</div>
+		</div>
+	</section>
+	<!-- /OUR WORKS -->
+
+	
+	<!-- About Me -->
+	<section id="about-us">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="section-title">
+						<h1>About Me</h1>
+						<span class="st-border"></span>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-4">
+						<div class="team-member">
+							<div class="member-image">
+								<img class="img-responsive" src="images/members/team1.jpg" alt="">
+								<div class="member-social">
+									<a href=""><i class="fa fa-facebook"></i></a>
+									<a href=""><i class="fa fa-twitter"></i></a>
+									<a href=""><i class="fa fa-google-plus"></i></a>
+									<a href=""><i class="fa fa-linkedin"></i></a>
+								</div>
+							</div>
+							<div class="member-info">
+								<h4>Ahmed Atieh</h4>
+								<span>Founder</span>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-md-8 ">
+						<div class="about-us text-center">
+							<p>Lates offers you customizable layouts for catalogs, flyers, menus, brochures, cards. Choose from various desingers and add your own flavor to the design! Add images, texts and other components to customize your layout. Once customized, download your template as a pdf. Some instructions on how to use the site. Maybe some kind of information regarding pricing.</p>
+							<a href="" class="btn btn-primary">Learn More</a>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</section>
+	<!-- /PRICING -->
+
+	<!-- PRICING -->
+	<section id="pricing">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="section-title">
+						<h1>Pricing</h1>
+						<span class="st-border"></span>
+					</div>
+				</div>
+
+				<div class="col-sm-4">
+					<div class="st-pricing text-center">
+						<h5>Basic</h5>
+						<h3>$39</h3>
+						<div class="st-border"></div>
+						<ul>
+							<li>Free Download</li>
+							<li>1000+ Software</li>
+							<li>Full Access</li>
+							<li>Free Update</li>
+							<li>Live Support</li>
+						</ul>
+						<a href="" class="btn btn-primary">Sign Up</a>
+					</div>
+				</div>
+
+				<div class="col-sm-4">
+					<div class="st-pricing text-center">
+						<h5>Silver</h5>
+						<h3>$89</h3>
+						<div class="st-border"></div>
+						<ul>
+							<li>Free Download</li>
+							<li>1000+ Software</li>
+							<li>Full Access</li>
+							<li>Free Update</li>
+							<li>Live Support</li>
+						</ul>
+						<a href="" class="btn btn-primary">Sign Up</a>
+					</div>
+				</div>
+
+				<div class="col-sm-4">
+					<div class="st-pricing text-center">
+						<h5>Gold</h5>
+						<h3>$209</h3>
+						<div class="st-border"></div>
+						<ul>
+							<li>Free Download</li>
+							<li>1000+ Software</li>
+							<li>Full Access</li>
+							<li>Free Update</li>
+							<li>Live Support</li>
+						</ul>
+						<a href="" class="btn btn-primary">Sign Up</a>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</section>
+	<!-- /PRICING -->
+		
+
+	
+	
+	
+
+	
+	<!-- CONTACT -->
+	<section id="contact">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="section-title">
+						<h1>Contact us</h1>
+						<span class="st-border"></span>
+					</div>
+				</div>
+				<div class="col-sm-4 contact-info">
+					<p class="contact-content">Feel free to contact us regarding any concerns or questions. We are here to serve you to the best of our ability. Additional text to be added.</p>
+					<p class="st-address"><i class="fa fa-map-marker"></i> <strong>Ahmed's Address, New York NY 21001, US</strong></p>
+					<p class="st-phone"><i class="fa fa-mobile"></i> <strong>+00 123-456-789</strong></p>
+					<p class="st-email"><i class="fa fa-envelope-o"></i> <strong>ahmed@yourdomain.com</strong></p>
+					<p class="st-website"><i class="fa fa-globe"></i> <strong>www.ahmeddomain.com</strong></p>
+				
+				</div>
+				<div class="col-sm-7 col-sm-offset-1">
+					<form action="php/send-contact.php" class="contact-form" name="contact-form" method="post">
+						<div class="row">
+							<div class="col-sm-6">
+								<input type="text" name="name" required="required" placeholder="Name*">
+							</div>
+							<div class="col-sm-6">
+								<input type="email" name="email" required="required" placeholder="Email*">
+							</div>
+							<div class="col-sm-6">
+								<input type="text" name="subject" placeholder="Subject">
+							</div>
+							<div class="col-sm-6">
+								<input type="text" name="website" placeholder="Website">
+							</div>
+							<div class="col-sm-12">
+								<textarea name="message" required="required" cols="30" rows="7" placeholder="Message*"></textarea>
+							</div>
+							<div class="col-sm-12">
+								<input type="submit" name="submit" value="Send Message" class="btn btn-primary">
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- /CONTACT -->
+
+	<!-- FOOTER -->
+	<footer id="footer">
+		<div class="container">
+			<div class="row">
+				<!-- SOCIAL ICONS -->
+				<div class="col-sm-6 col-sm-push-6 footer-social-icons">
+					<span>Follow us:</span>
+					<a href=""><i class="fa fa-facebook"></i></a>
+					<a href=""><i class="fa fa-twitter"></i></a>
+					<a href=""><i class="fa fa-google-plus"></i></a>
+					<a href=""><i class="fa fa-pinterest-p"></i></a>
+				</div>
+				<!-- /SOCIAL ICONS -->
+				<div class="col-sm-6 col-sm-pull-6 copyright">
+					<p>&copy; 2016 <a href="index.html">Lates</a>. All Rights Reserved.</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<!-- /FOOTER -->
+
+
+	<!-- Scroll-up -->
+	<div class="scroll-up">
+		<ul><li><a href="#header"><i class="fa fa-angle-up"></i></a></li></ul>
+	</div>
+
+	
+	<!-- JS -->
+	<script type="text/javascript" src="js/jquery.min.js"></script><!-- jQuery -->
+	<script type="text/javascript" src="js/bootstrap.min.js"></script><!-- Bootstrap -->
+	<script type="text/javascript" src="js/jquery.parallax.js"></script><!-- Parallax -->
+	<script type="text/javascript" src="js/smoothscroll.js"></script><!-- Smooth Scroll -->
+	<script type="text/javascript" src="js/masonry.pkgd.min.js"></script><!-- masonry -->
+	<script type="text/javascript" src="js/jquery.fitvids.js"></script><!-- fitvids -->
+	<script type="text/javascript" src="js/owl.carousel.min.js"></script><!-- Owl-Carousel -->
+	<script type="text/javascript" src="js/jquery.counterup.min.js"></script><!-- CounterUp -->
+	<script type="text/javascript" src="js/waypoints.min.js"></script><!-- CounterUp -->
+	<script type="text/javascript" src="js/jquery.isotope.min.js"></script><!-- isotope -->
+	<script type="text/javascript" src="js/jquery.magnific-popup.min.js"></script><!-- magnific-popup -->
+	<script type="text/javascript" src="js/scripts.js"></script><!-- Scripts -->
+	
+	<!-- Angular JS Content Delivery Network -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
+	<!-- Controllers -->
+	<script src="controllers/app.js"></script>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script type="text/javascript" src="js/minicart.js"></script>
+	<script
+		//paypal.minicart.render();
+		paypal.minicart.render({
+            action: 'https://www.paypal.com/cgi-bin/webscr'
+        });
+		
+		paypal.minicart.show();
+		
+		if (~window.location.search.indexOf('reset=true')) {
+            paypal.minicart.reset();
+        }
+	>
+
+</body>
+</html>

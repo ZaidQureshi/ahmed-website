@@ -40,6 +40,7 @@
 	<!-- /PRELOADER -->
 
 	
+
 	<!-- HEADER -->
 	<header id="header">
 		<nav class="navbar st-navbar navbar-fixed-top">
@@ -54,7 +55,7 @@
 					<a class="logo" href="/">Lates<img src="" alt=""></a>
 				</div>
 
-				<div class="collapse navbar-collapse" id="st-navbar-collapse">
+				<div class="collapse navbar-collapse" id="st-navbar-collapse" ng-controller="NavController">
 					<ul class="nav navbar-nav navbar-right">
 				    	<li><a href="/">Home</a></li>
 				    	<li><a href="/#services">Services</a></li>
@@ -62,55 +63,124 @@
 				    	<li><a href="/#about-us">About Me</a></li>
 						<li><a href="/#pricing">Pricing</a></li>
 				    	<li><a href="/#contact">Contact</a></li>
-				    	<li><a href="/store">Store</a></li>
-						<li><a href="/register">Register</a></li>
-						
+				    	<li><a href="#header">Store</a></li>
+						{{#unless username}}
+							<li><a href="/login" >Log In</a></li>
+						{{else}}						
+							 <li class="dropdown">
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#">Profile
+								<span class="caret"></span></a>
+								<ul class="dropdown-menu">
+								  <li><a href="#">Welcome {{username}}</a></li>
+								  <li><a href="/create">Create a Template</a></li>
+								  <li><a href="/logout">Log out</a></li> 
+								</ul>
+							 </li>
+						<!--<li><a href="/" ng-show="loggedin" ng-click="logout()">Log Out {[{user.name}]}</a></li>-->
+						{{/unless}}
 					</ul>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->
 		</nav>
 	</header>
 	<!-- /HEADER -->
-
-
-	<!-- LOG IN -->
-	<section class="login" ng-controller="LoginController as loginCtrl">
+	
+	
+	
+	<!-- PAGE HEADER -->
+	<section id="page-header">
 		<div class="container">
 			<div class="row">
-				<div class="login col-sm-6 col-md-4 col-md-offset-4">
-					<h1 class="text-center login-title">Sign in to continue to Lates</h1>
-					<div class="account-wall">
-						<!-- <img class="profile-img" src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=120"
-							alt=""> 
-							<img class="profile-img" src="images/login.png"
-							alt="">-->
-							<i class="profile-img fa fa-user big-icon" aria-hidden="true"></i>
-
-							<h5 ng-show="loginCtrl.invalid"><br /> Incorrect Username or Password <br /> Please try again </h5>
-							
-							<form class="form-signin" name="myForm" action="/login" method="post">
-								<input type="text" class="form-control" placeholder="Username" name ="username" id="username" ng-model="loginCtrl.username" required>
-								<input type="password" class="form-control" placeholder="Password" name="password" id="password" ng-model="loginCtrl.password" required>
-								<button class="btn btn-lg btn-primary btn-block" type="submit">
-									Sign in</button>
-								<label class="checkbox pull-left">
-									<input type="checkbox" value="remember-me">
-									Remember me
-								</label>
-								<!-- <a href="#" class="pull-right need-help">Need help? </a><span class="clearfix"></span> 
-								<h5 ng-show="loginCtrl.invalid">Incorrect Username or Password. Please try again.</h5>ng-submit="loginCtrl.submit()"
-								 -->
-							</form>
-						
+				<div class="col-md-12">
+					<div class="section-title">
+						<h1>Store</h1>
+						<span class="st-border"></span>
 					</div>
-					<a href="/register" class="text-center new-account">Register for an account </a>
 				</div>
 			</div>
 		</div>
 	</section>
+	<!-- /PAGE HEADER -->
+	
+	
+		<!-- STORE -->
+	<section id="our-works">
+		<div class="container">
+			<div class="row">
+
+				<div class="portfolio-wrapper" >
+					<div class="col-md-12">
+						<h4 class="sidebar-title">Categories</h4>
+						<ul class="filter">  			
+							<li><a class="active" href="#" data-filter="*">All</a></li>	
+							<li><a href="#" data-filter=".Flyer">Flyer</a></li>
+							<li><a href="#" data-filter=".Catalog">Catalog</a></li>
+							<li><a href="#" data-filter=".Menu">Menu</a></li>
+							<li><a href="#" data-filter=".Brochure">Brochure</a></li>
+							<li><a href="#" data-filter=".Card">Card</a></li>
+						</ul><!--/#portfolio-filter-->
+					</div>
 					
+					
+					
+					<div class="portfolio-items" ng-controller="TemplatesController as templatesCtrl">
+						
+						
+						<div class="col-md-4 Catalog {[{template.category}]}" id = "{[{template.id}]}"  ng-repeat="template in templatesCtrl.templates">
+							<div class="portfolio-content">
+								<img class="img-responsive" ng-src="{[{template.icon}]}" alt="">
+								<div class="portfolio-overlay">
+									
+									<a href="{[{template.icon}]}"><i class="fa fa-image"> Full Screen</i></a>
+									<h5>{[{template.name}]}</h5>
+									<p>Price: ${[{template.price}]}</p>
+									
+									<div class="button-container">
+										<form action="/view" method="GET" >
+											<input type="hidden" name="id" value="{[{template._id}]}" />
+											<input class="btn btn-primary" ng-click="templatesCtrl.view(template._id)" type="submit" value="View"/>
+										</form>
+										
+										<form action="/">
+											<input class="btn btn-primary" ng-click="addCart(template._id)" type="submit" value="Add To Cart"/>
+										</form>
+										
+										<form method="post" action="https://www.paypal.com/cgi-bin/webscr">
+											<fieldset>
+												<input type="hidden" name="cmd" value="_cart">
+												<input type="hidden" name="add" value="1">
+												<input type="hidden" name="business" value="npg230@nyu.edu">
+												<input type="hidden" name="item_name" value="{[{template.name}]}">
+												<input type="hidden" name="item_number" value="{[{template.category}]}">
+												<input type="hidden" name="amount" value="{[{template.price}]}">
+												<!--<input type="hidden" name="shipping" value="1.00">
+												<input type="hidden" name="shipping2" value="0.50">
+												<input type="hidden" name="handling" value="2.00 ">-->
+												<input type="hidden" name="currency_code" value="USD">
+												<input type="hidden" name="return" value="">
+												<input type="hidden" name="cancel_return" value="">
+												<input type="hidden" name="undefined_quantity" value="1">
+												<input type="image" src="http://www.paypalobjects.com/en_US/i/btn/x-click-but22.gif" border="0" name="submit" width="87" height="23" alt="Make payments with PayPal - it's fast, free and secure!">
+											</fieldset>
+										</form>
+										
+										
+										
+										
+									</div>
+											
+								</div>
+							</div>					
+						</div>
+						
+						
+					</div>	
+				</div>
 
-
+			</div>
+		</div>
+	</section>
+	
 
 	<!-- FOOTER -->
 	<footer id="footer">
@@ -137,7 +207,6 @@
 	<div class="scroll-up">
 		<ul><li><a href="#header"><i class="fa fa-angle-up"></i></a></li></ul>
 	</div>
-
 	
 	<!-- JS -->
 	<script type="text/javascript" src="js/jquery.min.js"></script><!-- jQuery -->
@@ -157,8 +226,21 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
+	
 	<!-- Controllers -->
-	<script src="/controllers/app.js"></script>
+	<script src="controllers/app.js"></script>
+	
+	<script type="text/javascript" src="/js/minicart.js"></script>
+	<script
+		//paypal.minicart.render();
+		paypal.minicart.render({
+            action: 'https://www.paypal.com/cgi-bin/webscr'
+        });
+		
+		if (~window.location.search.indexOf('reset=true')) {
+            paypal.minicart.reset();
+        }
+	>
 
 
 </body>

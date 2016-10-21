@@ -89,7 +89,7 @@
 							<h5 ng-show="loginCtrl.invalid"><br /> Incorrect Username or Password <br /> Please try again </h5>
 							
 							<form class="form-signin" name="myForm" action="/login" method="post">
-								<input type="text" class="form-control" placeholder="Username" name ="username" id="username" ng-model="loginCtrl.username" required>
+								<input type="text" class="form-control" placeholder="Username" name ="username" id="username" ng-model="loginCtrl.username" autofocus required>
 								<input type="password" class="form-control" placeholder="Password" name="password" id="password" ng-model="loginCtrl.password" required>
 								<button class="btn btn-lg btn-primary btn-block" type="submit">
 									Sign in</button>

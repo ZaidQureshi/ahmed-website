@@ -63,7 +63,7 @@
 						<li><a href="/#pricing">Pricing</a></li>
 				    	<li><a href="/#contact">Contact</a></li>
 				    	<li><a href="/store">Store</a></li>
-						<li><a href="/register">Register</a></li>
+						<li><a href="/login">Log In</a></li>
 						
 					</ul>
 				</div><!-- /.navbar-collapse -->
@@ -73,42 +73,90 @@
 	<!-- /HEADER -->
 
 
-	<!-- LOG IN -->
-	<section class="login" ng-controller="LoginController as loginCtrl">
-		<div class="container">
-			<div class="row">
-				<div class="login col-sm-6 col-md-4 col-md-offset-4">
-					<h1 class="text-center login-title">Sign in to continue to Lates</h1>
-					<div class="account-wall">
-						<!-- <img class="profile-img" src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=120"
-							alt=""> 
-							<img class="profile-img" src="images/login.png"
-							alt="">-->
-							<i class="profile-img fa fa-user big-icon" aria-hidden="true"></i>
+	<!-- REGISTER -->
 
-							<h5 ng-show="loginCtrl.invalid"><br /> Incorrect Username or Password <br /> Please try again </h5>
-							
-							<form class="form-signin" name="myForm" action="/login" method="post">
-								<input type="text" class="form-control" placeholder="Username" name ="username" id="username" ng-model="loginCtrl.username" required>
-								<input type="password" class="form-control" placeholder="Password" name="password" id="password" ng-model="loginCtrl.password" required>
-								<button class="btn btn-lg btn-primary btn-block" type="submit">
-									Sign in</button>
-								<label class="checkbox pull-left">
-									<input type="checkbox" value="remember-me">
-									Remember me
-								</label>
-								<!-- <a href="#" class="pull-right need-help">Need help? </a><span class="clearfix"></span> 
-								<h5 ng-show="loginCtrl.invalid">Incorrect Username or Password. Please try again.</h5>ng-submit="loginCtrl.submit()"
-								 -->
-							</form>
+	<section class="register" ng-controller="RegisterController as registerCtrl">
+		<div class="container">
+			<div class="row main">
+				<div class="panel-heading">
+	               <div class="panel-title text-center">
+	               		<h1 class="title">Create a New Account</h1>
+	               		<hr />
+	               	</div>
+	            </div> 
+				
+				<div class="main-login main-center">
+					<form class="form-horizontal" name="myForm" ng-submit="registerCtrl.submitForm()">
 						
-					</div>
-					<a href="/register" class="text-center new-account">Register for an account </a>
+						<div class="form-group">
+							<label for="name" class="cols-sm-2 control-label">Your Name</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="name" id="name" ng-model="registerCtrl.name" placeholder="Enter your Name" maxlength="15" autofocus required/>
+								</div>
+								
+							</div>
+						</div>
+
+
+						<div class="form-group">
+							<label for="email" class="cols-sm-2 control-label">Your Email</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+									<input type="email" class="form-control" name="email" id="email" ng-model="registerCtrl.email" placeholder="Enter your Email" required/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="username" class="cols-sm-2 control-label">Username</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="username" id="username" ng-model="registerCtrl.username" placeholder="Enter your Username" required ng-pattern="/^[a-zA-Z0-9_]*$/"/>
+									<!--
+									<span class="error" ng-show="myForm.username.$error.required">This is required!</span>
+									<span class="error" ng-show="myForm.username.$error.pattern">Alphanumeric, underscores and periods only!</span>
+									-->
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="password" class="cols-sm-2 control-label">Password</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+									<input type="password" class="form-control" name="password" id="password" ng-model="registerCtrl.passwrd"  placeholder="Enter your Password" required/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="confirm" class="cols-sm-2 control-label">Confirm Password</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+									<input type="password" class="form-control" name="confirm" id="confirm"  placeholder="Confirm your Password" required/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group ">
+							<button type="submit"  value="submit" class="btn btn-primary btn-lg btn-block login-button">Register</button>
+						</div>
+						<div class="login-register">
+				            <a href="/login">Login</a>
+				         </div>
+					</form>
 				</div>
 			</div>
 		</div>
 	</section>
-					
+
+
 
 
 
@@ -126,12 +174,13 @@
 				</div>
 				<!-- /SOCIAL ICONS -->
 				<div class="col-sm-6 col-sm-pull-6 copyright">
-					<p>&copy; 2016 <a href="/index">Lates</a>. All Rights Reserved.</p>
+					<p>&copy; 2016 <a href="index.html">Lates</a>. All Rights Reserved.</p>
 				</div>
 			</div>
 		</div>
 	</footer>
 	<!-- /FOOTER -->
+
 
 	<!-- Scroll-up -->
 	<div class="scroll-up">
@@ -157,6 +206,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
+	
 	<!-- Controllers -->
 	<script src="/controllers/app.js"></script>
 

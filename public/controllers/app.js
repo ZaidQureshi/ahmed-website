@@ -147,7 +147,7 @@ app.controller('RegisterController', ['$http', '$cookies', '$location', '$route'
 	vm.submitForm = function(){
 		$http.post('/registration', vm).success(function(response){
 				//vm.template = response;
-				console.log(response);
+				//console.log(response);
 				$window.alert("Congratulations! Registration was successful, please log in to continue.");
 				$location.path('/login');
 				//$route.reload();

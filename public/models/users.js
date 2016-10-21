@@ -13,7 +13,7 @@ var SALT_WORK_FACTOR = 12;
 var TemplateSchema = new mongoose.Schema({
   name: {type: String, required: true},
   category: {type: String, required: true},
-  icon: {type: String, required: true, index: {unique: true}},
+  icon: {type: String, required: true},
   price: {type: Number, required: true},
   author: {type: String, required: true}
 });
@@ -116,7 +116,7 @@ UserSchema.statics.getAuthenticated = function (user, callback) {
   });
 };
 
-
+/*
 UserSchema.statics.Create = function (user, callback) {
   // find a user in Mongo with provided username
   this.findOne({'username': user.username}, function (err, doc) {
@@ -127,7 +127,8 @@ UserSchema.statics.Create = function (user, callback) {
     // already exists
     if (doc) {
       return callback(new Error('Username Already Exists'), false);
-    } else {
+    } 
+	else {
 
       if (user.password != user.confirm) {
         return callback(new Error('Passwords do not match.'), false);
@@ -142,18 +143,55 @@ UserSchema.statics.Create = function (user, callback) {
         name: user.name,
         email: user.email
       });
+		
+		
+      // save the user
+	  
+      newUser.save(function (err) {
+        // In case of any error, return using the done method
+		console.log("Still good....\n")
+        if (err) {
+		  console.log("Still good....\n")
+		  return callback(err, newUser); 
+        }
+		else{
+        // User Registration succesful
+        return callback(null, newUser);
+		console.log("Still good....\n")
+		}
+      })
+	  
+    }
+  });
+};
+*/
 
+
+
+UserSchema.statics.Create = function (user, callback) {
+      // create the user
+      var User = mongoose.model('User', UserSchema);
+      var newUser = new User({
+        password: user.passwrd,
+        username: user.username,
+        name: user.name,
+        email: user.email
+      });
+		
       // save the user
       newUser.save(function (err) {
         // In case of any error, return using the done method
+		console.log("Still good....\n")
         if (err) {
-          return callback(err);
+			console.log("Still good....\n")
+			console.log(err);
+			return callback(err, newUser); 
         }
-        // User Registration succesful
-        return callback(null, newUser);
+		else {
+			// User Registration succesful
+			return callback(null, newUser);
+		}
       });
-    }
-  });
 };
 
 UserSchema.statics.usernameAvailable = function (username, callback) {
@@ -216,7 +254,6 @@ UserSchema.statics.CreateTemplate = function (template, callback) {
 	}	 	  
 	});
 };
-
 
 
 

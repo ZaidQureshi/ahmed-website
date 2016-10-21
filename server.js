@@ -134,7 +134,8 @@ app.get('/login', function (req, res){
 	if(!req.session.username){
 		res.render('login', {
 			layout: false,
-			username: req.session.username});
+			error: req.session.error});
+		console.log(req.session.error);
 	}
 	else{
 		// return since it is an asynchronous call
@@ -282,8 +283,6 @@ app.get('/templates/:id', function (req, res){
 app.post('/registration', function(req, res){
 	console.log("Got POST request");
 	console.log(req.body);
-	sess.req.session;
-	sess.name = req.body.name;
 	
 	//req.check('username').isAlphanumeric(); // check to see if not empty
 
@@ -295,9 +294,9 @@ app.post('/registration', function(req, res){
 
     Users.Create(req.body, function (err, user) {
             if (err) {
-                res.status(400).send(err.message);
+                res.status(400).send(err);
             } else {
-                res.sendStatus(200);
+                res.redirect('/login');
             }
         });
    // }
@@ -327,7 +326,7 @@ app.post('/users', function(req, res){
 app.post('/login', function (req, res) {
 	sess = req.session;
 	console.log(sess);
-	
+	req.session.error = null;
 	
     Users.getAuthenticated(req.body, function (err, token) {
         if (err) {
@@ -335,8 +334,11 @@ app.post('/login', function (req, res) {
 			console.log("The token is: " + token);
 			//res.send(false);
             //res.status(400).send(err.message);
-			res.send(false);
+			//res.send(false);
 			//res.status(400).send(err.message);
+			req.session.error = err.message;
+			console.log(req.session.error);
+			res.redirect('/login');
         } else {
 			//console.log(token);
             //res.send(token);

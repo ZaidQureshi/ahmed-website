@@ -4,6 +4,7 @@ Nodejs server
 */
 
 
+var jimp = require('jimp');
 var path = require('path');
 var fs = require('fs');
 //var admZip = require('adm-zip');
@@ -283,6 +284,7 @@ app.get('/create_template', function (req, res){
     //res.sendfile('public/login.html');
 	//res.sendFile('upload/templates/5/example_template.html', { root: __dirname });
 	//res.render('5', { layout: false });
+	tid = "5820c6c13de7b320f8dfd8b8";
 	
 	fs.realpath(__dirname, function(err, path) {
 		if (err) {
@@ -292,22 +294,22 @@ app.get('/create_template', function (req, res){
 		console.log('Path is : ' + path);
 	});
 	
-	fs.readdir(__dirname + "/views/templates/5", function(err, files) {
+	fs.readdir(__dirname + "/views/templates/5820c6c13de7b320f8dfd8b8", function(err, files) {
 		if (err) return;
 		files.forEach(function(f) {
 			console.log('Files: ' + f);
 			if(f.length > 5){
 					console.log(f.substr(f.length - 4));
 					if((f.substr(f.length -4)) ==  "html"){
-						fs.rename('views/templates/5/' + f, 'views/5.handlebars', function(err) {
+						fs.rename('views/templates/5820c6c13de7b320f8dfd8b8/' + f, 'views/5.handlebars', function(err) {
 							if ( err ) console.log('ERROR: ' + err);
 						});
-						//res.sendFile('views/templates/5/' + f, { root: __dirname }); 
+						//res.sendFile('views/templates/5820c6c13de7b320f8dfd8b8/' + f, { root: __dirname }); 
 						
 					}
 			}
 			if((f.substr(f.length - 3)) == "txt"){
-				fs.readFile('views/templates/' + 5 + '/' + f, "utf-8", function (err,data) {
+				fs.readFile('views/templates/' + '5820c6c13de7b320f8dfd8b8' + '/' + f, "utf-8", function (err,data) {
 										  if (err) {
 											return console.log(err);
 										  }
@@ -322,7 +324,7 @@ app.get('/create_template', function (req, res){
 										  console.log(iList);
 										  templateID = "5817bc792df6ef2bf8362b87";
 										  author = "a";
-										  Users.EditTemplate(author, templateID, iList, function (err, user) {
+										  Users.EditTemplate(author, tid, iList, function (err, user) {
 												if (err) {
 													res.status(400).send(err);
 												} else {
@@ -337,7 +339,7 @@ app.get('/create_template', function (req, res){
 		});
 	});
 	
-	res.render('templates/5/5', {
+	res.render('templates/5820c6c13de7b320f8dfd8b8/5820c6c13de7b320f8dfd8b8', {
 							layout: false,
 							company_Name: "Zaid's Hairy Chest",
 							full_name: "Starboy",
@@ -359,7 +361,7 @@ app.get('/templates', function(req, res){
 	console.log("I received a GET request");
 	
 	//Users.collection.distinct
-	Users.distinct('template', function (err, docs){
+	Users.distinct('template', {"template.approved" : "true"},  function (err, docs){
 		//console.log(docs);	
 		res.json(docs);
 	});
@@ -372,7 +374,7 @@ app.get('/templates_review', function(req, res){
 	console.log("I received a GET request");
 	
 	//Users.collection.distinct
-	Users.distinct('template', {"template.review" : "true"}, function (err, docs){
+	Users.distinct('template', {"template.reviewed" : "false"}, function (err, docs){
 		//console.log(docs);	
 		res.json(docs);
 	});
@@ -518,21 +520,30 @@ app.post('/login', function (req, res) {
 app.post('/create', function(req, res){
 	console.log("Got POST request");
 	console.log(req.body);
-	console.log(req.body.author);
 	console.log("\n" + req.files.file + "\n");
+	
+	// Defeat values if Ahmed makes a template
+	if(req.session.username == "ahmed") {
+		req.body.reviewed = "true";
+		req.body.approved = "true";
+	}
+	
+	
+	// Initialize empty array to contain the list of identifiers that will be saved into the template
+	var iList = [];
+	// Empty variable to store the image path that will be saved into the template
+	var iconPath = "";
+	
+		// Creates a template and sends the template ID as the response
 		Users.CreateTemplate(req.body, function (err, response){
 			if(err) {
 				res.send(err.message);
 			}
-			else{
-				//console.log("This is the user after function call" + response + "\n");
-				//return res.redirect('/upload');
-				//res.send(response);
-				//var template_id = 5;
+			else {
+		
 				var sampleFile;
 				sampleFile = req.files.file;
-				//console.log(req.files);
-				//console.log(req.files.file);
+
 				sampleFile.mv('upload/zips/' + response + '.zip', function(err) {
 					if (err) {
 						res.status(500).send(err);
@@ -544,46 +555,76 @@ app.post('/create', function(req, res){
 							if (err) {
 								res.status(500).send(err);
 							}
-							else{
-								//res.send('File uploaded!');
+							else {
+								
 								fs.readdir(__dirname + "/views/templates/" + response, function(err, files) {
 								if (err) return;
+								
+								// Iterate through each file and change the names of the files to match the template id that was generated
 								files.forEach(function(f) {
 									console.log('Files: ' + f);
-									if(f.length > 5){
-											console.log(f.substr(f.length - 4));
-											if((f.substr(f.length -4)) ==  "html"){
-												fs.rename('views/templates/' + response + '/' + f, 'views/templates/' + response + '/' + response + '.handlebars', function(err) {
-													if ( err ) console.log('ERROR: ' + err);
-												});
-												//res.sendFile('views/templates/5/' + f, { root: __dirname }); 
-												
-											}
+									
+									
+									if((f.substr(f.length -4)) ==  "html"){
+										fs.rename('views/templates/' + response + '/' + f, 'views/templates/' + response + '/' + response + '.handlebars', function(err) {
+											if ( err ) console.log('ERROR: ' + err);
+										});										
 									}
+									
 									if((f.substr(f.length - 3)) == "txt"){
 										fs.readFile('views/templates/' + response + '/' + f, "utf-8", function (err,data) {
 										  if (err) {
 											return console.log(err);
 										  }
-										  console.log(data);
-										  var identifierList = data.split("\\t");
-										  console.log(identifierList);
+										  var identifierList = data.split("\r\n");
+										
+										  //var identifierList = identifierList.split("\t");
+										  for(var i = 0; i < identifierList.length; i++){
+											  x = identifierList[i].split("\t");
+											  iList.push(x);
+										  }
+										  
 										});
 									}
 									
+									if((f.substr(f.length -3)) ==  "png"){
+										fs.rename('views/templates/' + response + '/' + f, 'public/images/uploads/' + response + '.png', function(err) {
+											if ( err ) console.log('ERROR: ' + err);
+										});
+										iconPath = "images/uploads/" + response + ".png";
+										resizePath = "public/" + iconPath;
+										jimp.read(resizePath, function (err, template) {
+											if (err) throw err;
+											template.resize(356, 256)            // resize 
+												 .quality(100)                 // set JPEG quality 
+												 //.greyscale()                 // set greyscale 
+												 .write(resizePath); // save 
+										});
+										console.log(iconPath);
+									}
+								
 								});
+									Users.EditTemplate(req.body.author, response, iList, iconPath, function (err, user) {
+												if (err) {
+													res.status(400).send(err);
+												} else {
+													//res.redirect('/login');
+													res.send(user);
+												}
+											});
+								
+								
+								
+								
 							});
-							
-								res.send(response);
 							}
-						});
-					   
+							
+							
+						}); 
 					}
-				});
+				});			
 			}
 		});	  	
-	
-    //Templates.Create(req.body, function (err, user) {
 	
 });
 

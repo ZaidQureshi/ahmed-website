@@ -205,7 +205,7 @@
 					
 					<div class="portfolio-items" ng-controller="TemplatesController as templatesCtrl">
 				
-						<div class="col-md-4 Catalog {[{template.category}]}" id = "{[{template.id}]}"  ng-repeat="template in templatesCtrl.templates">
+						<div class="col-md-4 Catalog {[{template.category}]}" id = "{[{template.id}]}"  ng-repeat="template in templatesCtrl.templates | limitTo: 5">
 							<div class="portfolio-content">
 								<img class="img-responsive" ng-src="{[{template.icon}]}" alt="">
 								<div class="portfolio-overlay">

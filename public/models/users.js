@@ -2,6 +2,7 @@
  * Module dependencies
  */
 var mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 var bcrypt = require('bcrypt');
 var jsonwebtoken = require('jsonwebtoken');
 var SALT_WORK_FACTOR = 12;
@@ -13,9 +14,11 @@ var SALT_WORK_FACTOR = 12;
 var TemplateSchema = new mongoose.Schema({
   name: {type: String, required: true},
   category: {type: String, required: true},
-  icon: {type: String, required: true},
+  icon: {type: String},
   price: {type: Number, required: true},
-  author: {type: String, required: true}
+  author: {type: String, required: true},
+  identifier: [[{type: String}]],
+  review: {type: Boolean, required: true}
 });
 
 
@@ -232,8 +235,10 @@ UserSchema.statics.CreateTemplate = function (template, callback) {
         category: template.category,
         icon: template.icon,
         price: template.price,
-		author: template.author
+		author: template.author,
+		review: template.review
 	});
+	var returnId = newTemplate.id;
 
 	this.findOne({'username': template.author}, function (err, user) { 
 	if(err) {
@@ -242,7 +247,45 @@ UserSchema.statics.CreateTemplate = function (template, callback) {
 	else{		
 		console.log("This is the user" + user + "\n");
 		user.template.push(newTemplate);
-		console.log("This is the user's template" + user.template + "\n" + "This is the user as a whole" + user + "\n");
+		//console.log("This is the user's template" + user.template + "\n" + "This is the user as a whole" + user + "\n");
+		user.save(function(err) {
+			if(err) { return callback(err); }
+			
+			else {
+				return callback(null, returnId);
+			}
+		});
+		
+	}	 	  
+	});
+};
+
+
+UserSchema.statics.EditTemplate = function (author, templateID, iList, callback) {
+
+	this.findOne({'username': author}, function (err, user) { 
+	if(err) {
+		return callback(err);
+	}
+	else{		
+		// console.log("This is the user" + user + "\n");
+		// user.template.push(newTemplate);
+		//console.log("This is the user's template" + user.template + "\n" + "This is the user as a whole" + user + "\n");
+		// user.save(function(err) {
+			// if(err) { return callback(err); }
+			
+			// else {
+				// return callback(null, returnId);
+			// }
+		// });
+		console.log(user.template.id(templateID));
+		console.log(iList);
+		for(var i = 0; i < iList.length; i++){
+			console.log(iList[i][0] + "\n");
+			user.template.id(templateID).identifier.push(iList[i]);
+		}
+		
+		//console.log(user.template.id(templateID).identifier[0][0]);
 		user.save(function(err) {
 			if(err) { return callback(err); }
 			
@@ -251,10 +294,27 @@ UserSchema.statics.CreateTemplate = function (template, callback) {
 			}
 		});
 		
+		
 	}	 	  
 	});
-};
 
+
+
+	
+	//Call the model and schema
+	// var Template = mongoose.model('Template', TemplateSchema);
+	//Create instance of Template following the schema
+	// var newTemplate = new Template({
+		// name: template.name,
+        // category: template.category,
+        // icon: template.icon,
+        // price: template.price,
+		// author: template.author
+	// });
+	// var returnId = newTemplate.id;
+
+
+};
 
 
 

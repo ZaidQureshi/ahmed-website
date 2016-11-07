@@ -5,11 +5,34 @@ Nodejs server
 
 
 var path = require('path');
+var fs = require('fs');
+//var admZip = require('adm-zip');
+//var multer = require('multer');
+
+var fileUpload = require('express-fileupload');
+var extract = require('extract-zip')
+	 
+/*
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'upload/zips')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+//var upload = multer({ dest: 'upload/zips' });
+var upload = multer ({ storage: storage });
+*/
+
+
 // Require express modules to be used
 var express = require('express');
 var session = require('express-session');
 var exphbs  = require('express-handlebars');
 var app = express();
+
+
 
 //app.use(session({ secret: 'ssshhhh'})); 
 app.use(session({
@@ -28,8 +51,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -45,17 +68,18 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-
+// default options
+app.use(fileUpload());
 
 // Bring Mongoose into the app
 var mongoose = require('mongoose');
 
 // Build the connection string
-//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin'; 
+//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
 var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 //var dbURI3 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin,127.0.0.1:27017/templates?authSource=admin'; 
 
-var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
+//var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
 //var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 
 
@@ -172,6 +196,50 @@ app.get('/logout',function(req,res){
 	}
 });
 
+app.get('/upload', function(req, res){
+	/*
+	if(req.session.username){
+		res.render('upload',{
+			layout: false,
+			username: req.session.username});
+	}
+	else{
+		return res.redirect('/');
+	}*/
+	res.render('upload', { layout: false });
+	
+});
+
+app.get('/review', function (req, res){
+    
+	//if(req.session.username == "ahmed"){
+		res.render('review', {
+			layout: false,
+			username: req.session.username});
+	//}
+	/*else{
+		// return since it is an asynchronous call
+		// return to homepage if you are not Ahmed
+		return res.redirect('/');
+	}*/
+});
+
+
+app.get('/review_template', function (req, res){
+    
+	if(req.session.username == "ahmed"){
+		res.render('review', {
+			layout: false,
+			username: req.session.username});
+	}
+	else{
+		// return since it is an asynchronous call
+		// return to homepage if you are not Ahmed
+		return res.redirect('/');
+	}
+});
+
+
 
 
 // Redirect to links requested from GET
@@ -211,6 +279,80 @@ app.get('/create', function (req, res){
 
 
 
+app.get('/create_template', function (req, res){
+    //res.sendfile('public/login.html');
+	//res.sendFile('upload/templates/5/example_template.html', { root: __dirname });
+	//res.render('5', { layout: false });
+	
+	fs.realpath(__dirname, function(err, path) {
+		if (err) {
+			console.log(err);
+		 return;
+		}
+		console.log('Path is : ' + path);
+	});
+	
+	fs.readdir(__dirname + "/views/templates/5", function(err, files) {
+		if (err) return;
+		files.forEach(function(f) {
+			console.log('Files: ' + f);
+			if(f.length > 5){
+					console.log(f.substr(f.length - 4));
+					if((f.substr(f.length -4)) ==  "html"){
+						fs.rename('views/templates/5/' + f, 'views/5.handlebars', function(err) {
+							if ( err ) console.log('ERROR: ' + err);
+						});
+						//res.sendFile('views/templates/5/' + f, { root: __dirname }); 
+						
+					}
+			}
+			if((f.substr(f.length - 3)) == "txt"){
+				fs.readFile('views/templates/' + 5 + '/' + f, "utf-8", function (err,data) {
+										  if (err) {
+											return console.log(err);
+										  }
+										  console.log(data);
+										  var identifierList = data.split("\r\n");
+										  var iList = [];
+										  //var identifierList = identifierList.split("\t");
+										  for(var i = 0; i < identifierList.length; i++){
+											  x = identifierList[i].split("\t");
+											  iList.push(x);
+										  }
+										  console.log(iList);
+										  templateID = "5817bc792df6ef2bf8362b87";
+										  author = "a";
+										  Users.EditTemplate(author, templateID, iList, function (err, user) {
+												if (err) {
+													res.status(400).send(err);
+												} else {
+													//res.redirect('/login');
+													
+												}
+											});
+			
+					});
+			}
+			
+		});
+	});
+	
+	res.render('templates/5/5', {
+							layout: false,
+							company_Name: "Zaid's Hairy Chest",
+							full_name: "Starboy",
+							address: "P9 cleaner than your church shoes" ,
+							job_Title: "Professional Fantasy Player",
+							phone: "You wish you can get these digits"
+							});
+	
+	
+	
+});
+
+
+
+
 
 // Sends back to the controller the GET data requested
 app.get('/templates', function(req, res){
@@ -218,12 +360,26 @@ app.get('/templates', function(req, res){
 	
 	//Users.collection.distinct
 	Users.distinct('template', function (err, docs){
-		//console.log(docs);
+		//console.log(docs);	
 		res.json(docs);
 	});
 	// Get the data from the database
 	
 });
+
+// Return the templates that needs to be reviewed
+app.get('/templates_review', function(req, res){
+	console.log("I received a GET request");
+	
+	//Users.collection.distinct
+	Users.distinct('template', {"template.review" : "true"}, function (err, docs){
+		//console.log(docs);	
+		res.json(docs);
+	});
+	// Get the data from the database
+	
+});
+
 
 
 // Store ID of template clicked on
@@ -338,13 +494,13 @@ app.post('/login', function (req, res) {
 			//res.status(400).send(err.message);
 			req.session.error = err.message;
 			console.log(req.session.error);
-			res.redirect('/login');
+			return res.redirect('/login');
         } else {
 			//console.log(token);
             //res.send(token);
 			req.session.username = req.body.username;
 			console.log(req.session.username);
-			res.redirect('/');
+			return res.redirect('/');
         }
     });
 });
@@ -357,23 +513,130 @@ app.post('/login', function (req, res) {
 
 
 // Store the user created template into the document of templates
+// Return the template id that was created
+// Rename all the files to the template id
 app.post('/create', function(req, res){
 	console.log("Got POST request");
 	console.log(req.body);
 	console.log(req.body.author);
+	console.log("\n" + req.files.file + "\n");
 		Users.CreateTemplate(req.body, function (err, response){
 			if(err) {
 				res.send(err.message);
 			}
 			else{
-				console.log("This is the user after function call" + response + "\n");
-				res.send(response);
+				//console.log("This is the user after function call" + response + "\n");
+				//return res.redirect('/upload');
+				//res.send(response);
+				//var template_id = 5;
+				var sampleFile;
+				sampleFile = req.files.file;
+				//console.log(req.files);
+				//console.log(req.files.file);
+				sampleFile.mv('upload/zips/' + response + '.zip', function(err) {
+					if (err) {
+						res.status(500).send(err);
+					}
+					else {
+					   
+						extract('upload/zips/' + response + '.zip', {dir: 'views/templates/' + response}, function (err) {
+						//extract('upload/zips/' + template_id + '.zip', {dir: 'upload/templates/'}, function (err) {
+							if (err) {
+								res.status(500).send(err);
+							}
+							else{
+								//res.send('File uploaded!');
+								fs.readdir(__dirname + "/views/templates/" + response, function(err, files) {
+								if (err) return;
+								files.forEach(function(f) {
+									console.log('Files: ' + f);
+									if(f.length > 5){
+											console.log(f.substr(f.length - 4));
+											if((f.substr(f.length -4)) ==  "html"){
+												fs.rename('views/templates/' + response + '/' + f, 'views/templates/' + response + '/' + response + '.handlebars', function(err) {
+													if ( err ) console.log('ERROR: ' + err);
+												});
+												//res.sendFile('views/templates/5/' + f, { root: __dirname }); 
+												
+											}
+									}
+									if((f.substr(f.length - 3)) == "txt"){
+										fs.readFile('views/templates/' + response + '/' + f, "utf-8", function (err,data) {
+										  if (err) {
+											return console.log(err);
+										  }
+										  console.log(data);
+										  var identifierList = data.split("\\t");
+										  console.log(identifierList);
+										});
+									}
+									
+								});
+							});
+							
+								res.send(response);
+							}
+						});
+					   
+					}
+				});
 			}
 		});	  	
 	
     //Templates.Create(req.body, function (err, user) {
 	
 });
+
+
+
+
+app.post('/upload', function(req, res){
+		
+		var template_id = 5;
+		var sampleFile;
+		sampleFile = req.files.file;
+		//console.log(req.files);
+		//console.log(req.files.file);
+		sampleFile.mv('upload/zips/' + template_id + '.zip', function(err) {
+			if (err) {
+				res.status(500).send(err);
+			}
+			else {
+			   
+			    extract('upload/zips/'+template_id+'.zip', {dir: 'views/templates/'+template_id}, function (err) {
+				//extract('upload/zips/' + template_id + '.zip', {dir: 'upload/templates/'}, function (err) {
+					if (err) {
+						res.status(500).send(err);
+					}
+					else{
+						res.send('File uploaded!');
+					}
+				});
+			   
+			}
+		});
+});
+	
+
+/*
+	
+	console.log("Got POST request");
+	console.log(req.file);
+	console.log(req.file.path);
+	
+	var zip = new admZip(req.file.path);
+	console.log(zip.getZipComment());
+	
+	var zipEntries = zip.getEntries();
+	
+	zipEntries.forEach(function(zipEntry) {
+        console.log(zipEntry.toString()); // outputs zip entries information
+		//zipEntry.entryName = req.file.filename;
+    });
+	
+	zip.extractAllTo("upload/templates/", true);
+
+
 
 
 

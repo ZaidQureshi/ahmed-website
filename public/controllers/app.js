@@ -88,6 +88,17 @@ app.controller('TemplatesController', ['$http', '$cookies', function($http, $coo
 		};
 }]);
 
+app.controller('ReviewController', ['$http', '$cookies', function($http, $cookies){
+	var vm = this;
+	vm.templates = [];
+	
+	$http.get('/templates_review').success(function(response){ 
+		console.log(response);
+		vm.templates = response;
+			
+	});
+}]);
+
 
 
 app.controller('ViewController', ['$http', '$location', function($http, $location){

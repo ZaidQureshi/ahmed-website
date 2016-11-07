@@ -107,41 +107,37 @@
 					<div class="create-template">
 						<div class="template-form">
 						
-						<form action="/create" method="post"  enctype="multipart/form-data">
-						<label for="name" class="cols-sm-2 control-label">Enter the name for your Template</label>
-						<input type="text" placeholder="Template One" name ="name" id="name" ng-model="createCtrl.name" maxlength="20" autofocus required>
+						<form action="/upload" method="post" enctype="multipart/form-data">
+					
+						<br>
+						
 						
 						<br>
 						
-						<label for="price" class="cols-sm-2 control-label">Enter the price for your Template</label>
-						<input type="number" placeholder="9.99" name="price" id="price" ng-model="createCtrl.price" step="any" required>
-						
+					
 						<br>
+						<input type="file" placeholder="Upload File" name="file" id="file" required>
 						
-						<label for="category" class="cols-sm-2 control-label">Select the category for your Template</label>
-						<select name="category" ng-model="createCtrl.category" required>
-						  <option value="Flyer">Flyer</option>
-						  <option value="Catalog">Catalog</option>
-						  <option value="Menu">Menu</option>
-						  <option value="Brochure">Brochure</option>
-						  <option value="Card">Card</option>
-						</select>
-						<br>
-						
-						<!--<label for="icon" class="cols-sm-2 control-label">Enter the url of the icon for your Template</label>
-						<input type="text" placeholder="" name="icon" id="icon" ng-model="createCtrl.icon" required>-->
-						
-						<br>
-						<input type="file" placeholder="Upload File" name="file" id="file">
-						
-						
-						<input type="hidden" placeholder="" name="author" id="author" value="{{username}}">
-						<input type="hidden" placeholder="" name="icon" id="icon" value="https://upload.wikimedia.org/wikipedia/commons/a/a4/Magnifying_glass_with_focus_on_glass.png">
-						<input type="hidden" placeholder="" name="review" id="review" value="true">
 						
 						<button type="submit" value="submit" class="btn btn-primary btn-lg btn-block">Create Template</button>
 						
 						</form>		
+						
+							<form action="/create_template" method="get"">
+					
+						<br>
+						
+						
+						<br>
+						
+					
+						<br>
+						
+						
+						
+						<button type="submit" value="submit" class="btn btn-primary btn-lg btn-block">Render Template</button>
+						
+						</form>	
 						
 						</div>
 					</div>

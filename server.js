@@ -76,8 +76,8 @@ app.use(fileUpload());
 var mongoose = require('mongoose');
 
 // Build the connection string
-//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
-var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
+var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
+//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 //var dbURI3 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin,127.0.0.1:27017/templates?authSource=admin'; 
 
 //var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
@@ -228,21 +228,361 @@ app.get('/review', function (req, res){
 
 app.get('/review_template', function (req, res){
     
-	if(req.session.username == "ahmed"){
-		res.render('review', {
+	//if(req.session.username == "ahmed"){
+		res.render('review_template', {
 			layout: false,
 			username: req.session.username});
-	}
-	else{
+	//}
+	/*else{
 		// return since it is an asynchronous call
 		// return to homepage if you are not Ahmed
 		return res.redirect('/');
-	}
+	}*/
 });
 
 
 
 
+
+
+// Sends back to the controller the GET data requested
+// Store Controller makes Request to display all the tempaltes that have been approved
+app.get('/templates', function(req, res){
+	console.log("I received a GET request");
+	
+	//Users.collection.distinct
+	Users.distinct('template', {"template.approved" : "true"},  function (err, docs){
+		console.log(docs);	
+		res.json(docs);
+	});
+	/* Users.findOne({"template.approved" : "true"}, "template", function (err, docs){
+		console.log(docs);
+		res.json(docs)
+	}); */
+	
+	// Get the data from the database
+	
+});
+
+// Return the templates that needs to be reviewed
+// Revire Controller makes Request to display all templates that needs to be revied
+app.get('/templates_review', function(req, res){
+	console.log("I received a GET request");
+	
+	//Users.collection.distinct
+	Users.distinct('template', {"template.approved" : "false"}, function (err, docs){
+		console.log(docs);	
+		res.json(docs);
+	});
+	// Get the data from the database
+	
+});
+
+
+// View from the store, View from the Review to just get the template with the ID in the url
+// Store ID of template clicked on
+//var template_id = 0;
+app.get('/templates/:id', function (req, res){
+	var template_id = req.params.id;
+	//console.log("The templates id: " + template_id);
+	
+	/*
+	db.findOne({_id: mongojs.ObjectId(template_id)}, function(err, doc){
+		console.log(doc);
+		res.json(doc);
+		});
+	*/
+	console.log("\n This is the template id: " + template_id + "\n");
+	
+	// find each person with a last name matching 'Ghost', selecting the `name` and `occupation` fields
+	// Person.findOne({ 'name.last': 'Ghost' }, 'name occupation', function (err, person) {
+	
+	/*
+		
+	Users.distinct('template', {'template._id':template_id}, function (err, docs){
+		console.log(docs);
+		res.json(docs);
+	});
+	
+	Users.find({
+    'template._id': { $in: [
+        mongoose.Types.ObjectId(template_id)
+    ]}
+	}, function(err, docs){
+		 console.log(docs);
+});
+	*/
+	
+	Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
+		//console.log("\n This is the resule of the query" + doc + "\n");
+		console.log(doc._id);
+		
+		//console.log(doc.template);
+		//res.json(doc.template);
+		Users.findOne({'_id': doc._id}, function (err, user) { 
+			if(err) {
+				return callback(err);
+			}
+			else{		
+				console.log("This is the user" + user + "\n");
+				console.log(user.template.id(template_id));
+				res.json(user.template.id(template_id));
+				
+			}
+		});	
+	})
+});
+
+
+app.post('/registration', function(req, res){
+	console.log("Got POST request");
+	console.log(req.body);
+	
+	//req.check('username').isAlphanumeric(); // check to see if not empty
+
+    //var errors = req.validationErrors();
+
+    //if (errors){
+     //   res.status(400).send(errors);
+    //} else {
+
+    Users.Create(req.body, function (err, user) {
+            if (err) {
+                res.status(400).send(err);
+            } else {
+                res.redirect('/login');
+            }
+        });
+   // }
+});
+
+
+
+// Check if username already exists in database during registration form
+app.post('/users', function(req, res){
+	var username = req.body.username;
+	console.log("Got POST request");
+	//console.log(username);
+
+    Users.usernameAvailable(username, function (err, response) {
+            if (err) {
+                res.send(err.message);
+            } else {
+				console.log(response);
+                res.send(response);
+            }
+        });
+   // }
+});
+
+
+app.post('/login', function (req, res) {
+	sess = req.session;
+	console.log(sess);
+	req.session.error = null;
+	
+    Users.getAuthenticated(req.body, function (err, token) {
+        if (err) {
+            console.log(err.message);
+			console.log("The token is: " + token);
+			//res.send(false);
+            //res.status(400).send(err.message);
+			//res.send(false);
+			//res.status(400).send(err.message);
+			req.session.error = err.message;
+			console.log(req.session.error);
+			return res.redirect('/login');
+        } else {
+			//console.log(token);
+            //res.send(token);
+			req.session.username = req.body.username;
+			console.log(req.session.username);
+			return res.redirect('/');
+        }
+    });
+});
+
+
+
+
+// Store the user created template into the document of templates
+// Return the template id that was created
+// Rename all the files to the template id
+app.post('/create', function(req, res){
+	console.log("Got POST request");
+	console.log(req.body);
+	console.log("\n" + req.files.file + "\n");
+	
+	// Defeat values if Ahmed makes a template
+	if(req.session.username == "ahmed") {
+		req.body.reviewed = "true";
+		req.body.approved = "true";
+	}
+	
+	
+	// Initialize empty array to contain the list of identifiers that will be saved into the template
+	var iList = [];
+	// Empty variable to store the image path that will be saved into the template
+	var iconPath = "";
+	
+		// Creates a template and sends the template ID as the response
+		Users.CreateTemplate(req.body, function (err, response){
+			if(err) {
+				res.send(err.message);
+			}
+			else {
+		
+				var sampleFile;
+				sampleFile = req.files.file;
+
+				sampleFile.mv('upload/zips/' + response + '.zip', function(err) {
+					if (err) {
+						res.status(500).send(err);
+					}
+					else {
+					   
+						extract('upload/zips/' + response + '.zip', {dir: 'views/templates/' + response}, function (err) {
+						//extract('upload/zips/' + template_id + '.zip', {dir: 'upload/templates/'}, function (err) {
+							if (err) {
+								res.status(500).send(err);
+							}
+							else {
+								
+								fs.readdir(__dirname + "/views/templates/" + response, function(err, files) {
+								if (err) return;
+								
+								// Iterate through each file and change the names of the files to match the template id that was generated
+								files.forEach(function(f) {
+									console.log('Files: ' + f);
+									
+									
+									if((f.substr(f.length -4)) ==  "html"){
+										fs.rename('views/templates/' + response + '/' + f, 'views/templates/' + response + '/' + response + '.handlebars', function(err) {
+											if ( err ) console.log('ERROR: ' + err);
+										});										
+									}
+									
+									if((f.substr(f.length - 3)) == "txt"){
+										fs.readFile('views/templates/' + response + '/' + f, "utf-8", function (err, data) {
+										  if (err) {
+											return console.log(err);
+										  }
+										  var identifierList = data.split("\r\n");
+										
+										  //var identifierList = identifierList.split("\t");
+										  for(var i = 0; i < identifierList.length; i++){
+											  x = identifierList[i].split("\t");
+											  iList.push(x);
+										  }
+										
+										});
+									}
+									
+									if((f.substr(f.length -3)) ==  "png"){
+										fs.rename('views/templates/' + response + '/' + f, 'public/images/uploads/' + response + '.png', function(err) {
+											if ( err ) console.log('ERROR: ' + err);
+										});
+										iconPath = "images/uploads/" + response + ".png";
+										resizePath = "public/" + iconPath;
+										jimp.read(resizePath, function (err, template) {
+											if (err){ 
+												console.log(err);
+												return res.status(400).send(err);
+											} //throw err;
+											template.resize(256, 256)            // resize 
+												 .quality(100)                 // set JPEG quality 
+												 //.greyscale()                 // set greyscale 
+												 .write(resizePath); // save 
+										});
+										console.log(iconPath);
+									}
+								
+								});
+									Users.EditTemplate(req.body.author, response, iList, iconPath, function (err, user) {
+												if (err) {
+													return res.status(400).send(err);
+												} else {
+													//res.redirect('/login');
+													//return res.send(user);
+													return res.redirect('/');
+												}
+										});								
+							});	
+						}	
+					}); 
+				}
+			});			
+		}
+	});	  	
+});
+
+
+
+// Approve or Disapprove a template by changing it's field in the database
+app.post('/approve', function(req, res){
+	
+	var author = req.body.author;
+	var templateID = req.body.templateID;
+	var approve = req.body.approve;
+	var review = req.body.review;
+	console.log("Got POST request");
+	console.log(req.body);
+
+    Users.approve(author, templateID, approve, review, function (err, response) {
+            if (err) {
+                res.send(err.message);
+            } else {
+				console.log(response);
+                res.send(response);
+            }
+        });
+   // }
+});
+
+
+
+
+/*
+	
+	console.log("Got POST request");
+	console.log(req.file);
+	console.log(req.file.path);
+	
+	var zip = new admZip(req.file.path);
+	console.log(zip.getZipComment());
+	
+	var zipEntries = zip.getEntries();
+	
+	zipEntries.forEach(function(zipEntry) {
+        console.log(zipEntry.toString()); // outputs zip entries information
+		//zipEntry.entryName = req.file.filename;
+    });
+	
+	zip.extractAllTo("upload/templates/", true);
+
+
+
+
+
+
+/*
+app.post("/", function (req, res) {
+    //console.log(req.body.user.name)
+    //console.log(req.body.user.email)
+	console.log(req.body.user);
+});
+
+<form method="post" action="/">
+<input type="text" name="user[name]">
+<input type="text" name="user[email]">
+<input type="submit" value="Submit">
+</form>
+*/
+
+
+
+
+/*
 // Redirect to links requested from GET
 app.get('/', function (req, res){
     //res.sendfile('public/index.html');
@@ -353,284 +693,6 @@ app.get('/create_template', function (req, res){
 });
 
 
-
-
-
-// Sends back to the controller the GET data requested
-app.get('/templates', function(req, res){
-	console.log("I received a GET request");
-	
-	//Users.collection.distinct
-	Users.distinct('template', {"template.approved" : "true"},  function (err, docs){
-		//console.log(docs);	
-		res.json(docs);
-	});
-	// Get the data from the database
-	
-});
-
-// Return the templates that needs to be reviewed
-app.get('/templates_review', function(req, res){
-	console.log("I received a GET request");
-	
-	//Users.collection.distinct
-	Users.distinct('template', {"template.reviewed" : "false"}, function (err, docs){
-		//console.log(docs);	
-		res.json(docs);
-	});
-	// Get the data from the database
-	
-});
-
-
-
-// Store ID of template clicked on
-//var template_id = 0;
-app.get('/templates/:id', function (req, res){
-	var template_id = req.params.id;
-	//console.log("The templates id: " + template_id);
-	
-	/*
-	db.findOne({_id: mongojs.ObjectId(template_id)}, function(err, doc){
-		console.log(doc);
-		res.json(doc);
-		});
-	*/
-	console.log("\n This is the template id: " + template_id + "\n");
-	
-	// find each person with a last name matching 'Ghost', selecting the `name` and `occupation` fields
-	// Person.findOne({ 'name.last': 'Ghost' }, 'name occupation', function (err, person) {
-	
-	/*
-		
-	Users.distinct('template', {'template._id':template_id}, function (err, docs){
-		console.log(docs);
-		res.json(docs);
-	});
-	
-	Users.find({
-    'template._id': { $in: [
-        mongoose.Types.ObjectId(template_id)
-    ]}
-	}, function(err, docs){
-		 console.log(docs);
-});
-	*/
-	
-	Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
-		//console.log("\n This is the resule of the query" + doc + "\n");
-		console.log(doc._id);
-		
-		//console.log(doc.template);
-		//res.json(doc.template);
-		Users.findOne({'_id': doc._id}, function (err, user) { 
-			if(err) {
-				return callback(err);
-			}
-			else{		
-				console.log("This is the user" + user + "\n");
-				console.log(user.template.id(template_id));
-				res.json(user.template.id(template_id));
-				
-			}
-		});	
-	})
-});
-
-
-app.post('/registration', function(req, res){
-	console.log("Got POST request");
-	console.log(req.body);
-	
-	//req.check('username').isAlphanumeric(); // check to see if not empty
-
-    //var errors = req.validationErrors();
-
-    //if (errors){
-     //   res.status(400).send(errors);
-    //} else {
-
-    Users.Create(req.body, function (err, user) {
-            if (err) {
-                res.status(400).send(err);
-            } else {
-                res.redirect('/login');
-            }
-        });
-   // }
-});
-
-
-
-// Check if username already exists in database during registration form
-app.post('/users', function(req, res){
-	var username = req.body.username;
-	console.log("Got POST request");
-	//console.log(username);
-	
-
-    Users.usernameAvailable(username, function (err, response) {
-            if (err) {
-                res.send(err.message);
-            } else {
-				console.log(response);
-                res.send(response);
-            }
-        });
-   // }
-});
-
-
-app.post('/login', function (req, res) {
-	sess = req.session;
-	console.log(sess);
-	req.session.error = null;
-	
-    Users.getAuthenticated(req.body, function (err, token) {
-        if (err) {
-            console.log(err.message);
-			console.log("The token is: " + token);
-			//res.send(false);
-            //res.status(400).send(err.message);
-			//res.send(false);
-			//res.status(400).send(err.message);
-			req.session.error = err.message;
-			console.log(req.session.error);
-			return res.redirect('/login');
-        } else {
-			//console.log(token);
-            //res.send(token);
-			req.session.username = req.body.username;
-			console.log(req.session.username);
-			return res.redirect('/');
-        }
-    });
-});
-
-
-
-
-
-
-
-
-// Store the user created template into the document of templates
-// Return the template id that was created
-// Rename all the files to the template id
-app.post('/create', function(req, res){
-	console.log("Got POST request");
-	console.log(req.body);
-	console.log("\n" + req.files.file + "\n");
-	
-	// Defeat values if Ahmed makes a template
-	if(req.session.username == "ahmed") {
-		req.body.reviewed = "true";
-		req.body.approved = "true";
-	}
-	
-	
-	// Initialize empty array to contain the list of identifiers that will be saved into the template
-	var iList = [];
-	// Empty variable to store the image path that will be saved into the template
-	var iconPath = "";
-	
-		// Creates a template and sends the template ID as the response
-		Users.CreateTemplate(req.body, function (err, response){
-			if(err) {
-				res.send(err.message);
-			}
-			else {
-		
-				var sampleFile;
-				sampleFile = req.files.file;
-
-				sampleFile.mv('upload/zips/' + response + '.zip', function(err) {
-					if (err) {
-						res.status(500).send(err);
-					}
-					else {
-					   
-						extract('upload/zips/' + response + '.zip', {dir: 'views/templates/' + response}, function (err) {
-						//extract('upload/zips/' + template_id + '.zip', {dir: 'upload/templates/'}, function (err) {
-							if (err) {
-								res.status(500).send(err);
-							}
-							else {
-								
-								fs.readdir(__dirname + "/views/templates/" + response, function(err, files) {
-								if (err) return;
-								
-								// Iterate through each file and change the names of the files to match the template id that was generated
-								files.forEach(function(f) {
-									console.log('Files: ' + f);
-									
-									
-									if((f.substr(f.length -4)) ==  "html"){
-										fs.rename('views/templates/' + response + '/' + f, 'views/templates/' + response + '/' + response + '.handlebars', function(err) {
-											if ( err ) console.log('ERROR: ' + err);
-										});										
-									}
-									
-									if((f.substr(f.length - 3)) == "txt"){
-										fs.readFile('views/templates/' + response + '/' + f, "utf-8", function (err,data) {
-										  if (err) {
-											return console.log(err);
-										  }
-										  var identifierList = data.split("\r\n");
-										
-										  //var identifierList = identifierList.split("\t");
-										  for(var i = 0; i < identifierList.length; i++){
-											  x = identifierList[i].split("\t");
-											  iList.push(x);
-										  }
-										  
-										});
-									}
-									
-									if((f.substr(f.length -3)) ==  "png"){
-										fs.rename('views/templates/' + response + '/' + f, 'public/images/uploads/' + response + '.png', function(err) {
-											if ( err ) console.log('ERROR: ' + err);
-										});
-										iconPath = "images/uploads/" + response + ".png";
-										resizePath = "public/" + iconPath;
-										jimp.read(resizePath, function (err, template) {
-											if (err) throw err;
-											template.resize(356, 256)            // resize 
-												 .quality(100)                 // set JPEG quality 
-												 //.greyscale()                 // set greyscale 
-												 .write(resizePath); // save 
-										});
-										console.log(iconPath);
-									}
-								
-								});
-									Users.EditTemplate(req.body.author, response, iList, iconPath, function (err, user) {
-												if (err) {
-													res.status(400).send(err);
-												} else {
-													//res.redirect('/login');
-													res.send(user);
-												}
-											});
-								
-								
-								
-								
-							});
-							}
-							
-							
-						}); 
-					}
-				});			
-			}
-		});	  	
-	
-});
-
-
-
-
 app.post('/upload', function(req, res){
 		
 		var template_id = 5;
@@ -659,42 +721,9 @@ app.post('/upload', function(req, res){
 });
 	
 
-/*
-	
-	console.log("Got POST request");
-	console.log(req.file);
-	console.log(req.file.path);
-	
-	var zip = new admZip(req.file.path);
-	console.log(zip.getZipComment());
-	
-	var zipEntries = zip.getEntries();
-	
-	zipEntries.forEach(function(zipEntry) {
-        console.log(zipEntry.toString()); // outputs zip entries information
-		//zipEntry.entryName = req.file.filename;
-    });
-	
-	zip.extractAllTo("upload/templates/", true);
-
-
-
-
-
-
-/*
-app.post("/", function (req, res) {
-    //console.log(req.body.user.name)
-    //console.log(req.body.user.email)
-	console.log(req.body.user);
-});
-
-<form method="post" action="/">
-<input type="text" name="user[name]">
-<input type="text" name="user[email]">
-<input type="submit" value="Submit">
-</form>
 */
+
+
 
 
 app.listen(3000);

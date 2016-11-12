@@ -73,7 +73,14 @@ app.controller('TemplatesController', ['$http', '$cookies', function($http, $coo
 	
 	$http.get('/templates').success(function(response){ 
 		console.log(response);
-		vm.templates = response;
+		for(i = 0; i < response.length; i++){
+			console.log(response[i].reviewed);
+			if(response[i].approved){
+				console.log("match");
+				vm.templates.push(response[i]);
+			}
+		}
+		//vm.templates = response;
 			
 	});
 	
@@ -94,13 +101,22 @@ app.controller('ReviewController', ['$http', '$cookies', function($http, $cookie
 	
 	$http.get('/templates_review').success(function(response){ 
 		console.log(response);
-		vm.templates = response;
+		for(i = 0; i < response.length; i++){
+			console.log(response[i].reviewed);
+			if(!response[i].reviewed){
+				console.log("match");
+				vm.templates.push(response[i]);
+			}
+		}
+		//vm.templates = response;
 			
 	});
 }]);
 
 
-
+// Store Page makes a GET request sending the ID to the server in the url
+// Controller makes request to send the ID information to the server to get the data and render it on the page
+// Form automatically redirets you to /view which the server spits back out the page "view.html"
 app.controller('ViewController', ['$http', '$location', function($http, $location){
 	var vm = this;
 	vm.template = [];
@@ -121,6 +137,24 @@ app.controller('ViewController', ['$http', '$location', function($http, $locatio
 				vm.template = response;
 			});
 }]);
+
+
+
+app.controller('ReviewTemplateController', ['$http', '$location', function($http, $location){
+	var vm = this;
+	vm.template = [];
+	//vm.id = $cookies.get('templateID');
+	
+	var x = $location.search();
+	vm.id = x['id'];
+	
+	$http.get('/templates/' + vm.id).success(function(response){
+				console.log(response);
+				vm.template = response;
+			});
+}]);
+
+
 
 
 app.controller('RegisterController', ['$http', '$cookies', '$location', '$route', '$window', function($http, $cookies, $location, $route, $window){

@@ -110,7 +110,7 @@
 							<div class="post-thumb"><img class="img-responsive" ng-src="{[{viewCtrl.template.icon}]}" alt=""></div>
 							<h4 class="post-title"><a href="">{[{viewCtrl.template.caption}]}Template Caption</a></h4>
 							<div class="post-meta text-uppercase">
-								<span>Date Posted: {[{viewCtrl.template.date}]}September, 21, 2016</span>
+								<span>Date Posted: {[{viewCtrl.template.createdAt | date : format : timezone }]}</span>
 								<span>Price {[{viewCtrl.template.price | currency}]}</span>
 								<span>Category: {[{viewCtrl.template.category}]}</span>
 								<span>Author: {[{viewCtrl.template.author}]}</span>
@@ -158,19 +158,11 @@
 						</ul>
 					</div>
 					<div class="sidebar-widget">
-						<h4 class="sidebar-title">Tags</h4>
-						<div class="tagcloud">
-							<a href="">design</a>
-							<a href="">{[{viewCtrl.template.category}]}</a>
-							<a href="">html</a>
-							<a href="">php</a>
-							<a href="">wordpress</a>
-							<a href="">css</a>
-							<a href="">development</a>
-							<a href="">theme</a>
-							<a href="">plugin</a>
-						</div>
-					</div>
+						<h4 class="sidebar-title">Identifiers</h4>
+							<div class="tagcloud" ng-repeat="identifier in viewCtrl.template.identifier">
+								<a href="">{[{identifier[1]}]}</a>						
+							</div>
+					</div>	
 					
 				</div><!-- end of col 3 -->
 			</div><!-- end of row -->

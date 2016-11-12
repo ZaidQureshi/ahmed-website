@@ -18,8 +18,11 @@ var TemplateSchema = new mongoose.Schema({
   price: {type: Number, required: true},
   author: {type: String, required: true},
   identifier: [[{type: String}]],
-  review: {type: Boolean, required: true}
-});
+  reviewed: {type: Boolean, required: true},
+  approved: {type: Boolean, required: true},
+},{
+    timestamps: true
+	});
 
 
  
@@ -224,6 +227,10 @@ UserSchema.statics.usernameAvailable = function (username, callback) {
   });
 };
 
+
+
+
+
 //Submit user entered information and store it into database
 UserSchema.statics.CreateTemplate = function (template, callback) {
 
@@ -236,7 +243,9 @@ UserSchema.statics.CreateTemplate = function (template, callback) {
         icon: template.icon,
         price: template.price,
 		author: template.author,
-		review: template.review
+		reviewed: template.reviewed,
+		approved: template.approved
+		
 	});
 	var returnId = newTemplate.id;
 
@@ -261,23 +270,17 @@ UserSchema.statics.CreateTemplate = function (template, callback) {
 };
 
 
-UserSchema.statics.EditTemplate = function (author, templateID, iList, callback) {
+UserSchema.statics.EditTemplate = function (author, templateID, iList, iconPath,  callback) {
 
+	//Find the user with the author that is passed in
 	this.findOne({'username': author}, function (err, user) { 
 	if(err) {
 		return callback(err);
 	}
-	else{		
-		// console.log("This is the user" + user + "\n");
-		// user.template.push(newTemplate);
-		//console.log("This is the user's template" + user.template + "\n" + "This is the user as a whole" + user + "\n");
-		// user.save(function(err) {
-			// if(err) { return callback(err); }
-			
-			// else {
-				// return callback(null, returnId);
-			// }
-		// });
+	// Find the user's template and edit
+	else {
+		//console.log(user);
+		// Edit the identifier list
 		console.log(user.template.id(templateID));
 		console.log(iList);
 		for(var i = 0; i < iList.length; i++){
@@ -285,36 +288,61 @@ UserSchema.statics.EditTemplate = function (author, templateID, iList, callback)
 			user.template.id(templateID).identifier.push(iList[i]);
 		}
 		
-		//console.log(user.template.id(templateID).identifier[0][0]);
+		// Edit the icon
+		console.log(iconPath);
+		user.template.id(templateID).icon = iconPath;
+		console.log(user.template.id(templateID).icon);
+		
+		// Save the changes and return the user
 		user.save(function(err) {
 			if(err) { return callback(err); }
 			
 			else {
 				return callback(null, user);
 			}
-		});
-		
-		
+		});	
 	}	 	  
 	});
-
-
-
 	
-	//Call the model and schema
-	// var Template = mongoose.model('Template', TemplateSchema);
-	//Create instance of Template following the schema
-	// var newTemplate = new Template({
-		// name: template.name,
-        // category: template.category,
-        // icon: template.icon,
-        // price: template.price,
-		// author: template.author
-	// });
-	// var returnId = newTemplate.id;
-
-
 };
+
+
+UserSchema.statics.approve = function (author, templateID, approve, review, callback) {
+	//Find the user with the author that is passed in
+	this.findOne({'username': author}, function (err, user) { 
+	if(err) {
+		return callback(err);
+	}
+	// Find the user's template and edit
+	else {
+		
+		console.log(user.template.id(templateID));
+		
+		// Edit the approve field
+		user.template.id(templateID).approved = approve;
+		user.template.id(templateID).reviewed = review;
+		
+		// Save the changes and return the user
+		user.save(function(err) {
+			if(err) { return callback(err); }
+			
+			else {
+				return callback(null, user);
+			}
+		});	
+	}	 	  
+	});
+	
+};
+
+
+
+
+
+
+
+
+
 
 
 

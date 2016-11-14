@@ -61,7 +61,7 @@
 				    	<li><a href="/#services">Services</a></li>
 				    	<li><a href="/#our-works">Samples</a></li>
 				    	<li><a href="/#contact">Contact</a></li>
-				    	<li><a href="#header">Store</a></li>
+				    	<li><a href="/store">Store</a></li>
 						{{#unless username}}
 							<li><a href="/login" >Log In</a></li>
 						{{else}}						
@@ -92,7 +92,7 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="section-title">
-						<h1>Store</h1>
+						<h1>My Templates</h1>
 						<span class="st-border"></span>
 					</div>
 				</div>
@@ -112,20 +112,17 @@
 						<h4 class="sidebar-title">Categories</h4>
 						<ul class="filter">  			
 							<li><a class="active" href="#" data-filter="*">All</a></li>	
-							<li><a href="#" data-filter=".Flyer">Flyer</a></li>
-							<li><a href="#" data-filter=".Catalog">Catalog</a></li>
-							<li><a href="#" data-filter=".Menu">Menu</a></li>
-							<li><a href="#" data-filter=".Brochure">Brochure</a></li>
-							<li><a href="#" data-filter=".Card">Card</a></li>
+							<li><a href="#" data-filter=".false">Under Review</a></li>
+							<li><a href="#" data-filter=".true">Approved</a></li>
 						</ul><!--/#portfolio-filter-->
 					</div>
 					
 					
 					
-					<div class="portfolio-items" ng-controller="TemplatesController as templatesCtrl">
+					<div class="portfolio-items" ng-controller="MyTemplatesController as templatesCtrl">
 						
 						
-						<div class="col-md-4 Catalog {[{template.category}]}" id = "{[{template.id}]}"  ng-repeat="template in templatesCtrl.templates">
+						<div class="col-md-4 Catalog {[{template.approved}]}" id = "{[{template.id}]}"  ng-repeat="template in templatesCtrl.templates">
 							<div class="portfolio-content">
 								<img class="img-responsive" ng-src="{[{template.icon}]}" alt="">
 								<div class="portfolio-overlay">

@@ -241,6 +241,23 @@ app.get('/review_template', function (req, res){
 });
 
 
+app.get('/my_template', function (req, res){
+    
+	if(req.session.username){
+		res.render('my_template', {
+			layout: false,
+			username: req.session.username});
+	}
+	else{
+		// return since it is an asynchronous call
+		return res.redirect('/');
+	}
+});
+
+
+
+
+
 
 
 
@@ -271,6 +288,21 @@ app.get('/templates_review', function(req, res){
 	
 	//Users.collection.distinct
 	Users.distinct('template', {"template.approved" : "false"}, function (err, docs){
+		console.log(docs);	
+		res.json(docs);
+	});
+	// Get the data from the database
+	
+});
+
+
+// Return the templates that needs to be reviewed
+// My Templates Controller makes Request to display all templates that belongs to the user
+app.get('/users_templates', function(req, res){
+	console.log("I received a GET request");
+	var user = req.session.username;
+	//Users.collection.distinct
+	Users.distinct('template', {"template.author" : user}, function (err, docs){
 		console.log(docs);	
 		res.json(docs);
 	});

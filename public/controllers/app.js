@@ -113,6 +113,30 @@ app.controller('ReviewController', ['$http', '$cookies', function($http, $cookie
 	});
 }]);
 
+// Controller to recieve the data from the server of all user templates
+app.controller('MyTemplatesController', ['$http', '$cookies', function($http, $cookies){
+	var vm = this;
+	vm.templates = [];
+	
+	$http.get('/users_templates').success(function(response){ 
+		console.log(response);
+		vm.templates = response;
+			
+	});
+	
+
+	
+	// Function to store the template id inside of a cookie
+	// Cookie will be used later to look up the template via id in the database store and display the result
+	vm.view = function(id){
+			console.log(id);
+			// Setting a cookie
+			//$cookies.put('templateID', id);
+		};
+}]);
+
+
+
 
 // Store Page makes a GET request sending the ID to the server in the url
 // Controller makes request to send the ID information to the server to get the data and render it on the page

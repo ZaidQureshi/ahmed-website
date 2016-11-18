@@ -4,6 +4,14 @@ Nodejs server
 */
 
 
+var Paypal = require('paypal-adaptive')
+var paypalSdk = new Paypal({
+	userId: 'userId',
+	password: 'password',
+	signature: 'signature',
+	sandbox: true //defaults to false
+});
+
 var jimp = require('jimp');
 var path = require('path');
 var fs = require('fs');
@@ -120,8 +128,7 @@ Users.remove({}, function(err) {
 
 
 
-
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.engine('handlebars', exphbs({defaultLayout: 'main', layoutsDir: path.resolve(__dirname, 'views/layouts')}));
 app.set('view engine', 'handlebars');
 
 app.get('/', function (req, res) {
@@ -137,6 +144,7 @@ app.get('/store', function (req, res){
 });
 
 app.get('/view', function (req, res){
+	//console.log("Query request " + req.query.id);
     res.render('view', {
 		layout: false,
 		username: req.session.username});
@@ -254,7 +262,18 @@ app.get('/my_template', function (req, res){
 	}
 });
 
-
+app.get('/buy_template', function (req, res){
+    
+	//f(req.session.username){
+		res.render('buy_template', {
+			layout: false,
+			username: req.session.username});
+	//}
+	//else{
+		// return since it is an asynchronous call
+		//return res.redirect('/');
+	//}
+});
 
 
 
@@ -364,6 +383,31 @@ app.get('/templates/:id', function (req, res){
 		});	
 	})
 });
+
+
+/* Request to display the specific template that is in the process of being purchased
+app.get('/templates_buy', function (req, res){
+	var template_id = req.params.id;
+
+	console.log("\n This is the template id: " + template_id + "\n");
+
+	
+	Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
+		Users.findOne({'_id': doc._id}, function (err, user) { 
+			if(err) {
+				return callback(err);
+			}
+			else{		
+				console.log("This is the user" + user + "\n");
+				console.log(user.template.id(template_id));
+				res.json(user.template.id(template_id));	
+			}
+		});	
+	})
+});
+*/
+
+
 
 
 app.post('/registration', function(req, res){
@@ -570,6 +614,48 @@ app.post('/approve', function(req, res){
         });
    // }
 });
+
+
+var requestData = {
+    requestEnvelope: {
+        errorLanguage:  'en_US',
+        detailLevel:    'ReturnAll'
+    },
+    payKey: 'AP-1234567890'
+};
+ 
+paypalSdk.callApi('AdaptivePayments/PaymentDetails', requestData, function (err, response) {
+    if (err) {
+        // You can see the error 
+        console.log(err);
+        //And the original Paypal API response too 
+        console.log(response);
+    } else {
+        // Successful response 
+        console.log(response);
+    }
+});
+
+
+
+app.post('/render_purchased_template', function(req, res){
+	console.log("Got POST request");
+	console.log(req.body);
+	req.body['layout'] = false;
+	//req.check('username').isAlphanumeric(); // check to see if not empty
+
+    //var errors = req.validationErrors();
+
+    //if (errors){
+     //   res.status(400).send(errors);
+    //} else {
+    res.render('templates/' + req.body['id'] + '/' + req.body['id'], req.body );
+
+});
+
+
+
+
 
 
 

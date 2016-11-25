@@ -10,7 +10,14 @@ var SALT_WORK_FACTOR = 12;
  * User schema
  */
  
- 
+var TransactionSchema = new mongoose.Schema({
+  templateID: {type: String, required: true},
+  templateData: {type: Object, required: true},
+  transaction: {type: Object, required: true},
+  transactionID: {type: String, required: true}
+});
+
+
 var TemplateSchema = new mongoose.Schema({
   name: {type: String, required: true},
   category: {type: String, required: true},
@@ -22,7 +29,7 @@ var TemplateSchema = new mongoose.Schema({
   approved: {type: Boolean, required: true},
 },{
     timestamps: true
-	});
+});
 
 
  
@@ -31,7 +38,8 @@ var UserSchema = new mongoose.Schema({
   email: {type: String, required: true},
   username: {type: String, required: true, index: {unique: true}},
   password: {type: String, required: true},
-  template: [TemplateSchema]
+  template: [TemplateSchema],
+  transaction: [TransactionSchema]
 });
 
 
@@ -303,7 +311,6 @@ UserSchema.statics.EditTemplate = function (author, templateID, iList, iconPath,
 		});	
 	}	 	  
 	});
-	
 };
 
 
@@ -332,7 +339,42 @@ UserSchema.statics.approve = function (author, templateID, approve, review, call
 		});	
 	}	 	  
 	});
-	
+};
+
+// Creates a transaction
+UserSchema.statics.CreateTransaction = function (templateID, templateData, currentUser, transaction, transactionID, callback) {
+
+  // Call the model and schema
+  var Transaction = mongoose.model('Transaction', TransactionSchema);
+  // Create instance of Template following the schema
+  var newTransaction = new Transaction({
+    templateID: templateID,
+    templateData: templateData,
+    transaction: transaction,
+    transactionID: transactionID
+  });
+
+
+  //var returnId = newTransaction.id;
+
+  this.findOne({'username': currentUser}, function (err, user) { 
+    if(err) {
+      return callback(err);
+    }
+    else {   
+      console.log("This is the user" + user + "\n");
+      user.transaction.push(newTransaction);
+      
+      //console.log("This is the user's template" + user.template + "\n" + "This is the user as a whole" + user + "\n");
+      user.save(function(err) {
+        if(err) { return callback(err); }
+        
+        else {
+          return callback(null, user);
+        }
+      }); 
+    }     
+  });
 };
 
 

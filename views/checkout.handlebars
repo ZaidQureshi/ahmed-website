@@ -90,12 +90,15 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="section-title">
-						<h1>{[{viewCtrl.template.name}]}</h1>
+						<h1>Checkout</h1>
 						<span class="st-border"></span>
 					</div>
 				</div>
 			</div>
 		</div>
+		<div>
+		{{clientToken}}
+	</div>
 	</section>
 	<!-- /PAGE HEADER -->
 
@@ -106,38 +109,24 @@
 				<div class="col-md-6">
 					
 					<div class="single-blog">
-						<article>
-							<div class="post-thumb"><img class="img-responsive" ng-src="{[{viewCtrl.template.icon}]}" alt=""></div>
-							<h4 class="post-title"><a href="">{[{viewCtrl.template.caption}]}Template Caption</a></h4>
-							<div class="post-meta text-uppercase">
-								<span>Date Posted: {[{viewCtrl.template.createdAt | date : format : timezone }]}</span>
-								<span>Price {[{viewCtrl.template.price | currency}]}</span>
-								<span>Category: {[{viewCtrl.template.category}]}</span>
-								<span>Author: {[{viewCtrl.template.author}]}</span>
-							</div>
-							<div class="post-article">
-								{[{viewCtrl.template.description}]}Template Description
-							</div>
-							<a href="" class="btn btn-info">Read More</a>
-							<a href="" class="btn btn-primary">Add To Cart</a>
-							
-							<form method="post" action="https://www.paypal.com/cgi-bin/webscr">
-								<fieldset>
-									<input type="hidden" name="cmd" value="_cart">
-									<input type="hidden" name="add" value="1">
-									<input type="hidden" name="business" value="npg230@nyu.edu">
-									<input type="hidden" name="item_name" value="{[{viewCtrl.template.name}]}">
-									<input type="hidden" name="item_number" value="{[{viewCtrl.template.category}]}">
-									<input type="hidden" name="amount" value="{[{viewCtrl.template.price}]}">
-									<input type="hidden" name="currency_code" value="USD">
-									<input type="hidden" name="return" value="">
-									<input type="hidden" name="cancel_return" value="">
-									<input type="hidden" name="undefined_quantity" value="1">
-									<input type="image" src="http://www.paypalobjects.com/en_US/i/btn/x-click-but22.gif" border="0" name="submit" width="87" height="23" alt="Make payments with PayPal - it's fast, free and secure!">
-								</fieldset>
-							</form>
-										
-						</article>
+
+						<form id="checkout" method="post" action="/checkout">
+						  <div id="payment-form"></div>
+						  <input type="hidden" name="templateID" value="{[{viewCtrl.template._id}]}">
+						  <input type="submit" value="Pay $10">
+						</form>
+
+						<script src="https://js.braintreegateway.com/js/braintree-2.30.0.min.js"></script>
+						<script>
+
+						var token = "{{{clientToken}}}";
+						
+
+						braintree.setup(token, "dropin", {
+						  container: "payment-form"
+						});
+
+						</script>
 					</div>
 					<hr>
 				</div>
@@ -147,22 +136,11 @@
 					<div class="sidebar-widget">
 
 						<h5 class="sidebar-title">Enter the following information for your template</h5>
-						<form method="post" action="/render_purchased_template">
-							<input type="hidden" name="templateID" value="{[{viewCtrl.template._id}]}">
-							<div class="identifiers" ng-repeat="identifier in viewCtrl.template.identifier">
-								<label class="cols-sm-2"> {[{identifier[1]}]}: </label>
-								<input type="text" name="{[{identifier[0]}]}" placeholder="{[{identifier[1]}]}">
-							</div>
-							
-                   			<input type="submit" class="btn btn-primary" value="Submit">
- 						</form>
-
+						
 					</div>
 					<div class="sidebar-widget">
 						<h4 class="sidebar-title">Identifiers</h4>
-							<div class="tagcloud" ng-repeat="identifier in viewCtrl.template.identifier">
-								<a href="">{[{identifier[1]}]}</a>						
-							</div>
+							
 					</div>	
 					
 				</div><!-- end of col 3 -->

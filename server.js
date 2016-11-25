@@ -4,13 +4,16 @@ Nodejs server
 */
 
 
-var Paypal = require('paypal-adaptive')
-var paypalSdk = new Paypal({
-	userId: 'userId',
-	password: 'password',
-	signature: 'signature',
-	sandbox: true //defaults to false
+// Configure the environment and API credentials for braintree
+var braintree = require('braintree');
+var gateway = braintree.connect({
+	environment: braintree.Environment.Sandbox,
+	merchantId: "z23ydwk2t9nkksgx",
+	publicKey: "f8q9ryp4rnbjqpg4",
+	privateKey: "61302bcc9938a0a3e6b9cb3460241302"
 });
+
+
 
 var jimp = require('jimp');
 var path = require('path');
@@ -60,8 +63,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -84,8 +87,8 @@ app.use(fileUpload());
 var mongoose = require('mongoose');
 
 // Build the connection string
-//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
-var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
+var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
+//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 //var dbURI3 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin,127.0.0.1:27017/templates?authSource=admin'; 
 
 //var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
@@ -128,8 +131,12 @@ Users.remove({}, function(err) {
 
 
 
-app.engine('handlebars', exphbs({defaultLayout: 'main', layoutsDir: path.resolve(__dirname, 'views/layouts')}));
+app.engine('handlebars', exphbs({defaultLayout: 'main', helpers:  {partial: function (name) {
+            return name;
+        }}, layoutsDir: path.resolve(__dirname, 'views/layouts'), partialsDir: path.resolve(__dirname, 'views/partials')}));
+//app.engine('handlebars', exphbs({defaultLayout: 'main',	helpers: { json: function (context) { return JSON.stringify(context); } } }));
 app.set('view engine', 'handlebars');
+
 
 app.get('/', function (req, res) {
     res.render('home', {
@@ -264,10 +271,12 @@ app.get('/my_template', function (req, res){
 
 app.get('/buy_template', function (req, res){
     
-	//f(req.session.username){
-		res.render('buy_template', {
+	//f(req.session.username)
+		    res.render('buy_template', {
 			layout: false,
-			username: req.session.username});
+			username: req.session.username
+		});
+		
 	//}
 	//else{
 		// return since it is an asynchronous call
@@ -275,8 +284,17 @@ app.get('/buy_template', function (req, res){
 	//}
 });
 
-
-
+app.get('/checkout', function (req, res){
+	// Send a client token to your client
+	gateway.clientToken.generate({}, function (err, response) {
+	 	console.log(response.clientToken);
+	    res.render('checkout', {
+		layout: false,
+		username: req.session.username,
+		clientToken: response.clientToken
+		});
+	});
+});
 
 
 
@@ -381,31 +399,8 @@ app.get('/templates/:id', function (req, res){
 				
 			}
 		});	
-	})
+	});
 });
-
-
-/* Request to display the specific template that is in the process of being purchased
-app.get('/templates_buy', function (req, res){
-	var template_id = req.params.id;
-
-	console.log("\n This is the template id: " + template_id + "\n");
-
-	
-	Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
-		Users.findOne({'_id': doc._id}, function (err, user) { 
-			if(err) {
-				return callback(err);
-			}
-			else{		
-				console.log("This is the user" + user + "\n");
-				console.log(user.template.id(template_id));
-				res.json(user.template.id(template_id));	
-			}
-		});	
-	})
-});
-*/
 
 
 
@@ -533,7 +528,7 @@ app.post('/create', function(req, res){
 									
 									
 									if((f.substr(f.length -4)) ==  "html"){
-										fs.rename('views/templates/' + response + '/' + f, 'views/templates/' + response + '/' + response + '.handlebars', function(err) {
+										fs.rename('views/templates/' + response + '/' + f, 'views/partials/' + response  + '.handlebars', function(err) {
 											if ( err ) console.log('ERROR: ' + err);
 										});										
 									}
@@ -616,51 +611,219 @@ app.post('/approve', function(req, res){
 });
 
 
-var requestData = {
-    requestEnvelope: {
-        errorLanguage:  'en_US',
-        detailLevel:    'ReturnAll'
-    },
-    payKey: 'AP-1234567890'
-};
- 
-paypalSdk.callApi('AdaptivePayments/PaymentDetails', requestData, function (err, response) {
-    if (err) {
-        // You can see the error 
-        console.log(err);
-        //And the original Paypal API response too 
-        console.log(response);
-    } else {
-        // Successful response 
-        console.log(response);
-    }
-});
-
-
-
+// Create transaction subdocument to store templates infomration to be rendered and redirect to the checkout page
+// Store the template information that the user submitted for the template they want to purchase in a session
 app.post('/render_purchased_template', function(req, res){
 	console.log("Got POST request");
 	console.log(req.body);
 	req.body['layout'] = false;
-	//req.check('username').isAlphanumeric(); // check to see if not empty
 
-    //var errors = req.validationErrors();
+	req.session.templateData = req.body;
+	res.redirect("/checkout" + "?id=" + req.body.templateID);
 
-    //if (errors){
-     //   res.status(400).send(errors);
-    //} else {
-    res.render('templates/' + req.body['id'] + '/' + req.body['id'], req.body );
+	/*
+	var templateID = req.body.templateID;
+	var templateData = req.body;
+	var orderComplete = false;
+	// Needed to search for the user's transaction list in order to push this data into the databases
+	var currentUser = req.session.username;
 
+	Users.CreateTransaction(templateID, templateData, orderComplete, currentUser, function (err, response) {
+            if (err) {
+                res.send(err.message);
+            } else {
+				console.log(response);
+                return res.redirect("/checkout" + "?id=" + templateID);
+            }
+        });
+    //res.render('templates/' + req.body['id'] + '/' + req.body['id'], req.body );
+    */
+});
+
+
+
+app.get('/order', function (req, res) {
+  var transaction;
+  var transactionID = req.session.transactionID;
+  //var transactionID = "g2z6xbe2";
+  console.log(transactionID);
+  var currentUser = req.session.username;
+  //var currentUser = "c";
+
+
+  Users.findOne({ username: currentUser},  function(err, doc){
+		//console.log("\n This is the resule of the query" + doc + "\n");
+		console.log(doc + "\n");
+		for(i = 0; i < doc.transaction.length; i++){
+			if (doc.transaction[i].transactionID == transactionID){
+				console.log(doc.transaction[i]);
+				transaction = doc.transaction[i];
+			}
+		}
+	
+
+  return res.render("order", {
+				layout: false,
+				transaction: transaction
+			});
+
+  //gateway.transaction.find(transactionID, function (err, transaction) {
+    //result = createResultObject(transaction);
+  //});
+  });
+});
+
+
+app.post('/checkout', function(req, res) {
+	console.log(req.body);
+
+	// Receive a payment method nonce from the client
+	var nonce = req.body.payment_method_nonce;
+	console.log(nonce);
+	//res.send("Success");
+
+	var currentUser = req.session.username;
+	var templateID = req.body.templateID; 
+	var templateData = req.session.templateData;
+
+
+	// Create the Transaction
+	gateway.transaction.sale({
+	  amount: "10.00",
+	  paymentMethodNonce: nonce,
+	  options: {
+	    submitForSettlement: true
+	  }
+	}, function (err, result) {
+		if (err) {
+			res.send(err.message);
+		}
+		else {
+			console.log(result.success);
+			console.log(result.transaction);
+			var transaction = result.transaction;
+			var transactionID = result.transaction.id;
+			//console.log(result);
+			// If transaction is successful, render template that was requested for purcahse with the data stored in transaction
+			if(result.success){
+				Users.CreateTransaction(templateID, templateData, currentUser, transaction, transactionID, function (err, response) {
+		            if (err) {
+		                res.send(err.message);
+		            } else {
+						console.log(response);
+						req.session.templateData = null; 
+						req.session.transactionID = result.transaction.id;
+		                //res.redirect("/order" + "?id=" + transactionID);
+		                //res.redirect("/checkout" + "?id=" + req.body.templateID);
+		                return res.redirect("/order");
+		            }
+		        });
+				
+				
+			}
+			else{
+
+			}
+		}
+
+	});
+	//res.send("Success");
 });
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Create a transaction
+// The sale call returns a Transaction Result Object which contains the transaction and information about the request
+/*
+gateway.transaction.sale({
+  amount: "10.00",
+  paymentMethodNonce: "fake-valid-no-billing-address-nonce",
+  options: {
+    submitForSettlement: true
+  }
+}, function (err, result) {
+	console.log(result.success);
+	console.log(result);
+});*/
+
+/*Send a client token to your client
+app.get("/client_token", function (req, res) {
+  gateway.clientToken.generate({}, function (err, response) {
+    res.send(response.clientToken);
+  });
+});
+
+// Receive a payment method nonce from your client
+app.post("/checkout", function (req, res) {
+  var nonceFromTheClient = req.body.payment_method_nonce;
+  // Use payment method nonce here
+});
 
 
 
 
 /*
+	
+	var Paypal = require('paypal-adaptive')
+	var paypalSdk = new Paypal({
+		userId: 'userId',
+		password: 'password',
+		signature: 'signature',
+		sandbox: true //defaults to false
+	});
+
+	var requestData = {
+	    requestEnvelope: {
+	        errorLanguage:  'en_US',
+	        detailLevel:    'ReturnAll'
+	    },
+	    payKey: 'AP-1234567890'
+	};
+	 
+	paypalSdk.callApi('AdaptivePayments/PaymentDetails', requestData, function (err, response) {
+	    if (err) {
+	        // You can see the error 
+	        console.log(err);
+	        //And the original Paypal API response too 
+	        console.log(response);
+	    } else {
+	        // Successful response 
+	        console.log(response);
+	    }
+	});
+
+
+
 	
 	console.log("Got POST request");
 	console.log(req.file);
@@ -838,6 +1001,27 @@ app.post('/upload', function(req, res){
 		});
 });
 	
+
+/* Request to display the specific template that is in the process of being purchased
+app.get('/templates_buy', function (req, res){
+	var template_id = req.params.id;
+
+	console.log("\n This is the template id: " + template_id + "\n");
+
+	
+	Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
+		Users.findOne({'_id': doc._id}, function (err, user) { 
+			if(err) {
+				return callback(err);
+			}
+			else{		
+				console.log("This is the user" + user + "\n");
+				console.log(user.template.id(template_id));
+				res.json(user.template.id(template_id));	
+			}
+		});	
+	})
+});
 
 */
 

@@ -63,8 +63,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -87,8 +87,8 @@ app.use(fileUpload());
 var mongoose = require('mongoose');
 
 // Build the connection string
-var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
-//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
+//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
+var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 //var dbURI3 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin,127.0.0.1:27017/templates?authSource=admin'; 
 
 //var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
@@ -181,6 +181,7 @@ app.get('/login', function (req, res){
 		// return since it is an asynchronous call
 		return res.redirect('/');
 	}
+	req.session.error = null;
 	
 });
 
@@ -450,7 +451,7 @@ app.post('/users', function(req, res){
 app.post('/login', function (req, res) {
 	sess = req.session;
 	console.log(sess);
-	req.session.error = null;
+	//req.session.error = null;
 	
     Users.getAuthenticated(req.body, function (err, token) {
         if (err) {
@@ -644,11 +645,11 @@ app.post('/render_purchased_template', function(req, res){
 
 app.get('/order', function (req, res) {
   var transaction;
-  var transactionID = req.session.transactionID;
-  //var transactionID = "g2z6xbe2";
+  //var transactionID = req.session.transactionID;
+  var transactionID = "g2z6xbe2";
   console.log(transactionID);
-  var currentUser = req.session.username;
-  //var currentUser = "c";
+  //var currentUser = req.session.username;
+  var currentUser = "c";
 
 
   Users.findOne({ username: currentUser},  function(err, doc){
@@ -662,10 +663,11 @@ app.get('/order', function (req, res) {
 		}
 	
 
-  return res.render("order", {
+  res.render("order", {
 				layout: false,
 				transaction: transaction
 			});
+  req.session.transactionID = null;
 
   //gateway.transaction.find(transactionID, function (err, transaction) {
     //result = createResultObject(transaction);
@@ -731,13 +733,86 @@ app.post('/checkout', function(req, res) {
 });
 
 
+var hbs = exphbs.create({
+    defaultLayout: 'main'
+    //helpers: require("path-to-your-helpers-if-any"),
+});
 
+var htmlToPdf = require('html-to-pdf');
+var pdf = require('html-pdf');
+app.post('/render_template', function(req, res) {
+	console.log(req.body);
+	//var currentUser = req.session.username;
+	var currentUser = "c";
+	var transactionID = req.body.transactionID; 
+	console.log(transactionID);
+	var transaction;
 
+	Users.findOne({ username: currentUser},  function(err, doc){
+		//console.log("the user is: " + doc);
+		for(i = 0; i < doc.transaction.length; i++){
+			if (doc.transaction[i].transactionID == transactionID){
+				console.log(doc.transaction[i]);
+				transaction = doc.transaction[i];
+			}
+		}
 
+		//console.log(transaction);
 
+		var templateData = transaction.templateData;
+		var templateID = templateData.templateID;
+		console.log(templateData);
+		console.log(templateID);
 
+		res.render('partials/' + templateID, templateData, function(err, hbsTemplate){
+		     // hbsTemplate contains the rendered html, do something with it...
+		     if(err){
+		     	res.send(err.message);
+		     }
+		     console.log(hbsTemplate);
+		     var html = hbsTemplate; //Some HTML String from code above 
+		     /*
+		     // Save the rendered html into a html file and store it locally temporarily
+			 fs.writeFile("tmp/" + transactionID + ".html", html, function(err) {
+			    if(err) {
+			        return console.log(err);
+			    }
 
+			    console.log("The file was saved!");
+			 }); 
+			*/
 
+			//var html = fs.readFileSync("tmp/" + transactionID + ".html", 'utf8');
+			//console.log(html);
+			var options = { 
+				"height": "256px",         
+  				"width": "256px"
+			};
+			 
+			pdf.create(html, options).toFile('views/pdf/' + transactionID + '.pdf', function(err, templatePDF) {
+			  if (err) return console.log(err);
+			  console.log(templatePDF); // { filename: '/app/businesscard.pdf' } 
+
+			  //return res.sendFile(templatePDF); 
+			  var downloadtemplate = 'views/pdf/' + transactionID + '.pdf';
+			  res.download(downloadtemplate);
+			});
+
+ 			/*
+			htmlToPdf.convertHTMLString(html, 'views/pdf/' + transactionID + '.pdf',
+			    function (error, success) {
+			        if (error) {
+			            console.log('Oh noes! Errorz!');
+			            console.log(error);
+			        } else {
+			            console.log('Woot! Success!');
+			            console.log(success);
+			        }
+			    }
+			);*/
+		});
+	});
+});
 
 
 

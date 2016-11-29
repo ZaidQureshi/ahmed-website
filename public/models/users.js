@@ -27,6 +27,8 @@ var TemplateSchema = new mongoose.Schema({
   identifier: [[{type: String}]],
   reviewed: {type: Boolean, required: true},
   approved: {type: Boolean, required: true},
+  width: {type: Number, required: true},
+  height: {type: Number, required: true},
 },{
     timestamps: true
 });
@@ -252,7 +254,9 @@ UserSchema.statics.CreateTemplate = function (template, callback) {
         price: template.price,
 		author: template.author,
 		reviewed: template.reviewed,
-		approved: template.approved
+		approved: template.approved,
+    width: template.width,
+    height: template.height
 		
 	});
 	var returnId = newTemplate.id;
@@ -362,17 +366,28 @@ UserSchema.statics.CreateTransaction = function (templateID, templateData, curre
       return callback(err);
     }
     else {   
-      console.log("This is the user" + user + "\n");
+      console.log("This is the user that we are going to push the transaction into" + user + "\n");
       user.transaction.push(newTransaction);
+      user.transaction;
       
       //console.log("This is the user's template" + user.template + "\n" + "This is the user as a whole" + user + "\n");
+      /*
       user.save(function(err) {
         if(err) { return callback(err); }
         
         else {
           return callback(null, user);
         }
-      }); 
+      });*/
+
+      user.save(function (err, user){
+        if (err) return callback(err);
+        console.log("This is the user after being saved" + user + '\n');
+        return callback(null, user);
+      });
+
+
+
     }     
   });
 };

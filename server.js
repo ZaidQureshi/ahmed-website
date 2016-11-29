@@ -63,8 +63,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -87,8 +87,8 @@ app.use(fileUpload());
 var mongoose = require('mongoose');
 
 // Build the connection string
-//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
-var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
+var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
+//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 //var dbURI3 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin,127.0.0.1:27017/templates?authSource=admin'; 
 
 //var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
@@ -186,23 +186,55 @@ app.get('/login', function (req, res){
 });
 
 app.get('/create', function (req, res){
-    
+	var isActive = false;
 	if(req.session.username){
-		res.render('create', {
-			layout: false,
-			username: req.session.username});
+		var currentUser = req.session.username;
+	    gateway.merchantAccount.find(currentUser, function (err, result) {
+				if(err){
+					console.log(err.message);
+					//res.status(500).send(err);
+				}
+				console.log(result);
+				if(result){
+					if(result.status == "active"){
+						isActive = true;
+					}
+				}
+				return res.render('create', {
+					layout: false,
+					isActive: isActive,
+					username: req.session.username});
+		
+			});
 	}
-	else{
+	else {
 		// return since it is an asynchronous call
 		return res.redirect('/');
 	}
 });
+
+app.get('/submerchant', function (req, res){
+    
+	//if(req.session.username){
+		res.render('submerchant', {
+			layout: false,
+			username: req.session.username,
+			submerchantError: req.session.submerchantError});
+	//}
+	/*else{
+		// return since it is an asynchronous call
+		return res.redirect('/');
+	}*/
+	req.session.submerchantError = null;
+});
+
 
 app.get('/logout',function(req,res){
 	if(req.session.username){
 		req.session.destroy(function(err) {
 		  if(err) {
 			console.log(err);
+			//res.status(500).send(err);
 		  } else {
 			return res.redirect('/');
 		  }
@@ -258,11 +290,27 @@ app.get('/review_template', function (req, res){
 
 
 app.get('/my_template', function (req, res){
-    
+	var status;
 	if(req.session.username){
-		res.render('my_template', {
-			layout: false,
-			username: req.session.username});
+		var currentUser = req.session.username;
+		
+	    gateway.merchantAccount.find(currentUser, function (err, result) {
+			if(err){
+				console.log(err.message);
+			}
+			if(result){
+				console.log(result);
+				status = result.status;
+			}
+			
+			return res.render('my_template', {
+						layout: false,
+						username: req.session.username,
+						merchantStatus: status});
+
+
+
+		});
 	}
 	else{
 		// return since it is an asynchronous call
@@ -287,13 +335,14 @@ app.get('/buy_template', function (req, res){
 
 app.get('/checkout', function (req, res){
 	// Send a client token to your client
+	console.log("I got a GET request from" + req.session.username + "\n");
 	gateway.clientToken.generate({}, function (err, response) {
 	 	console.log(response.clientToken);
 	    res.render('checkout', {
-		layout: false,
-		username: req.session.username,
-		clientToken: response.clientToken
-		});
+			layout: false,
+			username: req.session.username,
+			clientToken: response.clientToken
+			});
 	});
 });
 
@@ -538,8 +587,10 @@ app.post('/create', function(req, res){
 										fs.readFile('views/templates/' + response + '/' + f, "utf-8", function (err, data) {
 										  if (err) {
 											return console.log(err);
+											//throw err;
 										  }
-										  var identifierList = data.split("\r\n");
+										  //var identifierList = data.split("\r\n");
+										  var identifierList = data.toString().split("\n");
 										
 										  //var identifierList = identifierList.split("\t");
 										  for(var i = 0; i < identifierList.length; i++){
@@ -645,11 +696,11 @@ app.post('/render_purchased_template', function(req, res){
 
 app.get('/order', function (req, res) {
   var transaction;
-  //var transactionID = req.session.transactionID;
-  var transactionID = "g2z6xbe2";
+  var transactionID = req.session.transactionID;
+  //var transactionID = "g2z6xbe2";
   console.log(transactionID);
-  //var currentUser = req.session.username;
-  var currentUser = "c";
+  var currentUser = req.session.username;
+  //var currentUser = "c";
 
 
   Users.findOne({ username: currentUser},  function(err, doc){
@@ -685,13 +736,18 @@ app.post('/checkout', function(req, res) {
 	//res.send("Success");
 
 	var currentUser = req.session.username;
+	console.log(currentUser);
 	var templateID = req.body.templateID; 
 	var templateData = req.session.templateData;
-
+	var merchantAccountId = req.body.templateAuthor;
+	console.log("This is the seller: " + merchantAccountId);
+	console.log("This is the buyer: " + currentUser);
 
 	// Create the Transaction
 	gateway.transaction.sale({
+	  merchantAccountId: merchantAccountId,
 	  amount: "10.00",
+	  serviceFeeAmount: "8.00",
 	  paymentMethodNonce: nonce,
 	  options: {
 	    submitForSettlement: true
@@ -717,7 +773,7 @@ app.post('/checkout', function(req, res) {
 						req.session.transactionID = result.transaction.id;
 		                //res.redirect("/order" + "?id=" + transactionID);
 		                //res.redirect("/checkout" + "?id=" + req.body.templateID);
-		                return res.redirect("/order");
+		                return res.redirect("/order" + "?id=" + req.body.transactionID);
 		            }
 		        });
 				
@@ -740,10 +796,12 @@ var hbs = exphbs.create({
 
 var htmlToPdf = require('html-to-pdf');
 var pdf = require('html-pdf');
+
 app.post('/render_template', function(req, res) {
+	var currentUser = req.session.username;
 	console.log(req.body);
-	//var currentUser = req.session.username;
-	var currentUser = "c";
+	var currentUser = req.session.username;
+	//var currentUser = "c";
 	var transactionID = req.body.transactionID; 
 	console.log(transactionID);
 	var transaction;
@@ -768,6 +826,7 @@ app.post('/render_template', function(req, res) {
 		     // hbsTemplate contains the rendered html, do something with it...
 		     if(err){
 		     	res.send(err.message);
+		     	//res.status(500).send(err);
 		     }
 		     console.log(hbsTemplate);
 		     var html = hbsTemplate; //Some HTML String from code above 
@@ -784,6 +843,33 @@ app.post('/render_template', function(req, res) {
 
 			//var html = fs.readFileSync("tmp/" + transactionID + ".html", 'utf8');
 			//console.log(html);
+
+			
+			Users.findOne({'username':currentUser},  function(err, user){
+				console.log(user);
+				console.log(user.template.id(templateID));
+				template = user.template.id(templateID);
+
+				var options = { 
+				//"height": template.height,         
+  				//"width": template.width
+  				height: template.height+"px",
+  				width: template.width+"px"
+				};
+			 
+				pdf.create(html, options).toFile('views/pdf/' + transactionID + '.pdf', function(err, templatePDF) {
+				  if (err) return console.log(err);
+				  console.log(templatePDF); // { filename: '/app/businesscard.pdf' } 
+
+				  //return res.sendFile(templatePDF); 
+				  var downloadtemplate = 'views/pdf/' + transactionID + '.pdf';
+				  res.download(downloadtemplate);
+
+				});
+
+			});
+
+			/*
 			var options = { 
 				"height": "256px",         
   				"width": "256px"
@@ -796,7 +882,7 @@ app.post('/render_template', function(req, res) {
 			  //return res.sendFile(templatePDF); 
 			  var downloadtemplate = 'views/pdf/' + transactionID + '.pdf';
 			  res.download(downloadtemplate);
-			});
+			});*/
 
  			/*
 			htmlToPdf.convertHTMLString(html, 'views/pdf/' + transactionID + '.pdf',
@@ -815,22 +901,75 @@ app.post('/render_template', function(req, res) {
 });
 
 
+app.post('/submerchant', function(req, res){
+	var currentUser = req.sessions.username;
+	//var currentUser = "d";
+
+	console.log(req.body);
+
+	merchantAccountParams = {
+	  individual: {
+	    firstName: req.body.firstName,
+	    lastName: req.body.lastName,
+	    email: req.body.email,
+	    dateOfBirth: req.body.dateOfBirth,
+	    //dateOfBirth: "1981-11-19",
+	    address: {
+	      streetAddress: req.body.streetAddress,
+	      locality: req.body.locality,
+	      region: req.body.region,
+	      region: "IL",
+	      postalCode: req.body.postalCode
+	    }
+	  },
+	  funding: {
+	    destination: braintree.MerchantAccount.FundingDestination.Email,
+	    email: req.body.venmoEmail,
+	  },
+	  tosAccepted: true,
+	  masterMerchantAccountId: "lates",
+	  id: currentUser
+	};
+
+	/*
+	gateway.merchantAccount.find(currentUser, function (err, result) {
+		if(err){
+			console.log(err.message);
+		}
+		console.log(result);
+	});*/
+
+	gateway.merchantAccount.create(merchantAccountParams, function (err, result) {
+		if(err) {
+			console.log("This is the error:" + err);
+			return res.redirect('/submerchant');
+			//res.status(500).send(err);
+		}
+		else {
+			/*
+			console.log(result);
+			console.log(result.message);
+			var errors = result.errors.deepErrors();
+			console.log(errors);
+			console.log(result.merchantAccount);*/
+			if(result.merchantAccount){
+				console.log(result.merchantAccount.status);
+				console.log(result.merchantAccount.id);
+				console.log(result.merchantAccount.masterMerchantAccount.id);	
+				return res.redirect('/my_template');
+			}
+			else {
+				req.session.submerchantError = result.message;
+				return res.redirect('/submerchant');
+			}
 
 
+			
+		}
+		
+	});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+});
 
 
 

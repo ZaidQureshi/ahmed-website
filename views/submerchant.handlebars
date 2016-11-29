@@ -29,7 +29,7 @@
 	<![endif]-->
 	
 </head>
-<body ng-controller="ViewController as viewCtrl">
+<body ng-controller="CreateTemplateController as createCtrl">
 	<!-- PRELOADER -->
 	<div id="st-preloader">
 		<div id="pre-status">
@@ -90,65 +90,113 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="section-title">
-						<h1>Checkout</h1>
+						<h1>Create Merchant Account</h1>
 						<span class="st-border"></span>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div>
-		{{clientToken}}
-		{{username}}
-	</div>
 	</section>
 	<!-- /PAGE HEADER -->
+
 
 	
 	<section id="our-works">
 		<div class="container">
 			<div class="row">
-				<div class="col-md-6">
-					
-					<div class="single-blog">
+				<div class="col-md-8">
+					<div class="create-template">
+						<p>Sign up for Venmo Account: <a href="https://venmo.com/signup">https://venmo.com/signup</a></p>
+						<br>
 
-						<form id="checkout" method="post" action="/checkout">
-						  <div id="payment-form"></div>
-						  <input type="hidden" name="templateID" value="{[{viewCtrl.template._id}]}">
-						  <input type="hidden" name="templateAuthor" value="{[{viewCtrl.template.author}]}">
-						  <input type="submit" value="Pay $10">
-						</form>
-
-						<script src="https://js.braintreegateway.com/js/braintree-2.30.0.min.js"></script>
-						<script>
-
-						var token = "{{{clientToken}}}";
+						<div class="template-form">
 						
+						<form action="/submerchant" method="post">
 
-						braintree.setup(token, "dropin", {
-						  container: "payment-form"
-						});
+						{{#if submerchantError}}
+						<h3>Error: {{submerchantError}}</h3>
+						{{/if}}
 
-						</script>
+						<label for="name" class="cols-sm-2 control-label">Enter your first name</label>
+						<input type="text" placeholder="Jane" name ="firstName" required>
+						<br>
+
+						<label for="name" class="cols-sm-2 control-label">Enter your last name</label>
+						<input type="text" placeholder="Doe" name ="lastName" required>
+						<br>
+
+						<label for="name" class="cols-sm-2 control-label">Enter your email</label>
+						<input type="text" placeholder="janeDoe@gmail.com" name ="email" required>
+						<br>
+
+						<label for="name" class="cols-sm-2 control-label">Enter your date of birth</label>
+						<input type="date" placeholder="1981-11-19" name ="dateOfBirth" required>
+						<br>
+						<br>
+
+						<label for="name" class="cols-sm-2 control-label">Enter your street address</label>	
+						<input type="text" placeholder="111 Main St" name ="streetAddress" required>
+						<br>
+
+						<label for="name" class="cols-sm-2 control-label">Enter your locality (city)</label>	
+						<input type="text" placeholder="Chicago" name ="locality" required minlength=3>
+						<br>
+
+						<label for="name" class="cols-sm-2 control-label">Enter your region (state)</label>	
+						<input type="text" placeholder="IL" name ="region" required>
+						<br>
+						
+						<label for="name" class="cols-sm-2 control-label">Enter your postal code</label>	
+						<input type="text" placeholder="60622" name ="postalCode" required>
+						<br>
+						<br>
+
+						<label for="name" class="cols-sm-2 control-label">Enter your Venmo Account email address</label>	
+						<input type="text" placeholder="joedoe@gmail.com" name ="venmoEmail" required>
+						<br>
+						<br>
+
+						<h5>Terms & Conditions</h5>
+						<p>Lates uses Braintree, a division of PayPal, Inc. (Braintree) for payment processing services. By using the Braintree payment processing services you agree to the Braintree Payment Services Agreement available at <a href="https://www.braintreepayments.com/legal/gateway-agreement">https://www.braintreepayments.com/legal/gateway-agreement</a>, and the applicable bank agreement available at 
+						<a href="https://www.braintreepayments.com/legal/cea-wells">https://www.braintreepayments.com/legal/cea-wells</a>.</p>
+
+						<label for="name" class="cols-sm-2 control-label">I agree to these Terms & Conditions</label>	
+						<input type="checkbox" name ="tosAccepted" required>
+						<br>
+						<br>
+											
+						<button type="submit" value="submit" class="btn btn-primary btn-lg ">Create Merchant Account</button>
+						
+						</form>		
+						
+						</div>
 					</div>
 					<hr>
 				</div>
-				
-				<div class="col-md-6">
-				
-					<div class="sidebar-widget">
 
-						<h5 class="sidebar-title">Enter the following information for your template</h5>
-						
+				
+				<div class="col-md-4">
+					<div class="instructions">
+					<div style="border-left:medium #CC0000 solid; height:100%;" />
+					<ul>
+						<h4>INSTRUCTIONS</h4>
+						<li>You must create a Venmo Account in order to recieve your money from purchased templates. <strong>Note you will not be approved for a merchant account without first having an active Venmo Account.</strong></li>
+						<br>
+						<li>Enter the requested fields. <strong>The information you provide will be tested for validity and will not process if valid information is not provided.</strong></li>
+						<br>
+						<li>Make sure to enter the State's abbreviation (Ex. New York should be NY)</li>
+						<br>
+						<li>If correction information is provided, you should see your merchant status in the profile section under "View My Templates".
+						Once you have an active merchant account, you may begin creating tempaltes in the profile section under "Create A Template".</li>
+					</ul>
 					</div>
-					<div class="sidebar-widget">
-						<h4 class="sidebar-title">Identifiers</h4>
-							
-					</div>	
 					
 				</div><!-- end of col 3 -->
+				
 			</div><!-- end of row -->
 		</div><!-- end of container -->
-	</section>
+	</section><hr>
+
 
 
 	<!-- FOOTER -->
@@ -196,19 +244,10 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
 	<!-- Controllers -->
-	<script src="controllers/app.js"></script>
+	<script src="/controllers/app.js"></script>
 	
 	<script type="text/javascript" src="/js/minicart.js"></script>
-	<script
-		//paypal.minicart.render();
-		paypal.minicart.render({
-            action: 'https://www.paypal.com/cgi-bin/webscr'
-        });
-		
-		if (~window.location.search.indexOf('reset=true')) {
-            paypal.minicart.reset();
-        }
-	>
+
 
 
 </body>

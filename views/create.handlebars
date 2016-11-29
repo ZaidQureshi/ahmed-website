@@ -104,10 +104,12 @@
 	<section id="our-works">
 		<div class="container">
 			<div class="row">
-				<div class="col-md-9">
+				<div class="col-md-7">
 					<div class="create-template">
 						<div class="template-form">
-						
+						{{isActive}}
+						{{#if isActive}}
+
 						<form action="/create" method="post"  enctype="multipart/form-data">
 						<label for="name" class="cols-sm-2 control-label">Enter the name for your Template</label>
 						<input type="text" placeholder="Template One" name ="name" id="name" ng-model="createCtrl.name" maxlength="20" autofocus required>
@@ -128,12 +130,20 @@
 						  <option value="Card">Card</option>
 						</select>
 						<br>
+
+						<label for="width" class="cols-sm-2 control-label">Enter the width in pixels for your Template</label>
+						<input type="number" placeholder="512" name="width" id="width" ng-model="createCtrl.width" step="any" max="1024" required>
+						<br>
 						
+						<label for="height" class="cols-sm-2 control-label">Enter the height in pixels for your Template</label>
+						<input type="number" placeholder="256" name="height" id="height" ng-model="createCtrl.height" step="any"max="1024" required>
+						<br>
 						<!--<label for="icon" class="cols-sm-2 control-label">Enter the url of the icon for your Template</label>
 						<input type="text" placeholder="" name="icon" id="icon" ng-model="createCtrl.icon" required>-->
 						
 						<br>
 						<input type="file" placeholder="Upload File" name="file" id="file">
+						<br>
 						
 						
 						<input type="hidden" placeholder="" name="author" id="author" value="{{username}}">
@@ -143,7 +153,11 @@
 						
 						<button type="submit" value="submit" class="btn btn-primary btn-lg btn-block">Create Template</button>
 						
-						</form>		
+						</form>	
+
+						{{else}}	
+							<h5>You must create a merchant account and wait for apporval before creating templates</h5>
+						{{/if}}
 						
 						</div>
 					</div>
@@ -190,9 +204,11 @@
 				-->
 				
 				
-				<div class="col-md-3">
-					<div class="instructions">
+				<div class="col-md-5">
+					<div class="instructions" style="border:medium #CC0000 solid">
+						<!--<div style="border-left:medium #CC0000 solid; height:100%;" />-->
 					<ul>
+						<h4>Instructions</h4>
 						<li>Create and Design your template at:<a href="https://html-online.com/editor">  https://html-online.com/editor</a></li>
 						<br>
 						<li>Save the correct files with the correct extensions and zip it</li>

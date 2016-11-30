@@ -576,9 +576,14 @@ app.post('/create', function(req, res){
 	var iconPath = "";
 	// Get the author
 	var author = req.body.author;
+
+	//Store the author in the session to edit after the creation of the template is done
+	req.session.author = author;
 	
 		// Creates a template and sends the template ID as the response
 		Users.CreateTemplate(req.body, function (err, response){
+			//Store the new id of the template for editing 
+			req.session.createdTemplateID = response;
 			if(err) {
 				res.send(err.message);
 			}
@@ -630,8 +635,9 @@ app.post('/create', function(req, res){
 										    console.log("\n");
 										    iList.push(identifierList);
 										  })
-
+										
 									}
+
 									
 									if((f.substr(f.length -3)) ==  "png"){
 										fs.rename('views/templates/' + response + '/' + f, 'public/images/uploads/' + response + '.png', function(err) {
@@ -647,7 +653,17 @@ app.post('/create', function(req, res){
 												template.resize(256, 256)            // resize 
 													 .quality(100)                 // set JPEG quality 
 													 //.greyscale()                 // set greyscale 
-													 .write(resizePath); // save 
+													 .write(resizePath); // save
+												Users.EditTemplate(author, response, iList, iconPath, function (err, user) {
+												if (err) {
+													 res.status(400).send(err);
+												} 
+												else {
+													console.log(user);
+													return res.redirect('/my_template');
+												}
+									});
+												
 											});
 
 											console.log(iconPath);
@@ -655,19 +671,54 @@ app.post('/create', function(req, res){
 										});
 										
 									}
-								
-								
+									
+
+									/*
+									Users.findOne({'username': author}, function (err, user) { 
+										if(err) {
+											return callback(err);
+										}
+										// Find the user's template and edit
+										else {
+											//console.log(user);
+											// Edit the identifier list
+											console.log(user.template.id(response));
+											console.log(iList);
+											for(var i = 0; i < iList.length; i++){
+												console.log(iList[i][0] + "\n");
+												user.template.id(response).identifier.push(iList[i]);
+											}
+											
+											// Edit the icon
+											console.log(iconPath);
+											user.template.id(response).icon = iconPath;
+											console.log(user.template.id(response).icon);
+											
+											// Save the changes and return the user
+											user.save(function(err) {
+												if(err) { 
+													//return callback(err); 
+													console.log(err);
+												}
+												/*
+												else {
+													//return callback(null, user);
+													return res.redirect("/my_template");
+												}/
+											});	
+										}	 	  
+									});
+										*/
+
+
+
+
+
+								 //store the iList for editing 
+								//req.session.iList = iList;
 								}); // end of filesForEach
 
-									Users.EditTemplate(author, response, iList, iconPath, function (err, user) {
-												if (err) {
-													 res.status(400).send(err);
-												} else {
-													//res.redirect('/login');
-													//return res.send(user);
-													 res.redirect('/');
-												}
-									});								
+								
 							});	// end of reading all files in directory
 						}	
 					}); 
@@ -677,6 +728,34 @@ app.post('/create', function(req, res){
 	});	// end of creating template 	
 });
 
+/*
+app.get('/editCreatedTemplate', function(req, res){
+	var author = req.session.author;
+	var response = req.session.createdTemplateID;
+	var iList = req.session.iList || [];
+	var iconPath = req.session.iconPath;
+	console.log("I am in edit created template");
+	console.log(author);
+	console.log(response);
+	console.log(iList);
+	console.log(iconPath);
+
+	Users.EditTemplate(author, response, iList, iconPath, function (err, user) {
+		if (err) {
+			res.status(400).send(err);
+		} 
+		else {
+			res.redirect('/my_template');
+		}
+	});	
+
+	req.session.author = null;
+	req.session.createdTemplateID = null;
+	req.session.iList = null;
+	req.session.iconPath = null;
+
+});
+*/
 
 
 // Approve or Disapprove a template by changing it's field in the database

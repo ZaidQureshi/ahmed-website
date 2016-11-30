@@ -63,8 +63,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -87,8 +87,8 @@ app.use(fileUpload());
 var mongoose = require('mongoose');
 
 // Build the connection string
-var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
-//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
+//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
+var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 //var dbURI3 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin,127.0.0.1:27017/templates?authSource=admin'; 
 
 //var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
@@ -320,30 +320,36 @@ app.get('/my_template', function (req, res){
 
 app.get('/buy_template', function (req, res){
     
-	//f(req.session.username)
+	if (req.session.username) {
 		    res.render('buy_template', {
 			layout: false,
 			username: req.session.username
 		});
 		
-	//}
-	//else{
+	}
+	else{
 		// return since it is an asynchronous call
-		//return res.redirect('/');
-	//}
+		res.redirect('/login');
+	}
 });
 
 app.get('/checkout', function (req, res){
-	// Send a client token to your client
-	console.log("I got a GET request from" + req.session.username + "\n");
-	gateway.clientToken.generate({}, function (err, response) {
-	 	console.log(response.clientToken);
-	    res.render('checkout', {
-			layout: false,
-			username: req.session.username,
-			clientToken: response.clientToken
-			});
-	});
+
+	if (req.session.username) {
+		// Send a client token to your client
+		console.log("I got a GET request from" + req.session.username + "\n");
+		gateway.clientToken.generate({}, function (err, response) {
+		 	console.log(response.clientToken);
+		    res.render('checkout', {
+				layout: false,
+				username: req.session.username,
+				clientToken: response.clientToken
+				});
+		});
+	}
+	else {
+		res.redirect('/');
+	}
 });
 
 
@@ -523,7 +529,30 @@ app.post('/login', function (req, res) {
     });
 });
 
+/*
+app.get('/testFile', function(req, res){
+	var readline = require('linebyline');
+	var iList = [];
+	rl = readline('views/templates/582f49fb72c5f60f105661b4/example_template_identifier.txt');
+	rl.on('line', function(line, lineCount, byteCount) {
+	// do something with the line of text 
+		console.log(line);
+		console.log(lineCount);
+		var identifierList = line.toString().split("\t");
+		console.log(identifierList);
+		console.log("\n");
+		iList.push(identifierList);
+		console.log("After push: " + iList);
+	})
+	var re = new RegExp('({{.*}})');
+	var r  = '{{job_Title}} {{phone}}</span></p>'.match(re);
+	if (r){
+    	console.log(r[1]);
+    }
 
+
+});
+*/
 
 
 // Store the user created template into the document of templates
@@ -545,6 +574,8 @@ app.post('/create', function(req, res){
 	var iList = [];
 	// Empty variable to store the image path that will be saved into the template
 	var iconPath = "";
+	// Get the author
+	var author = req.body.author;
 	
 		// Creates a template and sends the template ID as the response
 		Users.CreateTemplate(req.body, function (err, response){
@@ -570,7 +601,9 @@ app.post('/create', function(req, res){
 							else {
 								
 								fs.readdir(__dirname + "/views/templates/" + response, function(err, files) {
-								if (err) return;
+								if (err) {
+									res.status(500).send(err);
+								}
 								
 								// Iterate through each file and change the names of the files to match the template id that was generated
 								files.forEach(function(f) {
@@ -583,60 +616,65 @@ app.post('/create', function(req, res){
 										});										
 									}
 									
+									// Handle reading the identifier list/html
 									if((f.substr(f.length - 3)) == "txt"){
-										fs.readFile('views/templates/' + response + '/' + f, "utf-8", function (err, data) {
-										  if (err) {
-											return console.log(err);
-											//throw err;
-										  }
-										  //var identifierList = data.split("\r\n");
-										  var identifierList = data.toString().split("\n");
-										
-										  //var identifierList = identifierList.split("\t");
-										  for(var i = 0; i < identifierList.length; i++){
-											  x = identifierList[i].split("\t");
-											  iList.push(x);
-										  }
-										
-										});
+
+										var readline = require('linebyline');
+										rl = readline('views/templates/' + response + '/' + f);
+										rl.on('line', function(line, lineCount, byteCount) {
+										    // do something with the line of text 
+										    console.log(line);
+										    console.log(lineCount);
+										    var identifierList = line.toString().split("\t");
+										    console.log(identifierList);
+										    console.log("\n");
+										    iList.push(identifierList);
+										  })
+
 									}
 									
 									if((f.substr(f.length -3)) ==  "png"){
 										fs.rename('views/templates/' + response + '/' + f, 'public/images/uploads/' + response + '.png', function(err) {
 											if ( err ) console.log('ERROR: ' + err);
+											iconPath = "images/uploads/" + response + ".png";
+											resizePath = "public/" + iconPath;
+											jimp.read(resizePath, function (err, template) {
+												if (err){ 
+													//console.log(err);
+													//return res.status(400).send(err);
+													res.status(500).send(err);
+												} //throw err;
+												template.resize(256, 256)            // resize 
+													 .quality(100)                 // set JPEG quality 
+													 //.greyscale()                 // set greyscale 
+													 .write(resizePath); // save 
+											});
+
+											console.log(iconPath);
+
 										});
-										iconPath = "images/uploads/" + response + ".png";
-										resizePath = "public/" + iconPath;
-										jimp.read(resizePath, function (err, template) {
-											if (err){ 
-												console.log(err);
-												return res.status(400).send(err);
-											} //throw err;
-											template.resize(256, 256)            // resize 
-												 .quality(100)                 // set JPEG quality 
-												 //.greyscale()                 // set greyscale 
-												 .write(resizePath); // save 
-										});
-										console.log(iconPath);
+										
 									}
 								
-								});
-									Users.EditTemplate(req.body.author, response, iList, iconPath, function (err, user) {
+								
+								}); // end of filesForEach
+
+									Users.EditTemplate(author, response, iList, iconPath, function (err, user) {
 												if (err) {
-													return res.status(400).send(err);
+													 res.status(400).send(err);
 												} else {
 													//res.redirect('/login');
 													//return res.send(user);
-													return res.redirect('/');
+													 res.redirect('/');
 												}
-										});								
-							});	
+									});								
+							});	// end of reading all files in directory
 						}	
 					}); 
 				}
 			});			
-		}
-	});	  	
+		}// end of the else statement if not an error when creating the template
+	});	// end of creating template 	
 });
 
 
@@ -666,6 +704,7 @@ app.post('/approve', function(req, res){
 // Create transaction subdocument to store templates infomration to be rendered and redirect to the checkout page
 // Store the template information that the user submitted for the template they want to purchase in a session
 app.post('/render_purchased_template', function(req, res){
+
 	console.log("Got POST request");
 	console.log(req.body);
 	req.body['layout'] = false;
@@ -695,35 +734,43 @@ app.post('/render_purchased_template', function(req, res){
 
 
 app.get('/order', function (req, res) {
-  var transaction;
-  var transactionID = req.session.transactionID;
-  //var transactionID = "g2z6xbe2";
-  console.log(transactionID);
-  var currentUser = req.session.username;
-  //var currentUser = "c";
+
+	if(req.session.username){
+	  var transaction;
+	  var transactionID = req.session.transactionID;
+	  //var transactionID = "g2z6xbe2";
+	  console.log(transactionID);
+	  var currentUser = req.session.username;
+	  //var currentUser = "c";
 
 
-  Users.findOne({ username: currentUser},  function(err, doc){
-		//console.log("\n This is the resule of the query" + doc + "\n");
-		console.log(doc + "\n");
-		for(i = 0; i < doc.transaction.length; i++){
-			if (doc.transaction[i].transactionID == transactionID){
-				console.log(doc.transaction[i]);
-				transaction = doc.transaction[i];
+	  Users.findOne({ username: currentUser},  function(err, doc){
+			//console.log("\n This is the resule of the query" + doc + "\n");
+			console.log(doc + "\n");
+			for(i = 0; i < doc.transaction.length; i++){
+				if (doc.transaction[i].transactionID == transactionID){
+					console.log(doc.transaction[i]);
+					transaction = doc.transaction[i];
+				}
 			}
-		}
-	
+		
 
-  res.render("order", {
-				layout: false,
-				transaction: transaction
-			});
-  req.session.transactionID = null;
+	  res.render("order", {
+					layout: false,
+					transaction: transaction
+				});
+	  req.session.transactionID = null;
 
-  //gateway.transaction.find(transactionID, function (err, transaction) {
-    //result = createResultObject(transaction);
-  //});
-  });
+	  //gateway.transaction.find(transactionID, function (err, transaction) {
+	    //result = createResultObject(transaction);
+	  //});
+	  });
+	}
+
+	else{
+		res.redirect('/');
+	}
+
 });
 
 
@@ -773,7 +820,7 @@ app.post('/checkout', function(req, res) {
 						req.session.transactionID = result.transaction.id;
 		                //res.redirect("/order" + "?id=" + transactionID);
 		                //res.redirect("/checkout" + "?id=" + req.body.templateID);
-		                return res.redirect("/order" + "?id=" + req.body.transactionID);
+		                return res.redirect("/order" + "?id=" + transactionID);
 		            }
 		        });
 				
@@ -902,7 +949,7 @@ app.post('/render_template', function(req, res) {
 
 
 app.post('/submerchant', function(req, res){
-	var currentUser = req.sessions.username;
+	var currentUser = req.session.username;
 	//var currentUser = "d";
 
 	console.log(req.body);
@@ -1074,6 +1121,24 @@ app.post("/", function (req, res) {
 </form>
 */
 
+
+				/*
+										fs.readFile('views/templates/' + response + '/' + f, "utf-8", function (err, data) {
+										  if (err) {
+											return console.log(err);
+											//throw err;
+										  }
+										  //var identifierList = data.split("\r\n");
+										  var identifierList = data.toString().split("\n");
+										
+										  //var identifierList = identifierList.split("\t");
+										  for(var i = 0; i < identifierList.length; i++){
+											  x = identifierList[i].split("\t");
+											  iList.push(x);
+										  }
+										
+										});
+										*/
 
 
 

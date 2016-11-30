@@ -1,0 +1,5 @@
+restaurant name	RestaurantName
+first item	Item1
+first item price	Price1
+second item	Item2
+second item price	Price2

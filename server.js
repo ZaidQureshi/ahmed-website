@@ -395,7 +395,8 @@ app.post('/get_transactions', function (req, res){
 		
 			res.render("order", {
 				layout: false,
-				transaction: transaction
+				transaction: transaction,
+				username: req.session.username
 			});
 	  	req.session.transactionID = null;
 		});

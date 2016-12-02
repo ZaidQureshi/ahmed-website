@@ -69,8 +69,10 @@
 								<span class="caret"></span></a>
 								<ul class="dropdown-menu">
 								  <li><a href="#">Welcome {{username}}</a></li>
+								  <li><a href="/submerchant">Create Merchant Account</a></li>
 								  <li><a href="/create">Create a Template</a></li>
 								  <li><a href="/my_template">View my Templates</a></li>
+								  <li><a href="/get_transactions">View my Transactions</a></li>
 								  <li><a href="/logout">Log out</a></li> 
 								</ul>
 							 </li>
@@ -107,7 +109,6 @@
 				<div class="col-md-7">
 					<div class="create-template">
 						<div class="template-form">
-						{{isActive}}
 						{{#if isActive}}
 
 						<form action="/create" method="post"  enctype="multipart/form-data">
@@ -142,7 +143,7 @@
 						<input type="text" placeholder="" name="icon" id="icon" ng-model="createCtrl.icon" required>-->
 						
 						<br>
-						<input type="file" placeholder="Upload File" name="file" id="file">
+						<input type="file" placeholder="Upload File" name="file" id="file" required>
 						<br>
 						
 						
@@ -154,6 +155,10 @@
 						<button type="submit" value="submit" class="btn btn-primary btn-lg btn-block">Create Template</button>
 						
 						</form>	
+						<br>
+						<ul>
+						<li><strong>If the page returns "{}" you have not followed the instructions and have not uploaded the three correct files (html, png, txt)</strong></li>
+						<ul>
 
 						{{else}}	
 							<h5>You must create a merchant account and wait for apporval before creating templates</h5>
@@ -165,57 +170,30 @@
 				</div>
 					
 					
-					<!--
-					<div class="single-blog">
-						<article>
-							<div class="post-thumb"><img class="img-responsive" ng-src="images/works/{[{viewCtrl.template.icon}]}" alt=""></div>
-							<h4 class="post-title"><a href="">{[{viewCtrl.template.caption}]}Template Caption</a></h4>
-							<div class="post-meta text-uppercase">
-								<span>Date Posted: {[{viewCtrl.template.date}]}September, 21, 2016</span>
-								<span>Price {[{viewCtrl.template.price | currency}]}</span>
-								<span>Category: {[{viewCtrl.template.category}]}</span>
-							</div>
-							<div class="post-article">
-								{[{viewCtrl.template.description}]}Template Description
-							</div>
-							<a href="" class="btn btn-info">Read More</a>
-							<a href="" class="btn btn-primary">Add To Cart</a>
-							
-							<form method="post" action="https://www.paypal.com/cgi-bin/webscr">
-								<fieldset>
-									<input type="hidden" name="cmd" value="_cart">
-									<input type="hidden" name="add" value="1">
-									<input type="hidden" name="business" value="npg230@nyu.edu">
-									<input type="hidden" name="item_name" value="{[{viewCtrl.template.name}]}">
-									<input type="hidden" name="item_number" value="{[{viewCtrl.template.category}]}">
-									<input type="hidden" name="amount" value="{[{viewCtrl.template.price}]}">
-									<input type="hidden" name="currency_code" value="USD">
-									<input type="hidden" name="return" value="">
-									<input type="hidden" name="cancel_return" value="">
-									<input type="hidden" name="undefined_quantity" value="1">
-									<input type="image" src="http://www.paypalobjects.com/en_US/i/btn/x-click-but22.gif" border="0" name="submit" width="87" height="23" alt="Make payments with PayPal - it's fast, free and secure!">
-								</fieldset>
-							</form>
-										
-						</article>
-					</div>
-					<hr>
-				</div>
-				-->
-				
-				
 				<div class="col-md-5">
-					<div class="instructions" style="border:medium #CC0000 solid">
-						<!--<div style="border-left:medium #CC0000 solid; height:100%;" />-->
+					<div>
+					<div style="border-left:medium #CC0000 solid; height:100%;" />
+						<!--<div class="instructions" style="border:medium #CC0000 solid">-->
 					<ul>
 						<h4>Instructions</h4>
 						<li>Create and Design your template at:<a href="https://html-online.com/editor">  https://html-online.com/editor</a></li>
-						<br>
 						<li>Save the correct files with the correct extensions and zip it</li>
-						<br>
 						<li>Enter the requested fields and create your template</li>
+						<li>On the right of the design of your template contains the html</li>
+						<li>Save the html code into a file and name it with the extension <strong>".html"</strong></li>
+						<li>Take a screeshot of your template by clicking the "preview" option and save the image with
+						the extension <strong>".png"</strong></li>
+						<li>Create a text file that will consist of your identifiers that the user will. Follow the
+						following format: name of identifier used in template TAB description of identifier ENTER</li>
+						<li>For example,<br>
+						RestaurantName	&nbsp;&nbsp;&nbsp;&nbsp;Name of restaurant<br>
+						PriceOne	&nbsp;&nbsp;&nbsp;&nbsp;Price of first item</li>
+						<li>Save this file and name it with the extension <strong>".txt"</strong></li>
+						<li>Compress these three files into a zip and upload it. Note, if you do not follow the instructed format, your template will be automatically rejected</li>
 					</ul>
+
 					</div>
+				</div>
 					
 				</div><!-- end of col 3 -->
 				
@@ -244,6 +222,24 @@
 		</div>
 	</section>
 	<!--
+	On the right of the design of your template contains the html
+
+Save the html code into a file and name it with the extension ".html"
+Take a screeshot of your template by clicking the "preview" option and save the image with
+the extension ".png"
+
+Create a text file that will consist of your identifiers that the user will. Follow the
+following format: name of identifier used in template TAB description of identifier ENTER
+
+For example,
+RestaurantName	Name of restaurant
+PriceOne	Price of first item
+
+Save this file and name it with the extension ".txt"
+
+Compress these three files into a zip and upload it. Note, if you do not follow the instructed format,
+your template will be automatically rejected
+
 							<div class="sidebar-widget">
 								<h4 class="sidebar-title">Similar Layouts</h4>
 								<ul class="content-flickr" ng-controller="TemplatesController as templateCtrl">

@@ -209,22 +209,22 @@ app.get('/create', function (req, res){
 	}
 	else {
 		// return since it is an asynchronous call
-		return res.redirect('/');
+		return res.redirect('/login');
 	}
 });
 
 app.get('/submerchant', function (req, res){
     
-	//if(req.session.username){
+	if(req.session.username){
 		res.render('submerchant', {
 			layout: false,
 			username: req.session.username,
 			submerchantError: req.session.submerchantError});
-	//}
-	/*else{
+	}
+	else{
 		// return since it is an asynchronous call
-		return res.redirect('/');
-	}*/
+		res.redirect('/');
+	}
 	req.session.submerchantError = null;
 });
 
@@ -245,6 +245,7 @@ app.get('/logout',function(req,res){
 	}
 });
 
+//user for testing file uploads
 app.get('/upload', function(req, res){
 	/*
 	if(req.session.username){
@@ -261,31 +262,31 @@ app.get('/upload', function(req, res){
 
 app.get('/review', function (req, res){
     
-	//if(req.session.username == "ahmed"){
+	if(req.session.username == "ahmed"){
 		res.render('review', {
 			layout: false,
 			username: req.session.username});
-	//}
-	/*else{
+	}
+	else{
 		// return since it is an asynchronous call
 		// return to homepage if you are not Ahmed
-		return res.redirect('/');
-	}*/
+		res.redirect('/');
+	}
 });
 
 
 app.get('/review_template', function (req, res){
     
-	//if(req.session.username == "ahmed"){
+	if(req.session.username == "ahmed"){
 		res.render('review_template', {
 			layout: false,
 			username: req.session.username});
-	//}
-	/*else{
+	}
+	else{
 		// return since it is an asynchronous call
 		// return to homepage if you are not Ahmed
-		return res.redirect('/');
-	}*/
+		res.redirect('/');
+	}
 });
 
 
@@ -307,8 +308,6 @@ app.get('/my_template', function (req, res){
 						layout: false,
 						username: req.session.username,
 						merchantStatus: status});
-
-
 
 		});
 	}
@@ -353,6 +352,59 @@ app.get('/checkout', function (req, res){
 });
 
 
+app.get('/get_transactions', function (req, res){
+    
+	if (req.session.username) {
+
+		var currentUser = req.session.username;
+		Users.distinct('transaction', {username : currentUser},  function (err, docs){
+			console.log(docs);	
+			res.render('get_transactions', {
+				layout: false,
+				username: req.session.username,
+				transactions: docs
+			});	
+		});
+	}
+	else{
+		// return since it is an asynchronous call
+		res.redirect('/login');
+	}
+});
+
+
+
+
+app.post('/get_transactions', function (req, res){
+	if(req.session.username) {
+
+	  var transaction;
+	  var transactionID = req.body.transactionID;
+	  console.log(transactionID);
+	  var currentUser = req.session.username;
+
+	  Users.findOne({ username: currentUser},  function(err, doc){
+			//console.log("\n This is the resule of the query" + doc + "\n");
+			console.log(doc + "\n");
+			for(i = 0; i < doc.transaction.length; i++){
+				if (doc.transaction[i].transactionID == transactionID){
+					console.log(doc.transaction[i]);
+					transaction = doc.transaction[i];
+				}
+			}
+		
+			res.render("order", {
+				layout: false,
+				transaction: transaction
+			});
+	  	req.session.transactionID = null;
+		});
+	}
+
+	else{
+		res.redirect('/');
+	}
+});
 
 
 // Sends back to the controller the GET data requested
@@ -377,29 +429,40 @@ app.get('/templates', function(req, res){
 // Return the templates that needs to be reviewed
 // Revire Controller makes Request to display all templates that needs to be revied
 app.get('/templates_review', function(req, res){
-	console.log("I received a GET request");
-	
-	//Users.collection.distinct
-	Users.distinct('template', {"template.approved" : "false"}, function (err, docs){
-		console.log(docs);	
-		res.json(docs);
-	});
-	// Get the data from the database
-	
+
+	if(req.session.username == "ahmed"){
+		console.log("I received a GET request");
+		
+		//Users.collection.distinct
+		Users.distinct('template', {"template.approved" : "false"}, function (err, docs){
+			console.log(docs);	
+			res.json(docs);
+		});
+		// Get the data from the database
+	}
+	else {
+		res.redirect('/');
+	}
 });
 
 
 // Return the templates that needs to be reviewed
 // My Templates Controller makes Request to display all templates that belongs to the user
 app.get('/users_templates', function(req, res){
-	console.log("I received a GET request");
-	var user = req.session.username;
-	//Users.collection.distinct
-	Users.distinct('template', {"template.author" : user}, function (err, docs){
-		console.log(docs);	
-		res.json(docs);
-	});
-	// Get the data from the database
+
+	if(req.session.username){
+		console.log("I received a GET request");
+		var user = req.session.username;
+		//Users.collection.distinct
+		Users.distinct('template', {"template.author" : user}, function (err, docs){
+			console.log(docs);	
+			res.json(docs);
+		});
+		// Get the data from the database
+	}
+	else{
+		res.redirect('/login');
+	}
 	
 });
 
@@ -437,25 +500,30 @@ app.get('/templates/:id', function (req, res){
 		 console.log(docs);
 });
 	*/
-	
-	Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
-		//console.log("\n This is the resule of the query" + doc + "\n");
-		console.log(doc._id);
-		
-		//console.log(doc.template);
-		//res.json(doc.template);
-		Users.findOne({'_id': doc._id}, function (err, user) { 
+	//if (template_id != 'undefined') {
+		Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
 			if(err) {
-				return callback(err);
+				console.log(err);
+				return res.send(err);
 			}
-			else{		
-				console.log("This is the user" + user + "\n");
-				console.log(user.template.id(template_id));
-				res.json(user.template.id(template_id));
-				
-			}
-		});	
-	});
+			//console.log("\n This is the resule of the query" + doc + "\n");
+			console.log(doc._id);
+			
+			//console.log(doc.template);
+			//res.json(doc.template);
+			Users.findOne({'_id': doc._id}, function (err, user) { 
+				if(err) {
+					return callback(err);
+				}
+				else{		
+					console.log("This is the user" + user + "\n");
+					console.log(user.template.id(template_id));
+					res.json(user.template.id(template_id));
+					
+				}
+			});	
+		});
+	//}
 });
 
 
@@ -559,6 +627,12 @@ app.get('/testFile', function(req, res){
 // Return the template id that was created
 // Rename all the files to the template id
 app.post('/create', function(req, res){
+	if(req.session.username) {
+
+	var sawHTML = false;
+	var sawPNG = false;
+	var sawTXT = false;
+
 	console.log("Got POST request");
 	console.log(req.body);
 	console.log("\n" + req.files.file + "\n");
@@ -585,7 +659,7 @@ app.post('/create', function(req, res){
 			//Store the new id of the template for editing 
 			req.session.createdTemplateID = response;
 			if(err) {
-				res.send(err.message);
+				return res.send(err.message);
 			}
 			else {
 		
@@ -594,20 +668,20 @@ app.post('/create', function(req, res){
 
 				sampleFile.mv('upload/zips/' + response + '.zip', function(err) {
 					if (err) {
-						res.status(500).send(err);
+						return res.status(500).send(err);
 					}
 					else {
 					   
 						extract('upload/zips/' + response + '.zip', {dir: 'views/templates/' + response}, function (err) {
 						//extract('upload/zips/' + template_id + '.zip', {dir: 'upload/templates/'}, function (err) {
 							if (err) {
-								res.status(500).send(err);
+								return res.status(500).send(err);
 							}
 							else {
 								
 								fs.readdir(__dirname + "/views/templates/" + response, function(err, files) {
 								if (err) {
-									res.status(500).send(err);
+									return res.status(500).send(err);
 								}
 								
 								// Iterate through each file and change the names of the files to match the template id that was generated
@@ -616,14 +690,20 @@ app.post('/create', function(req, res){
 									
 									
 									if((f.substr(f.length -4)) ==  "html"){
+										if(!sawHTML){
 										fs.rename('views/templates/' + response + '/' + f, 'views/partials/' + response  + '.handlebars', function(err) {
-											if ( err ) console.log('ERROR: ' + err);
-										});										
-									}
+											//if ( err ) console.log('ERROR: ' + err);
+											if (err) {
+												return res.send(err);
+											}
+											sawHTML = true;
+										});		
+										}
+									}	
 									
 									// Handle reading the identifier list/html
 									if((f.substr(f.length - 3)) == "txt"){
-
+										if(!sawTXT){
 										var readline = require('linebyline');
 										rl = readline('views/templates/' + response + '/' + f);
 										rl.on('line', function(line, lineCount, byteCount) {
@@ -634,12 +714,15 @@ app.post('/create', function(req, res){
 										    console.log(identifierList);
 										    console.log("\n");
 										    iList.push(identifierList);
+										    sawTXT = true;
 										  })
+										}
 										
 									}
 
 									
 									if((f.substr(f.length -3)) ==  "png"){
+										if(!sawPNG){
 										fs.rename('views/templates/' + response + '/' + f, 'public/images/uploads/' + response + '.png', function(err) {
 											if ( err ) console.log('ERROR: ' + err);
 											iconPath = "images/uploads/" + response + ".png";
@@ -648,15 +731,16 @@ app.post('/create', function(req, res){
 												if (err){ 
 													//console.log(err);
 													//return res.status(400).send(err);
-													res.status(500).send(err);
+													return res.status(500).send(err);
 												} //throw err;
+												sawPNG = true;
 												template.resize(256, 256)            // resize 
 													 .quality(100)                 // set JPEG quality 
 													 //.greyscale()                 // set greyscale 
 													 .write(resizePath); // save
 												Users.EditTemplate(author, response, iList, iconPath, function (err, user) {
 												if (err) {
-													 res.status(400).send(err);
+													 return res.status(400).send(err);
 												} 
 												else {
 													console.log(user);
@@ -669,7 +753,7 @@ app.post('/create', function(req, res){
 											console.log(iconPath);
 
 										});
-										
+									}
 									}
 									
 
@@ -725,7 +809,11 @@ app.post('/create', function(req, res){
 				}
 			});			
 		}// end of the else statement if not an error when creating the template
-	});	// end of creating template 	
+	});	// end of creating template 
+	}
+	else {
+		return res.redirect('/');
+	}	
 });
 
 /*
@@ -760,68 +848,77 @@ app.get('/editCreatedTemplate', function(req, res){
 
 // Approve or Disapprove a template by changing it's field in the database
 app.post('/approve', function(req, res){
-	
-	var author = req.body.author;
-	var templateID = req.body.templateID;
-	var approve = req.body.approve;
-	var review = req.body.review;
-	console.log("Got POST request");
-	console.log(req.body);
+	if(username.req.session){
+		var author = req.body.author;
+		var templateID = req.body.templateID;
+		var approve = req.body.approve;
+		var review = req.body.review;
+		console.log("Got POST request");
+		console.log(req.body);
 
-    Users.approve(author, templateID, approve, review, function (err, response) {
-            if (err) {
-                res.send(err.message);
-            } else {
-				console.log(response);
-                res.send(response);
-            }
-        });
-   // }
+	    Users.approve(author, templateID, approve, review, function (err, response) {
+	            if (err) {
+	                return res.send(err.message);
+	            } else {
+					console.log(response);
+	                //res.send(response);
+	                return res.redirect('/review')
+	            }
+	        });
+	   // }
+	}
+	else {
+		return res.redirect('/');
+	}
 });
 
 
 // Create transaction subdocument to store templates infomration to be rendered and redirect to the checkout page
 // Store the template information that the user submitted for the template they want to purchase in a session
 app.post('/render_purchased_template', function(req, res){
+	if(req.session.username) {
+		console.log("Got POST request");
+		console.log(req.body);
+		req.body['layout'] = false;
 
-	console.log("Got POST request");
-	console.log(req.body);
-	req.body['layout'] = false;
+		req.session.templateData = req.body;
+		return res.redirect("/checkout" + "?id=" + req.body.templateID);
 
-	req.session.templateData = req.body;
-	res.redirect("/checkout" + "?id=" + req.body.templateID);
+		/*
+		var templateID = req.body.templateID;
+		var templateData = req.body;
+		var orderComplete = false;
+		// Needed to search for the user's transaction list in order to push this data into the databases
+		var currentUser = req.session.username;
 
-	/*
-	var templateID = req.body.templateID;
-	var templateData = req.body;
-	var orderComplete = false;
-	// Needed to search for the user's transaction list in order to push this data into the databases
-	var currentUser = req.session.username;
+		Users.CreateTransaction(templateID, templateData, orderComplete, currentUser, function (err, response) {
+	            if (err) {
+	                res.send(err.message);
+	            } else {
+					console.log(response);
+	                return res.redirect("/checkout" + "?id=" + templateID);
+	            }
+	        });
+	    //res.render('templates/' + req.body['id'] + '/' + req.body['id'], req.body );
+	    */
+	}
 
-	Users.CreateTransaction(templateID, templateData, orderComplete, currentUser, function (err, response) {
-            if (err) {
-                res.send(err.message);
-            } else {
-				console.log(response);
-                return res.redirect("/checkout" + "?id=" + templateID);
-            }
-        });
-    //res.render('templates/' + req.body['id'] + '/' + req.body['id'], req.body );
-    */
+	else {
+		return res.redirect('/');
+	}
 });
 
 
 
 app.get('/order', function (req, res) {
 
-	if(req.session.username){
+	if(req.session.username) {
 	  var transaction;
 	  var transactionID = req.session.transactionID;
 	  //var transactionID = "g2z6xbe2";
 	  console.log(transactionID);
 	  var currentUser = req.session.username;
 	  //var currentUser = "c";
-
 
 	  Users.findOne({ username: currentUser},  function(err, doc){
 			//console.log("\n This is the resule of the query" + doc + "\n");
@@ -836,7 +933,8 @@ app.get('/order', function (req, res) {
 
 	  res.render("order", {
 					layout: false,
-					transaction: transaction
+					transaction: transaction,
+					username: req.session.username
 				});
 	  req.session.transactionID = null;
 
@@ -854,64 +952,79 @@ app.get('/order', function (req, res) {
 
 
 app.post('/checkout', function(req, res) {
-	console.log(req.body);
 
-	// Receive a payment method nonce from the client
-	var nonce = req.body.payment_method_nonce;
-	console.log(nonce);
-	//res.send("Success");
+	if(req.session.username) {
+		console.log(req.body);
+		// Receive a payment method nonce from the client
+		var nonce = req.body.payment_method_nonce;
+		console.log(nonce);
+		//res.send("Success");
 
-	var currentUser = req.session.username;
-	console.log(currentUser);
-	var templateID = req.body.templateID; 
-	var templateData = req.session.templateData;
-	var merchantAccountId = req.body.templateAuthor;
-	console.log("This is the seller: " + merchantAccountId);
-	console.log("This is the buyer: " + currentUser);
+		var currentUser = req.session.username;
+		console.log(currentUser);
+		var templateID = req.body.templateID; 
+		var templateData = req.session.templateData;
+		var merchantAccountId = req.body.templateAuthor;
+		console.log("This is the seller: " + merchantAccountId);
+		console.log("This is the buyer: " + currentUser);
 
-	// Create the Transaction
-	gateway.transaction.sale({
-	  merchantAccountId: merchantAccountId,
-	  amount: "10.00",
-	  serviceFeeAmount: "8.00",
-	  paymentMethodNonce: nonce,
-	  options: {
-	    submitForSettlement: true
-	  }
-	}, function (err, result) {
-		if (err) {
-			res.send(err.message);
-		}
-		else {
-			console.log(result.success);
-			console.log(result.transaction);
-			var transaction = result.transaction;
-			var transactionID = result.transaction.id;
-			//console.log(result);
-			// If transaction is successful, render template that was requested for purcahse with the data stored in transaction
-			if(result.success){
-				Users.CreateTransaction(templateID, templateData, currentUser, transaction, transactionID, function (err, response) {
-		            if (err) {
-		                res.send(err.message);
-		            } else {
-						console.log(response);
-						req.session.templateData = null; 
-						req.session.transactionID = result.transaction.id;
-		                //res.redirect("/order" + "?id=" + transactionID);
-		                //res.redirect("/checkout" + "?id=" + req.body.templateID);
-		                return res.redirect("/order" + "?id=" + transactionID);
-		            }
-		        });
-				
-				
+		var templatePrice = req.body.price;
+		var serviceFee = 0.1;
+		var serviceAmount = (templatePrice*serviceFee);
+		console.log(templatePrice);
+		console.log(serviceAmount);
+
+
+		// Create the Transaction
+		gateway.transaction.sale({
+		  merchantAccountId: merchantAccountId,
+		  amount: templatePrice,
+		  serviceFeeAmount: serviceAmount,
+		  paymentMethodNonce: nonce,
+		  options: {
+		    submitForSettlement: true
+		  }
+		}, function (err, result) {
+			if (err) {
+				res.send(err.message);
 			}
-			else{
+			else {
+				console.log(result.success);
+				console.log(result.transaction);
+				var transaction = result.transaction;
+				var transactionID = result.transaction.id;
+				//console.log(result);
 
+				// If transaction is successful, render template that was requested for purcahse with the data stored in transaction
+				if(result.success){
+					Users.CreateTransaction(templateID, templateData, currentUser, transaction, transactionID, function (err, response) {
+			            if (err) {
+			                res.send(err.message);
+			            } else {
+							console.log(response);
+							req.session.templateData = null; 
+							req.session.transactionID = result.transaction.id;
+			                return res.redirect("/order" + "?id=" + transactionID);
+			            }
+			        });
+					
+					
+				}
+				else{
+
+				}
 			}
-		}
 
-	});
-	//res.send("Success");
+		});
+		//res.send("Success");
+	}
+
+	else {
+		res.redirect('/');
+	}
+
+
+
 });
 
 
@@ -924,65 +1037,115 @@ var htmlToPdf = require('html-to-pdf');
 var pdf = require('html-pdf');
 
 app.post('/render_template', function(req, res) {
-	var currentUser = req.session.username;
-	console.log(req.body);
-	var currentUser = req.session.username;
-	//var currentUser = "c";
-	var transactionID = req.body.transactionID; 
-	console.log(transactionID);
-	var transaction;
+	if(req.session.username) {
 
-	Users.findOne({ username: currentUser},  function(err, doc){
-		//console.log("the user is: " + doc);
-		for(i = 0; i < doc.transaction.length; i++){
-			if (doc.transaction[i].transactionID == transactionID){
-				console.log(doc.transaction[i]);
-				transaction = doc.transaction[i];
+		var currentUser = req.session.username;
+		console.log(req.body);
+		//var currentUser = req.session.username;
+		//var currentUser = "c";
+		var transactionID = req.body.transactionID; 
+		console.log(transactionID);
+		var transaction;
+
+		Users.findOne({ username: currentUser},  function(err, doc){
+			//console.log("the user is: " + doc);
+			if(err) {
+				return res.send(err.message);
 			}
-		}
+			if(doc) {
+				for(i = 0; i < doc.transaction.length; i++){
+					if (doc.transaction[i].transactionID == transactionID){
+						console.log(doc.transaction[i]);
+						transaction = doc.transaction[i];
+					}
+				}
+			}
+			else {
+				return res.redirect('/');
+			}
 
-		//console.log(transaction);
+			//console.log(transaction);
 
-		var templateData = transaction.templateData;
-		var templateID = templateData.templateID;
-		console.log(templateData);
-		console.log(templateID);
+			var templateData = transaction.templateData;
+			var templateID = templateData.templateID;
+			console.log(templateData);
+			console.log(templateID);
 
-		res.render('partials/' + templateID, templateData, function(err, hbsTemplate){
-		     // hbsTemplate contains the rendered html, do something with it...
-		     if(err){
-		     	res.send(err.message);
-		     	//res.status(500).send(err);
-		     }
-		     console.log(hbsTemplate);
-		     var html = hbsTemplate; //Some HTML String from code above 
-		     /*
-		     // Save the rendered html into a html file and store it locally temporarily
-			 fs.writeFile("tmp/" + transactionID + ".html", html, function(err) {
-			    if(err) {
-			        return console.log(err);
-			    }
+			res.render('partials/' + templateID, templateData, function(err, hbsTemplate){
+			     // hbsTemplate contains the rendered html, do something with it...
+			     if(err){
+			     	return res.send(err.message);
+			     	//res.status(500).send(err);
+			     }
+			     console.log(hbsTemplate);
+			     var html = hbsTemplate; //Some HTML String from code above 
 
-			    console.log("The file was saved!");
-			 }); 
-			*/
 
-			//var html = fs.readFileSync("tmp/" + transactionID + ".html", 'utf8');
-			//console.log(html);
+			     Users.findOne({'template._id':templateID}, 'template',  function(err, user){
+			     	if(err) {
+			     		return res.send(err);
+			     	}
 
+					console.log(user);
+					console.log(user.template.id(templateID));
+					template = user.template.id(templateID);
+
+					var options = { 
+					//"height": template.height,         
+	  				//"width": template.width
+	  					height: template.height+"px",
+	  					width: template.width+"px"
+					};
+				 
+					pdf.create(html, options).toFile('views/pdf/' + transactionID + '.pdf', function(err, templatePDF) {
+					  if (err) {
+					  	return res.send(err);
+					  }
+
+					  console.log(templatePDF); // { filename: '/app/businesscard.pdf' } 
+
+					  //return res.sendFile(templatePDF); 
+					  var downloadtemplate = 'views/pdf/' + transactionID + '.pdf';
+					  return res.download(downloadtemplate);
+
+					});
+
+				});
 			
-			Users.findOne({'username':currentUser},  function(err, user){
-				console.log(user);
-				console.log(user.template.id(templateID));
-				template = user.template.id(templateID);
+				/*
+				Users.findOne({'username':currentUser},  function(err, user){
+					console.log(user);
+					console.log(user.template.id(templateID));
+					template = user.template.id(templateID);
 
+					var options = { 
+					//"height": template.height,         
+	  				//"width": template.width
+	  					height: template.height+"px",
+	  					width: template.width+"px"
+					};
+				 
+					pdf.create(html, options).toFile('views/pdf/' + transactionID + '.pdf', function(err, templatePDF) {
+					  if (err) {
+					  	return res.send(err);
+					  }
+
+					  console.log(templatePDF); // { filename: '/app/businesscard.pdf' } 
+
+					  //return res.sendFile(templatePDF); 
+					  var downloadtemplate = 'views/pdf/' + transactionID + '.pdf';
+					  return res.download(downloadtemplate);
+
+					});
+
+				});*/
+
+				/*
 				var options = { 
-				//"height": template.height,         
-  				//"width": template.width
-  				height: template.height+"px",
-  				width: template.width+"px"
+					"height": "256px",         
+	  				"width": "256px"
 				};
-			 
+				 
 				pdf.create(html, options).toFile('views/pdf/' + transactionID + '.pdf', function(err, templatePDF) {
 				  if (err) return console.log(err);
 				  console.log(templatePDF); // { filename: '/app/businesscard.pdf' } 
@@ -990,110 +1153,116 @@ app.post('/render_template', function(req, res) {
 				  //return res.sendFile(templatePDF); 
 				  var downloadtemplate = 'views/pdf/' + transactionID + '.pdf';
 				  res.download(downloadtemplate);
+				});*/
 
-				});
+	 			/*
+				htmlToPdf.convertHTMLString(html, 'views/pdf/' + transactionID + '.pdf',
+				    function (error, success) {
+				        if (error) {
+				            console.log('Oh noes! Errorz!');
+				            console.log(error);
+				        } else {
+				            console.log('Woot! Success!');
+				            console.log(success);
+				        }
+				    }
+				);*/
+     /*
+			     // Save the rendered html into a html file and store it locally temporarily
+				 fs.writeFile("tmp/" + transactionID + ".html", html, function(err) {
+				    if(err) {
+				        return console.log(err);
+				    }
+
+				    console.log("The file was saved!");
+				 }); 
+				*/
+
+				//var html = fs.readFileSync("tmp/" + transactionID + ".html", 'utf8');
+				//console.log(html);
 
 			});
-
-			/*
-			var options = { 
-				"height": "256px",         
-  				"width": "256px"
-			};
-			 
-			pdf.create(html, options).toFile('views/pdf/' + transactionID + '.pdf', function(err, templatePDF) {
-			  if (err) return console.log(err);
-			  console.log(templatePDF); // { filename: '/app/businesscard.pdf' } 
-
-			  //return res.sendFile(templatePDF); 
-			  var downloadtemplate = 'views/pdf/' + transactionID + '.pdf';
-			  res.download(downloadtemplate);
-			});*/
-
- 			/*
-			htmlToPdf.convertHTMLString(html, 'views/pdf/' + transactionID + '.pdf',
-			    function (error, success) {
-			        if (error) {
-			            console.log('Oh noes! Errorz!');
-			            console.log(error);
-			        } else {
-			            console.log('Woot! Success!');
-			            console.log(success);
-			        }
-			    }
-			);*/
 		});
-	});
+	}
+
+	else {
+		redirect('/');
+	}
 });
 
 
-app.post('/submerchant', function(req, res){
-	var currentUser = req.session.username;
-	//var currentUser = "d";
+app.post('/submerchant', function(req, res) {
 
-	console.log(req.body);
+	if(req.session.username) { 
+		var currentUser = req.session.username;
+		//var currentUser = "d";
 
-	merchantAccountParams = {
-	  individual: {
-	    firstName: req.body.firstName,
-	    lastName: req.body.lastName,
-	    email: req.body.email,
-	    dateOfBirth: req.body.dateOfBirth,
-	    //dateOfBirth: "1981-11-19",
-	    address: {
-	      streetAddress: req.body.streetAddress,
-	      locality: req.body.locality,
-	      region: req.body.region,
-	      region: "IL",
-	      postalCode: req.body.postalCode
-	    }
-	  },
-	  funding: {
-	    destination: braintree.MerchantAccount.FundingDestination.Email,
-	    email: req.body.venmoEmail,
-	  },
-	  tosAccepted: true,
-	  masterMerchantAccountId: "lates",
-	  id: currentUser
-	};
+		console.log(req.body);
 
-	/*
-	gateway.merchantAccount.find(currentUser, function (err, result) {
-		if(err){
-			console.log(err.message);
-		}
-		console.log(result);
-	});*/
+		merchantAccountParams = {
+		  individual: {
+		    firstName: req.body.firstName,
+		    lastName: req.body.lastName,
+		    email: req.body.email,
+		    dateOfBirth: req.body.dateOfBirth,
+		    //dateOfBirth: "1981-11-19",
+		    address: {
+		      streetAddress: req.body.streetAddress,
+		      locality: req.body.locality,
+		      region: req.body.region,
+		      region: "IL",
+		      postalCode: req.body.postalCode
+		    }
+		  },
+		  funding: {
+		    destination: braintree.MerchantAccount.FundingDestination.Email,
+		    email: req.body.venmoEmail,
+		  },
+		  tosAccepted: true,
+		  masterMerchantAccountId: "lates",
+		  id: currentUser
+		};
 
-	gateway.merchantAccount.create(merchantAccountParams, function (err, result) {
-		if(err) {
-			console.log("This is the error:" + err);
-			return res.redirect('/submerchant');
-			//res.status(500).send(err);
-		}
-		else {
-			/*
+		/*
+		gateway.merchantAccount.find(currentUser, function (err, result) {
+			if(err){
+				console.log(err.message);
+			}
 			console.log(result);
-			console.log(result.message);
-			var errors = result.errors.deepErrors();
-			console.log(errors);
-			console.log(result.merchantAccount);*/
-			if(result.merchantAccount){
-				console.log(result.merchantAccount.status);
-				console.log(result.merchantAccount.id);
-				console.log(result.merchantAccount.masterMerchantAccount.id);	
-				return res.redirect('/my_template');
+		});*/
+
+		gateway.merchantAccount.create(merchantAccountParams, function (err, result) {
+			if(err) {
+				console.log("This is the error:" + err);
+				return res.redirect('/submerchant');
+				//res.status(500).send(err);
 			}
 			else {
-				req.session.submerchantError = result.message;
-				return res.redirect('/submerchant');
+				/*
+				console.log(result);
+				console.log(result.message);
+				var errors = result.errors.deepErrors();
+				console.log(errors);
+				console.log(result.merchantAccount);*/
+				if(result.merchantAccount){
+					console.log(result.merchantAccount.status);
+					console.log(result.merchantAccount.id);
+					console.log(result.merchantAccount.masterMerchantAccount.id);	
+					return res.redirect('/my_template');
+				}
+				else {
+					req.session.submerchantError = result.message;
+					return res.redirect('/submerchant');
+				}
+
 			}
-
-
 			
-		}
-		
-	});
+		});
+	}
+
+	else {
+		res.redirect('/');
+	}
 
 });
 

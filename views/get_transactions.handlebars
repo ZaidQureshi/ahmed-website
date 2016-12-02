@@ -92,7 +92,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="section-title">
-            <h1>Order Summary</h1>
+            <h1>Past Transactions</h1>
             <span class="st-border"></span>
           </div>
         </div>
@@ -125,58 +125,26 @@
             }
            </style>
 
-          <table class="transaction-table" padding="1" spacing="1">                        
+
+
+          <table class="transaction-table" padding="1" spacing="1">  
+          {{#each transactions}}                      
             <tr>                        
               <th>Transaction ID</th>
-              <td>{{transaction.transaction.id}}</td>
+              <td>{{this.transactionID}}</td>
+              <td>
+              <form method="post" action="/get_transactions">
+                <input type="hidden" name="transactionID" value="{{this.transactionID}}">
+                <button type="submit" class="btn btn-primary">View Transaction</button>
+              </form>
+            </td>
             </tr>
-            <tr>                        
-              <th>Type of Credit Card</th>
-              <td>{{transaction.transaction.creditCard.cardType}}</td>
-            </tr>
-            <tr>                        
-              <th>Last Four Digits of Credit Card</th>
-              <td>{{transaction.transaction.creditCard.last4}}</td>
-            </tr>
-            <tr>                        
-              <th>Expiration Date of Credit Card</th>
-              <td>{{transaction.transaction.creditCard.expirationDate}}</td>
-            </tr>
-            <tr>                       
-              <th>Transaction Location</th>
-              <td>{{transaction.transaction.creditCard.customerLocation}}</td>
-            </tr>
-            <tr>                        
-              <th>Transaction Status</th>
-              <td>{{transaction.transaction.status}}</td>
-            </tr>
-            <tr>                        
-              <th>Transaction Amount   </th>
-              <td>{{transaction.transaction.amount}} {{transaction.transaction.currencyIsoCode}}</td>
-            </tr>
+            {{/each}}
           </table>
           </div>
           <hr>
         </div>
-        
-        <a href="/get_transactions">View all your transactions here</a>
-        <div class="col-md-6">
-        
-          <div class="sidebar-widget">
-
-            <h5 class="sidebar-title">Here is a preview of your template that you purchased</h5>
-            <h5> {{> (partial transaction.templateID) transaction.templateData }}</h5>
-
-           
-            
-          </div>
-          <div class="sidebar-widget">
-            <form method="post" action="/render_template">
-              <input type="hidden" name="transactionID" value="{{transaction.transaction.id}}">
-              <button type="submit" class="btn btn-primary">Click here to download your PDF version of the template</button>
-            </form>
-              
-          </div>  
+         
           
         </div><!-- end of col 3 -->
       </div><!-- end of row -->

@@ -1,7 +1,0 @@
-RestaurantName	restaurant name
-Item1	first item	
-Price1	first item price	
-Item2	second item	
-Price2	second item price	
-Item3	third item	
-Price3	third item price	

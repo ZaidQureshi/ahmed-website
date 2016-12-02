@@ -71,13 +71,13 @@
 								<span class="caret"></span></a>
 								<ul class="dropdown-menu">
 								  <li><a href="#">Welcome {{username}}</a></li>
+								  <li><a href="/submerchant">Create Merchant Account</a></li>
 								  <li><a href="/create">Create a Template</a></li>
 								  <li><a href="/my_template">View my Templates</a></li>
-								  <li><a href="/submerchant">Create Merchant Account</a></li>
+								  <li><a href="/get_transactions">View my Transactions</a></li>
 								  <li><a href="/logout">Log out</a></li> 
 								</ul>
 							 </li>
-						<!--<li><a href="/" ng-show="loggedin" ng-click="logout()">Log Out {[{user.name}]}</a></li>-->
 						{{/unless}}
 					</ul>
 				</div><!-- /.navbar-collapse -->
@@ -223,38 +223,6 @@
 											<input class="btn btn-primary" ng-click="templatesCtrl.view(template._id)" type="submit" value="View"/>
 										</form>
 										
-										<form class="add-to-cart" method="GET">
-											<input class="btn btn-primary" ng-hide="added" ng-click="addToCart()" type="submit" value="Add To Cart"/>					
-											
-										</form>
-										
-										<form  method="GET">
-											<input class="btn btn-success" ng-show="added"  type="submit" value="Checkout"/>
-											
-										</form>
-										
-							
-										<form method="post" action="https://www.paypal.com/cgi-bin/webscr">
-											<fieldset>
-												<input type="hidden" name="cmd" value="_cart">
-												<input type="hidden" name="add" value="1">
-												<input type="hidden" name="business" value="npg230@nyu.edu">
-												<input type="hidden" name="item_name" value="{[{template.name}]}">
-												<input type="hidden" name="item_number" value="{[{template.category}]}">
-												<input type="hidden" name="amount" value="{[{template.price}]}">
-												<!--<input type="hidden" name="shipping" value="1.00">
-												<input type="hidden" name="shipping2" value="0.50">
-												<input type="hidden" name="handling" value="2.00 ">-->
-												<input type="hidden" name="currency_code" value="USD">
-												<input type="hidden" name="return" value="">
-												<input type="hidden" name="cancel_return" value="">
-												<input type="hidden" name="undefined_quantity" value="1">
-												<input type="image" src="http://www.paypalobjects.com/en_US/i/btn/x-click-but22.gif" border="0" name="submit" width="87" height="23" alt="Make payments with PayPal - it's fast, free and secure!">
-											</fieldset>
-										</form>
-										
-										
-									</div>
 									</div>
 											
 								</div>
@@ -271,121 +239,6 @@
 		</div>
 	</section>
 	<!-- /OUR WORKS -->
-
-	
-	<!-- About Me >
-	<section id="about-us">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<div class="section-title">
-						<h1>About Me</h1>
-						<span class="st-border"></span>
-					</div>
-				</div>
-				
-				<div class="row">
-					<div class="col-md-4">
-						<div class="team-member">
-							<div class="member-image">
-								<img class="img-responsive" src="images/members/team1.jpg" alt="">
-								<div class="member-social">
-									<a href=""><i class="fa fa-facebook"></i></a>
-									<a href=""><i class="fa fa-twitter"></i></a>
-									<a href=""><i class="fa fa-google-plus"></i></a>
-									<a href=""><i class="fa fa-linkedin"></i></a>
-								</div>
-							</div>
-							<div class="member-info">
-								<h4>Ahmed Atieh</h4>
-								<span>Founder</span>
-							</div>
-						</div>
-					</div>
-					
-					<div class="col-md-8 ">
-						<div class="about-us text-center">
-							<p>Lates offers you customizable layouts for catalogs, flyers, menus, brochures, cards. Choose from various desingers and add your own flavor to the design! Add images, texts and other components to customize your layout. Once customized, download your template as a pdf. Some instructions on how to use the site. Maybe some kind of information regarding pricing.</p>
-							<a href="" class="btn btn-primary">Learn More</a>
-						</div>
-					</div>
-				</div>
-				
-			</div>
-		</div>
-	</section>
-	<!-- /PRICING ->
-
-	<!-- PRICING ->
-	<section id="pricing">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<div class="section-title">
-						<h1>Pricing</h1>
-						<span class="st-border"></span>
-					</div>
-				</div>
-
-				<div class="col-sm-4">
-					<div class="st-pricing text-center">
-						<h5>Basic</h5>
-						<h3>$39</h3>
-						<div class="st-border"></div>
-						<ul>
-							<li>Free Download</li>
-							<li>1000+ Software</li>
-							<li>Full Access</li>
-							<li>Free Update</li>
-							<li>Live Support</li>
-						</ul>
-						<a href="" class="btn btn-primary">Sign Up</a>
-					</div>
-				</div>
-
-				<div class="col-sm-4">
-					<div class="st-pricing text-center">
-						<h5>Silver</h5>
-						<h3>$89</h3>
-						<div class="st-border"></div>
-						<ul>
-							<li>Free Download</li>
-							<li>1000+ Software</li>
-							<li>Full Access</li>
-							<li>Free Update</li>
-							<li>Live Support</li>
-						</ul>
-						<a href="" class="btn btn-primary">Sign Up</a>
-					</div>
-				</div>
-
-				<div class="col-sm-4">
-					<div class="st-pricing text-center">
-						<h5>Gold</h5>
-						<h3>$209</h3>
-						<div class="st-border"></div>
-						<ul>
-							<li>Free Download</li>
-							<li>1000+ Software</li>
-							<li>Full Access</li>
-							<li>Free Update</li>
-							<li>Live Support</li>
-						</ul>
-						<a href="" class="btn btn-primary">Sign Up</a>
-					</div>
-				</div>
-				
-			</div>
-		</div>
-	</section>
-	<!-- /PRICING -->
-	
-		
-
-	
-	
-	
-
 	
 	<!-- CONTACT -->
 	<section id="contact">
@@ -484,19 +337,6 @@
 	<script src="controllers/app.js"></script>
 	
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-	<script type="text/javascript" src="js/minicart.js"></script>
-	<script
-		//paypal.minicart.render();
-		paypal.minicart.render({
-            action: 'https://www.paypal.com/cgi-bin/webscr'
-        });
-		
-		paypal.minicart.show();
-		
-		if (~window.location.search.indexOf('reset=true')) {
-            paypal.minicart.reset();
-        }
-	>
 
 </body>
 </html>

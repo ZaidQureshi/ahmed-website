@@ -1,4 +1,0 @@
-company_name	Company Name
-full_name	Full Name
-address	Address
-phone	Phone

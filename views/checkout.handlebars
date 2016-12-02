@@ -97,8 +97,6 @@
 			</div>
 		</div>
 		<div>
-		{{clientToken}}
-		{{username}}
 	</div>
 	</section>
 	<!-- /PAGE HEADER -->
@@ -107,15 +105,19 @@
 	<section id="our-works">
 		<div class="container">
 			<div class="row">
-				<div class="col-md-6">
+				<div class="col-md-8">
 					
 					<div class="single-blog">
-
+						<div class="sidebar-widget">
+						<h5 class="sidebar-title">Enter the requested payment information</h5>
+						<hr>
+						</div>
 						<form id="checkout" method="post" action="/checkout">
 						  <div id="payment-form"></div>
 						  <input type="hidden" name="templateID" value="{[{viewCtrl.template._id}]}">
 						  <input type="hidden" name="templateAuthor" value="{[{viewCtrl.template.author}]}">
-						  <input type="submit" value="Pay $10">
+						  <input type="hidden" name="price" value="{[{viewCtrl.template.price}]}">
+						  <input type="submit" value="Pay {[{viewCtrl.template.price}]}$">
 						</form>
 
 						<script src="https://js.braintreegateway.com/js/braintree-2.30.0.min.js"></script>
@@ -132,18 +134,6 @@
 					</div>
 					<hr>
 				</div>
-				
-				<div class="col-md-6">
-				
-					<div class="sidebar-widget">
-
-						<h5 class="sidebar-title">Enter the following information for your template</h5>
-						
-					</div>
-					<div class="sidebar-widget">
-						<h4 class="sidebar-title">Identifiers</h4>
-							
-					</div>	
 					
 				</div><!-- end of col 3 -->
 			</div><!-- end of row -->

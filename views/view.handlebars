@@ -69,8 +69,10 @@
 								<span class="caret"></span></a>
 								<ul class="dropdown-menu">
 								  <li><a href="#">Welcome {{username}}</a></li>
+								  <li><a href="/submerchant">Create Merchant Account</a></li>
 								  <li><a href="/create">Create a Template</a></li>
 								  <li><a href="/my_template">View my Templates</a></li>
+								  <li><a href="/get_transactions">View my Transactions</a></li>
 								  <li><a href="/logout">Log out</a></li> 
 								</ul>
 							 </li>
@@ -109,7 +111,7 @@
 					<div class="single-blog">
 						<article>
 							<div class="post-thumb"><img class="img-responsive" ng-src="{[{viewCtrl.template.icon}]}" alt=""></div>
-							<h4 class="post-title"><a href="">{[{viewCtrl.template.caption}]}Template Caption</a></h4>
+							<!--<h4 class="post-title"><a href="">{[{viewCtrl.template.caption}]}Template Caption</a></h4>-->
 							<div class="post-meta text-uppercase">
 								<span>Date Posted: {[{viewCtrl.template.createdAt | date : format : timezone }]}</span>
 								<span>Price {[{viewCtrl.template.price | currency}]}</span>
@@ -118,45 +120,19 @@
 								<span>Author: {[{viewCtrl.template.author}]}</span>
 								<span>Width: {[{viewCtrl.template.width}]}</span>
 								<span>Height: {[{viewCtrl.template.height}]}</span>
-								
 							</div>
-							<div class="post-article">
-								{[{viewCtrl.template.description}]}Template Description
-							</div>
-							<a href="" class="btn btn-info">Read More</a>
-							<a href="" class="btn btn-primary">Add To Cart</a>
 
-							<form action="/buy_template" method="GET" >
+							<!--<div class="post-article">{[{viewCtrl.template.description}]}Template Description</div-->
+							<form action="/buy_template" method="GET" ng-show="viewCtrl.template.approved" >
 								<input type="hidden" name="id" value="{[{viewCtrl.template._id}]}" />
-								<input class="btn btn-primary" ng-click="templatesCtrl.view(template._id)" type="submit" value="Purchase"/>
-							</form>
-							
-							
-							<form method="post" action="https://www.paypal.com/cgi-bin/webscr">
-								<fieldset>
-									<input type="hidden" name="cmd" value="_cart">
-									<input type="hidden" name="add" value="1">
-									<input type="hidden" name="business" value="npg230@nyu.edu">
-									<input type="hidden" name="item_name" value="{[{viewCtrl.template.name}]}">
-									<input type="hidden" name="item_number" value="{[{viewCtrl.template.category}]}">
-									<input type="hidden" name="amount" value="{[{viewCtrl.template.price}]}">
-									<input type="hidden" name="currency_code" value="USD">
-									<input type="hidden" name="return" value="">
-									<input type="hidden" name="cancel_return" value="">
-									<input type="hidden" name="undefined_quantity" value="1">
-									<input type="image" src="http://www.paypalobjects.com/en_US/i/btn/x-click-but22.gif" border="0" name="submit" width="87" height="23" alt="Make payments with PayPal - it's fast, free and secure!">
-								</fieldset>
-							</form>
-										
+								<input  class="btn btn-primary" ng-click="templatesCtrl.view(template._id)" type="submit" value="Purchase"/>
+							</form>	
 						</article>
 					</div>
 					<hr>
 				</div>
 				
 				<div class="col-md-3">
-				
-			
-					
 					<div class="sidebar-widget">
 						<h4 class="sidebar-title">Similar Layouts</h4>
 						<ul class="content-flickr" ng-controller="TemplatesController as templateCtrl">

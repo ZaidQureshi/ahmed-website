@@ -69,7 +69,10 @@
 								<span class="caret"></span></a>
 								<ul class="dropdown-menu">
 								  <li><a href="#">Welcome {{username}}</a></li>
+								  <li><a href="/submerchant">Create Merchant Account</a></li>
 								  <li><a href="/create">Create a Template</a></li>
+								  <li><a href="/my_template">View my Templates</a></li>
+								  <li><a href="/get_transactions">View my Transactions</a></li>
 								  <li><a href="/logout">Log out</a></li> 
 								</ul>
 							 </li>
@@ -110,17 +113,15 @@
 							<div class="post-thumb"><img class="img-responsive" ng-src="{[{viewCtrl.template.icon}]}" alt=""></div>
 							<h4 class="post-title"><a href="">{[{viewCtrl.template.caption}]}Template Caption</a></h4>
 							<div class="post-meta text-uppercase">
-								<span>Date Posted: {[{viewCtrl.template.date}]}September, 21, 2016</span>
+								<span>Date Posted: {[{viewCtrl.template.createdAt | date : format : timezone }]}</span>
 								<span>Price {[{viewCtrl.template.price | currency}]}</span>
 								<span>Category: {[{viewCtrl.template.category}]}</span>
+								<br>
 								<span>Author: {[{viewCtrl.template.author}]}</span>
+								<span>Width: {[{viewCtrl.template.width}]}</span>
+								<span>Height: {[{viewCtrl.template.height}]}</span>
 							</div>
-							<div class="post-article">
-								{[{viewCtrl.template.description}]}Template Description
-							</div>
-							
-							<a href="/approve" class="btn btn-info">Read More</a>
-							<a href="" class="btn btn-primary">Add To Cart</a>
+
 							
 							
 										

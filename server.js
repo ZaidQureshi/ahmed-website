@@ -63,8 +63,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -975,51 +975,104 @@ app.post('/checkout', function(req, res) {
 		console.log(templatePrice);
 		console.log(serviceAmount);
 
+		if(merchantAccountId == "ahmed"){
+					// Create the Transaction
+				gateway.transaction.sale({
+				  //merchantAccountId: merchantAccountId,
+				  amount: templatePrice,
+				  //serviceFeeAmount: serviceAmount,
+				  paymentMethodNonce: nonce,
+				  options: {
+				    submitForSettlement: true
+				  }
+				}, function (err, result) {
+					if (err) {
+						res.send(err.message);
+					}
+					else {
+						if(result.success){
+							console.log(result.success);
+							console.log(result.transaction);
+							var transaction = result.transaction;
+							var transactionID = result.transaction.id;
+							//console.log(result); 	
 
-		// Create the Transaction
-		gateway.transaction.sale({
-		  merchantAccountId: merchantAccountId,
-		  amount: templatePrice,
-		  serviceFeeAmount: serviceAmount,
-		  paymentMethodNonce: nonce,
-		  options: {
-		    submitForSettlement: true
-		  }
-		}, function (err, result) {
-			if (err) {
-				res.send(err.message);
+							// If transaction is successful, render template that was requested for purcahse with the data stored in transaction
+							if(result.success){
+								Users.CreateTransaction(templateID, templateData, currentUser, transaction, transactionID, function (err, response) {
+						            if (err) {
+						                res.send(err.message);
+						            } else {
+										console.log(response);
+										req.session.templateData = null; 
+										req.session.transactionID = result.transaction.id;
+						                return res.redirect("/order" + "?id=" + transactionID);
+						            }
+						        });
+								
+								
+							}
+						}
+						else{
+							console.log(result.success);
+							return res.redirect("/");
+						}
+					}
+
+				});
+				//res.send("Success");
 			}
 			else {
-				console.log(result.success);
-				console.log(result.transaction);
-				var transaction = result.transaction;
-				var transactionID = result.transaction.id;
-				//console.log(result);
+			// Create the Transaction
+				gateway.transaction.sale({
+				  merchantAccountId: merchantAccountId,
+				  amount: templatePrice,
+				  serviceFeeAmount: serviceAmount,
+				  paymentMethodNonce: nonce,
+				  options: {
+				    submitForSettlement: true
+				  }
+				}, function (err, result) {
+					if (err) {
+						res.send(err.message);
+					}
+					else {
+						if(result.success){
+							console.log(result.success);
+							console.log(result.transaction);
+							var transaction = result.transaction;
+							var transactionID = result.transaction.id;
+							//console.log(result); 	
 
-				// If transaction is successful, render template that was requested for purcahse with the data stored in transaction
-				if(result.success){
-					Users.CreateTransaction(templateID, templateData, currentUser, transaction, transactionID, function (err, response) {
-			            if (err) {
-			                res.send(err.message);
-			            } else {
-							console.log(response);
-							req.session.templateData = null; 
-							req.session.transactionID = result.transaction.id;
-			                return res.redirect("/order" + "?id=" + transactionID);
-			            }
-			        });
-					
-					
-				}
-				else{
+							// If transaction is successful, render template that was requested for purcahse with the data stored in transaction
+							if(result.success){
+								Users.CreateTransaction(templateID, templateData, currentUser, transaction, transactionID, function (err, response) {
+						            if (err) {
+						                res.send(err.message);
+						            } else {
+										console.log(response);
+										req.session.templateData = null; 
+										req.session.transactionID = result.transaction.id;
+						                return res.redirect("/order" + "?id=" + transactionID);
+						            }
+						        });
+								
+								
+							}
+						}
+						else{
+							console.log(result.success);
+							return res.redirect("/");
+						}
+					}
 
-				}
+				});
+				//res.send("Success");
 			}
 
-		});
-		//res.send("Success");
-	}
-
+		}
+		
+		
 	else {
 		res.redirect('/');
 	}

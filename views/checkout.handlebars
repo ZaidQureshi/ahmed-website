@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 
-	<title>Lates - Customizable Layouts</title>
+	<title>Leaflates - Customizable Layouts</title>
 	
 	<!-- Main CSS file -->
 	<link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -66,8 +66,7 @@
 	<section id="our-works">
 		<div class="container">
 			<div class="row">
-				<div class="col-md-8">
-					
+				<div class="col-md-6">
 					<div class="single-blog">
 						<div class="sidebar-widget">
 						<h5 class="sidebar-title">Enter the requested payment information</h5>
@@ -78,8 +77,14 @@
 						  <input type="hidden" name="templateID" value="{[{viewCtrl.template._id}]}">
 						  <input type="hidden" name="templateAuthor" value="{[{viewCtrl.template.author}]}">
 						  <input type="hidden" name="price" value="{[{viewCtrl.template.price}]}">
-						  <input type="submit" value="Pay {[{viewCtrl.template.price}]}$">
+						  <input type="submit" class="btn btn-primary" value="Pay ${[{viewCtrl.template.price}]}">
 						</form>
+						<br>
+						<h5 class="sidebar-title">If you are logged out and redirected to the home page, there was an error with the transaction.
+						Please try again</h5>
+						<br>
+						<h5 class="sidebar-title"> Upon successful transaction, you will be redirected to a confirmation page with your purchased template's details can be found.</h5>
+						<br>
 
 						<script src="https://js.braintreegateway.com/js/braintree-2.30.0.min.js"></script>
 						<script>

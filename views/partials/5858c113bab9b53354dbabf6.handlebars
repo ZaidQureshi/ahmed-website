@@ -1,0 +1,129 @@
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <style>
+
+.left-side h1{
+	font-size: 50px;
+	font-weight: bold;
+	
+}
+  .menu-body {
+  max-width: 400px;
+  margin: 0 auto;
+  display: block;
+  color: rgb(92, 92, 92);
+}
+
+.menu-section {
+  margin-bottom: 80px;
+}
+
+.menu-section-title {
+  font-family: georgia;
+  font-size: 30px;
+  display: block;
+  font-weight:bold;
+  margin: 20px 0; 
+  text-align: Center;
+}
+
+.menu-item {
+  margin: 35px 0;
+  font-size: 18px;
+}
+
+.menu-item-name{
+  font-family: helvetica;
+  font-weight: bold;
+  border-bottom: 2px dotted rgb(213, 213, 213);
+}
+
+.menu-item-description {
+  font-style: italic;
+  font-size: .9em;
+  line-height: 1.5em;
+}
+
+.menu-item-price{
+  float: right;
+  font-weight: bold;
+  font-family: arial;
+  margin-top: -22px;
+}
+
+table {
+    width: 70%;
+    height: 100px;
+}
+table, th, td {
+    border: 10px solid black;
+    border-collapse: collapse;
+}
+.menu th, td {
+    padding: 5px;
+    text-align: left;
+    width: 50%;
+}
+
+.menu table#t01 tr:nth-child(even) {
+    background-color: #eee;
+}
+.menu table#t01 tr:nth-child(odd) {
+   background-color:#fff;
+}
+.menu table#t01 th {
+    background-color: black;
+    color: white;
+}
+
+.business-name {
+	font-weight: bold;
+	font-family: arial;
+	margin-top: 200px;
+	margin-left: 220px;
+	text-align: left;
+}
+
+
+.imgA1{
+	position: absolute;
+    left: 0px;
+    top: 0px;
+	z-index: -1;
+	width: 100%;
+}
+.business-info{
+	margin-left: 30%;
+	margin-top: -10%;
+}
+.business-address{
+	margin-left: 30%;
+	margin-top: 1%;
+}
+.business-connection{
+	margin-left: 30%;
+	margin-top: 2%;
+}
+</style>
+<div class="business-card">
+	<span><img class="imgA1" src="http://wallpapercave.com/wp/07kILzG.png"></span>
+	<div class="business-name">
+		<h1><strong>{{FullName}}</strong></h1>
+		<h1>{{Position}}</h1>
+	</div>
+	<div class="business-info">
+		<h2> <span><img src="http://i.imgur.com/1FbPWaV.png"> {{PhoneNumber}}</span></h2>
+	</div>
+	<div class="business-address">
+		<h2> <span><img src="http://i.imgur.com/UKnp3Ez.png"> {{Address}}</span></h2>
+	</div>
+	<div class="business-connection">
+		<h2> <span><img src="http://i.imgur.com/jCph1I9.png"> {{Connection}}</span></h2>
+	</div>
+
+</div>
+
+
+
+

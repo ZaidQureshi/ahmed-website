@@ -415,7 +415,7 @@ app.get('/templates', function(req, res){
 	
 	//Users.collection.distinct
 	Users.distinct('template', {"template.approved" : "true"},  function (err, docs){
-		console.log(docs);	
+		//console.log(docs);	
 		res.json(docs);
 	});
 	/* Users.findOne({"template.approved" : "true"}, "template", function (err, docs){
@@ -508,7 +508,7 @@ app.get('/templates/:id', function (req, res){
 				return res.send(err);
 			}
 			//console.log("\n This is the resule of the query" + doc + "\n");
-			console.log(doc._id);
+			//console.log(doc._id);
 			
 			//console.log(doc.template);
 			//res.json(doc.template);
@@ -518,7 +518,7 @@ app.get('/templates/:id', function (req, res){
 				}
 				else{		
 					console.log("This is the user" + user + "\n");
-					console.log(user.template.id(template_id));
+					//console.log(user.template.id(template_id));
 					res.json(user.template.id(template_id));
 					
 				}
@@ -735,7 +735,7 @@ app.post('/create', function(req, res){
 													return res.status(500).send(err);
 												} //throw err;
 												sawPNG = true;
-												template.resize(256, 256)            // resize 
+												template.resize(512, 512)            // resize 
 													 .quality(100)                 // set JPEG quality 
 													 //.greyscale()                 // set greyscale 
 													 .write(resizePath); // save
@@ -849,7 +849,7 @@ app.get('/editCreatedTemplate', function(req, res){
 
 // Approve or Disapprove a template by changing it's field in the database
 app.post('/approve', function(req, res){
-	if(username.req.session){
+	if(req.session.username){
 		var author = req.body.author;
 		var templateID = req.body.templateID;
 		var approve = req.body.approve;
@@ -972,6 +972,7 @@ app.post('/checkout', function(req, res) {
 		var templatePrice = req.body.price;
 		var serviceFee = 0.1;
 		var serviceAmount = (templatePrice*serviceFee);
+		serviceAmount = Math.ceil(serviceAmount);
 		console.log(templatePrice);
 		console.log(serviceAmount);
 
@@ -1062,6 +1063,8 @@ app.post('/checkout', function(req, res) {
 						}
 						else{
 							console.log(result.success);
+							console.log("Something went wrong here");
+							console.log(result);
 							return res.redirect("/");
 						}
 					}
@@ -1150,6 +1153,8 @@ app.post('/render_template', function(req, res) {
 	  					height: template.height+"px",
 	  					width: template.width+"px"
 					};
+					console.log(options.height);
+					console.log(options.width);
 				 
 					pdf.create(html, options).toFile('views/pdf/' + transactionID + '.pdf', function(err, templatePDF) {
 					  if (err) {

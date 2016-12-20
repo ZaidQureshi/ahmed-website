@@ -1,0 +1,239 @@
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <style>
+.menu  .menu-body {
+  max-width: 400px;
+  margin: 0 auto;
+  display: block;
+  color: rgb(92, 92, 92);
+}
+
+.menu .menu-section {
+  margin-bottom: 80px;
+}
+
+.menu .menu-section-title {
+  font-family: georgia;
+  font-size: 30px;
+  display: block;
+  font-weight:bold;
+  margin: 20px 0; 
+  text-align: Center;
+}
+
+.menu .menu-item {
+  margin: 35px 0;
+  font-size: 18px;
+}
+
+.menu .menu-item-name{
+  font-family: helvetica;
+  font-weight: bold;
+  border-bottom: 2px dotted rgb(213, 213, 213);
+}
+
+.menu .menu-item-description {
+  font-style: italic;
+  font-size: .9em;
+  line-height: 1.5em;
+}
+
+.menu .menu-item-price{
+  float: right;
+  font-weight: bold;
+  font-family: arial;
+  margin-top: -22px;
+}
+
+.menu table {
+    width: 70%;
+    height: 100px;
+}
+.menu table, th, td {
+    border: 10px solid black;
+    border-collapse: collapse;
+}
+.menu th, td {
+    padding: 5px;
+    text-align: left;
+    width: 50%;
+}
+
+.menu table#t01 tr:nth-child(even) {
+    background-color: #eee;
+}
+.menu table#t01 tr:nth-child(odd) {
+   background-color:#fff;
+}
+.menu table#t01 th {
+    background-color: black;
+    color: white;
+}
+.menu{
+	background-image: url('http://www.drewsamericangrill.com/wp-content/themes/custom/images/drews-background-final.jpg');
+	background-repeat: no-repeat;
+	background-size: 100% 2000px;
+}
+.left-side h1{
+	font-size: 50px;
+	font-weight: bold;
+	
+}
+</style>
+
+<div class="menu">
+	<table>
+	  <tr>
+	    <th>
+	    	<center>
+		    <img src="https://www.jazzyshirt.de/content/pics/top-motive/kochmuetze-schwarz.png">
+		  	<div class="left-side"><h1>{{RestaurantName}}</h1></div>
+
+		  	<div><center><h3>{{RestaurantDescription}}</h3></center></div>
+		  	<br>
+
+		  	<img src="http://i.imgur.com/muB8ycQ.png">
+		  </center>
+		</th>
+
+	    <th>
+				   <!-- Section starts: Appetizers -->
+				       <h2 class="menu-section-title">{{SectionOne}}</h2>
+				      <!-- Item starts -->
+				      <div class="menu-item">
+				         <div class="menu-item-name">
+				            {{SectionOne_ItemOne}}
+				         </div>
+				         <div class="menu-item-price">
+				            {{SectionOne_PriceOne}}
+				         </div>
+				         <div class="menu-item-description">
+				            {{SectionOne_ItemOne_Description}}
+				         </div>
+				      </div>
+				      <!-- Item ends -->
+
+				      <!-- Item starts -->
+				      <div class="menu-item">
+				         <div class="menu-item-name">
+				            {{SectionOne_ItemTwo}}
+				         </div>
+				         <div class="menu-item-price">
+				            {{SectionOne_PriceTwo}}
+				         </div>
+				         <div class="menu-item-description">
+				            {{SectionOne_ItemTwo_Description}}
+				         </div>
+				      </div>
+				      <!-- Item ends -->
+
+				      <!-- Item starts -->
+				      <div class="menu-item">
+				         <div class="menu-item-name">
+				            {{SectionOne_ItemThree}}
+				         </div>
+				         <div class="menu-item-price">
+				            {{SectionOne_PriceThree}}
+				         </div>
+				         <div class="menu-item-description">
+				            {{SectionOne_ItemThree_Description}}
+				         </div>
+				      </div>
+				      <!-- Item ends -->
+				       <h2 class="menu-section-title">{{SectionTwo}}</h2>
+				      <!-- Item starts -->
+				      <div class="menu-item">
+				         <div class="menu-item-name">
+				            {{SectionTwo_ItemOne}}
+				         </div>
+				         <div class="menu-item-price">
+				            {{SectionTwo_PriceOne}}
+				         </div>
+				         <div class="menu-item-description">
+				            {{SectionTwo_ItemOne_Description}}
+				         </div>
+				      </div>
+				      <!-- Item ends -->
+
+				      <!-- Item starts -->
+				      <div class="menu-item">
+				         <div class="menu-item-name">
+				            {{SectionTwo_ItemTwo}}
+				         </div>
+				         <div class="menu-item-price">
+				            {{SectionTwo_PriceTwo}}
+				         </div>
+				         <div class="menu-item-description">
+				            {{SectionTwo_ItemTwo_Description}}
+				         </div>
+				      </div>
+				      <!-- Item ends -->
+
+				      <!-- Item starts -->
+				      <div class="menu-item">
+				         <div class="menu-item-name">
+				            {{SectionTwo_ItemThree}}
+				         </div>
+				         <div class="menu-item-price">
+				            {{SectionTwo_PriceThree}}
+				         </div>
+				         <div class="menu-item-description">
+				            {{SectionTwo_ItemThree_Description}}
+				         </div>
+				      </div>
+				      <!-- Item ends -->
+				       <h2 class="menu-section-title">{{SectionThree}}</h2>
+				      <!-- Item starts -->
+				      <div class="menu-item">
+				         <div class="menu-item-name">
+				            {{SectionThree_ItemOne}}
+				         </div>
+				         <div class="menu-item-price">
+				            {{SectionThree_PriceOne}}
+				         </div>
+				         <div class="menu-item-description">
+				            {{SectionThree_ItemOne_Description}}
+				         </div>
+				      </div>
+				      <!-- Item ends -->
+
+				      <!-- Item starts -->
+				      <div class="menu-item">
+				         <div class="menu-item-name">
+				            {{SectionThree_ItemTwo}}
+				         </div>
+				         <div class="menu-item-price">
+				            {{SectionThree_PriceTwo}}
+				         </div>
+				         <div class="menu-item-description">
+				            {{SectionThree_ItemTwo_Description}}
+				         </div>
+				      </div>
+				      <!-- Item ends -->
+
+				      <!-- Item starts -->
+				      <div class="menu-item">
+				         <div class="menu-item-name">
+				            {{SectionThree_ItemThree}}
+				         </div>
+				         <div class="menu-item-price">
+				            {{SectionThree_PriceThree}}
+				         </div>
+				         <div class="menu-item-description">
+				            {{SectionThree_ItemThree_Description}}
+				         </div>
+				      </div>
+				      <!-- Item ends -->
+
+
+				      
+				   
+				      
+				  
+				</div></th> 
+	  </tr>
+	</table>
+</div>
+
+

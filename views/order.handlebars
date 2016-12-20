@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
 
-  <title>Lates - Customizable Layouts</title>
+  <title>Leaflate - Customizable Layouts</title>
   
   <!-- Main CSS file -->
   <link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -116,15 +116,17 @@
           </table>
           </div>
           <hr>
+          <a href="/get_transactions">View all your transactions here</a>
         </div>
         
-        <a href="/get_transactions">View all your transactions here</a>
+       
         <div class="col-md-6">
         
           <div class="sidebar-widget">
-
-            <h5 class="sidebar-title">Here is a preview of your template that you purchased</h5>
-            <h5> {{> (partial transaction.templateID) transaction.templateData }}</h5>
+            <h5 class="sidebar-title"><strong>Here is a preview of your template that you purchased</strong></h5>
+            <div>
+              <h5> {{> (partial transaction.templateID) transaction.templateData }}</h5>
+            </div>
 
            
             

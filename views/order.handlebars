@@ -122,15 +122,17 @@
        
         <div class="col-md-6">
         
+        <!--
           <div class="sidebar-widget">
             <h5 class="sidebar-title"><strong>Here is a preview of your template that you purchased</strong></h5>
+            <!--
             <div>
               <h5> {{> (partial transaction.templateID) transaction.templateData }}</h5>
-            </div>
+            </div>->
 
            
             
-          </div>
+          </div>-->
           <div class="sidebar-widget">
             <form method="post" action="/render_template">
               <input type="hidden" name="transactionID" value="{{transaction.transaction.id}}">

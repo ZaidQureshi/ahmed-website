@@ -95,7 +95,7 @@
 					<div class="sidebar-widget">
 						<h4 class="sidebar-title">Similar Layouts</h4>
 						<ul class="content-flickr" ng-controller="TemplatesController as templateCtrl">
-							<li ng-repeat="template in templateCtrl.templates">
+							<li ng-repeat="template in templateCtrl.templates | limitTo: 5">
                                 <a href="/view?id={[{template._id}]}" title="" ng-click="templateCtrl.view(template._id)">
                                     <img class="img-responsive" ng-src="{[{template.icon}]}" alt="">
                                 </a>

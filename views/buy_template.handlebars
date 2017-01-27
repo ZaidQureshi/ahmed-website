@@ -89,21 +89,25 @@
 				
 				<div class="col-md-6">
 					
-				
 					<div class="sidebar-widget">
+						
+						<div class="clsScroll">
 
-						<h5 class="sidebar-title">Enter the following information for your template</h5>
-						<form method="post" action="/render_purchased_template">
-							<input type="hidden" name="templateID" value="{[{viewCtrl.template._id}]}">
-							<div class="identifiers" ng-repeat="identifier in viewCtrl.template.identifier">
-								<label class="cols-sm-2"> {[{identifier[1]}]}: </label>
-								<input type="text" name="{[{identifier[0]}]}" placeholder="{[{identifier[1]}]}" required>
-							</div>
-							
-                   			<input type="submit" class="btn btn-primary" value="Submit">
- 						</form>
+							<h5 class="sidebar-title">Enter the following information for your template</h5>
+							<form method="post" action="/render_purchased_template">
+								<input type="hidden" name="templateID" value="{[{viewCtrl.template._id}]}">
+								<div class="identifiers" ng-repeat="identifier in viewCtrl.template.identifier">
+									<label class="cols-sm-2"> {[{identifier[1]}]}: </label>
+									<input type="text" name="{[{identifier[0]}]}" placeholder="{[{identifier[1]}]}" required>
+								</div>
+								
+	                   			<input type="submit" class="btn btn-primary" value="Submit">
+	 						</form>
+
+ 						</div>
 
 					</div>
+
 					<div class="sidebar-widget">
 						<h4 class="sidebar-title">Identifiers</h4>
 							<div class="tagcloud" ng-repeat="identifier in viewCtrl.template.identifier">
@@ -112,6 +116,7 @@
 					</div>	
 					
 				</div><!-- end of col 3 -->
+
 			</div><!-- end of row -->
 		</div><!-- end of container -->
 	</section>

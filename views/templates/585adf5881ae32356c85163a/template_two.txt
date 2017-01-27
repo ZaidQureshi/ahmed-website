@@ -1,0 +1,6 @@
+FullName	full name
+Position	job title
+PhoneNumber	phone number
+Address	address
+Connection	social network sites
+imageOne	image one 50px x 50px

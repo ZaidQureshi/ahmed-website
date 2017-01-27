@@ -67,16 +67,23 @@
 			<div class="row">
 				<div class="col-md-8">
 					<div class="create-template">
+						
+						{{#if submerchantError}}
+						<h3 font-color="red">Error: {{submerchantError}}</h3>
+						{{/if}}
+
+
+
 						<p>Sign up for Venmo Account: <a href="https://venmo.com/signup">https://venmo.com/signup</a></p>
 						<br>
+
+						
 
 						<div class="template-form">
 						
 						<form action="/submerchant" method="post">
 
-						{{#if submerchantError}}
-						<h3>Error: {{submerchantError}}</h3>
-						{{/if}}
+						
 
 						<label for="name" class="cols-sm-2 control-label">Enter your first name</label>
 						<input type="text" placeholder="Jane" name ="firstName" required>

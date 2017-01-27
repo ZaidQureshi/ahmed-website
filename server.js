@@ -63,8 +63,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -598,11 +598,12 @@ app.post('/login', function (req, res) {
     });
 });
 
-/*
+
 app.get('/testFile', function(req, res){
+	/*
 	var readline = require('linebyline');
 	var iList = [];
-	rl = readline('views/templates/582f49fb72c5f60f105661b4/example_template_identifier.txt');
+	rl = readline('views/templates/5888e41b9574671ef42bed354/example_template_identifier.txt');
 	rl.on('line', function(line, lineCount, byteCount) {
 	// do something with the line of text 
 		console.log(line);
@@ -613,15 +614,29 @@ app.get('/testFile', function(req, res){
 		iList.push(identifierList);
 		console.log("After push: " + iList);
 	})
-	var re = new RegExp('({{.*}})');
-	var r  = '{{job_Title}} {{phone}}</span></p>'.match(re);
+	*/
+	var temp = '{{full_Name}} {{address}} >{{job_Title}} {{phone}}</span></p>'
+
+	//var re = new RegExp('/({{.*?}})/');
+	var r = temp.match(/{{.*?}}/g)
+	//var r  = temp.match(re);
 	if (r){
     	console.log(r[1]);
+    	console.log(r);
+    }
+
+    var iList = [];
+    for(i = 0; i < r.length; i++){
+    	var x = r[i].length - 4;
+    	//console.log(r[i].substr(2, x));
+    	iList.push(r[i].substr(2, x)); 
+    	//console.log(r[i].length);
+    	console.log(iList[i]);
     }
 
 
 });
-*/
+
 
 
 // Store the user created template into the document of templates
@@ -1150,8 +1165,11 @@ app.post('/render_template', function(req, res) {
 					var options = { 
 					//"height": template.height,         
 	  				//"width": template.width
-	  					height: template.height+"px",
-	  					width: template.width+"px"
+	  					//height: template.height+"px",
+	  					//width: template.width+"px",
+	  					//height: "0",
+	  					//width: "0",
+	  					type: "pdf"
 					};
 					console.log(options.height);
 					console.log(options.width);

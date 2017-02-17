@@ -904,7 +904,9 @@ app.post('/render_purchased_template', function(req, res){
 		        	'short_description' : 'Template ID: ' + templateID +  ' Author: '+ templateAuthor,
 		        	'period' : 'once',
 		        	'currency' :'USD',
-				    "redirect_uri": "http://localhost/order?",
+				//"redirect_uri": "http://localhost/order?",
+			    	"redirect_uri": "http://localhost/order?",
+			    		
 		        },
 		        function(payment) {
 		        	console.log("Creating WePay Transaction.");

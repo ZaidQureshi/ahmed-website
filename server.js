@@ -63,8 +63,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -87,8 +87,8 @@ app.use(fileUpload());
 var mongoose = require('mongoose');
 
 // Build the connection string
-var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
-//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
+//var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
+var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 //var dbURI3 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin,127.0.0.1:27017/templates?authSource=admin'; 
 
 //var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
@@ -872,10 +872,12 @@ app.post('/render_purchased_template', function(req, res){
 
 		// Template ID to be stored in the transaction field of the user 
 		var templateID = req.body.templateID;
+		req.session.templateID = templateID;
 		// Template Data that was entered by the user
 		var templateData = req.body;
 		// Author of the template to search for the author's access_token and account_id for the transaction
 		var templateAuthor = req.body.templateAuthor;
+		req.session.templateAuthor = templateAuthor;
 		// The user (buyer) that is purchasing the template, used to append the transaction information to the user's account
 		var currentUser = req.session.username;
 
@@ -900,19 +902,6 @@ app.post('/render_purchased_template', function(req, res){
 			var wp = new wepay(wepay_settings);
 			wp.use_staging(); // use staging environment (payments are not charged)
 
-			/*
-			wp.call('/checkout/create', {
-		        	'account_id' : doc.accountID, //req.session.account_id,
-		        	'amount' : templatePrice,
-		        	'short_description' : 'Services rendered by freelancer',
-		        	'type' : 'service',
-		        	'currency' :'USD',
-		        	"hosted_checkout": {
-				      "redirect_uri": "http://localhost/order?"
-		       		},
-
-		        },
-		    */
 		    wp.call('/preapproval/create', {
 		        	'client_id' : '181327',
 		        	'client_secret' : '059b31fd34',
@@ -927,68 +916,12 @@ app.post('/render_purchased_template', function(req, res){
 		        	if(payment) {
 		        		console.log(payment);
 		        		req.session.checkout_uri = payment.preapproval_uri;
+		        		req.session.preapproval_id = payment.preapproval_id;
 		        		var preapproval_id = payment.preapproval_id;
 		        		console.log(req.session.checkout_uri);
 		        		req.session.transaction = payment;
 
-				       	var wepay_settings = {
-					       	'account_id' : '69241989',
-							'client_id' : '181327',
-					    	'client_secret' : '059b31fd34',
-						    'access_token' :  'STAGE_898b945443a6a489b8f2ed07d1b8ee0d9096b2ae1cc66209bed6e821ce4846f2',
-						    'preapproval_id' : preapproval_id
-						}
-
-						var wp1 = new wepay(wepay_settings);
-						wp1.use_staging(); // use staging environment (payments are not charged)
-
-
-						var templatePriceAhmed = templatePrice *10;
-						wp1.call('/checkout/create', {
-					        	'account_id' : '69241989',
-					        	'amount' : '1.49',
-					        	'short_description' : 'Services rendered by freelancer',
-					        	'type' : 'service',
-					        	'currency' :'USD',
-					        	'payment_method' : {
-					        		'type' : 'preapproval',
-					        		'preapproval' : {
-					        			'id' : preapproval_id
-					        		}
-					        	},
-					        },
-					        function(response1){
-					        	console.log(response1);
-
-					        	var wepay_settings = {
-							       	'account_id' : doc.accountID,
-									'client_id' : '181327',
-							    	'client_secret' : '059b31fd34',
-								    'access_token' :  doc.accessToken,
-								    'preapproval_id' : preapproval_id
-								}
-
-								var wp2 = new wepay(wepay_settings);
-								wp2.use_staging(); // use staging environment (payments are not charged)
-
-
-								var templatePriceAhmed = templatePrice *10;
-								wp2.call('/checkout/create', {
-							        	'account_id' : doc.accountID, //req.session.account_id,
-							        	'amount' : '2.59',
-							        	'short_description' : 'Services rendered by freelancer',
-							        	'type' : 'service',
-							        	'currency' :'USD',
-							        	'payment_method' : {
-							        		'type' : 'preapproval',
-							        		'preapproval' : {
-							        			'id' : preapproval_id
-							        		}
-							        	},
-							        },
-							        function(response2){
-							        	console.log(response2);
-							        	Users.CreateTransaction(templateID, templateData, currentUser, payment, payment.preapproval_id, function (err, response) {
+		        		Users.CreateTransaction(templateID, templateData, currentUser, payment, payment.preapproval_id, function (err, response) {
 											if (err) {
 												res.send(err.message);
 											} 
@@ -1002,9 +935,6 @@ app.post('/render_purchased_template', function(req, res){
 										}); // end of storing the transaction into the database
 
 
-							    }); // end of wepay 'checkout/create' call 2 (template author)
-
-					        }); // end of wepay 'checkout/create' call 1 (ahmed)
 
 						/*
 
@@ -1022,7 +952,7 @@ app.post('/render_purchased_template', function(req, res){
 						}); */
 
 
-					}	
+					} // end of if statemnet
 		        	else {
 		        		return res.redirect('/index');
 		        	}
@@ -1038,6 +968,7 @@ app.post('/render_purchased_template', function(req, res){
 app.get('/orderComplete', function(req, res){
 
 	var transactionID = req.session.transactionID;
+	var transaction;
 	currentUser = 'b';
 
 	Users.findOne({ username: currentUser},  function(err, doc){
@@ -1067,12 +998,95 @@ app.get('/orderComplete', function(req, res){
 app.get('/order', function (req, res) {
 
 	console.log(req.query.preapproval_id);
-	//var transaction = req.session.transaction;	
+	//var transaction = req.session.transactdion;	
 	//console.log(transaction);
 	var transactionID = req.query.preapproval_id;
 	req.session.transactionID = transactionID;
+	var preapproval_id = req.session.preapproval_id;
+	var templateID = req.session.templateID;
 
-	res.redirect('/orderComplete');
+
+	var templateAuthor = req.session.templateAuthor;
+		// Search for the author of the template to retrieve accesc_token and accound_id to process the transaction
+		Users.findOne({ username: templateAuthor},  function(err, doc) {
+			if(err) { return res.send(err.message); }
+
+			console.log(doc.accessToken);
+			console.log(doc.accountID);
+			console.log("Printing template for sale: ");
+			console.log(doc.template.id(templateID));
+			console.log(doc.template.id(templateID).price);
+			var templatePrice = doc.template.id(templateID).price;
+	
+			
+				       	var wepay_settings = {
+					       	'account_id' : '69241989',
+							'client_id' : '181327',
+					    	'client_secret' : '059b31fd34',
+						    'access_token' :  'STAGE_898b945443a6a489b8f2ed07d1b8ee0d9096b2ae1cc66209bed6e821ce4846f2',
+						    'preapproval_id' : preapproval_id
+						}
+
+						var wp1 = new wepay(wepay_settings);
+						wp1.use_staging(); // use staging environment (payments are not charged)
+
+
+						var templatePriceAhmed = Math.floor(templatePrice *.5);
+						wp1.call('/checkout/create', {
+					        	'account_id' : '69241989',
+					        	'amount' : templatePriceAhmed,
+					        	'short_description' : 'Services rendered by freelancer',
+					        	'type' : 'service',
+					        	'currency' :'USD',
+					        	'payment_method' : {
+					        		'type' : 'preapproval',
+					        		'preapproval' : {
+					        			'id' : preapproval_id
+					        		}
+					        	},
+					        },
+					        function(response1){
+					        	console.log(response1);
+
+					        	var wepay_settings = {
+							       	'account_id' : doc.accountID,
+									'client_id' : '181327',
+							    	'client_secret' : '059b31fd34',
+								    'access_token' :  doc.accessToken,
+								    'preapproval_id' : preapproval_id
+								}
+
+								var wp2 = new wepay(wepay_settings);
+								wp2.use_staging(); // use staging environment (payments are not charged)
+
+
+								var templatePriceMerchant = templatePrice - templatePriceAhmed;
+								wp2.call('/checkout/create', {
+							        	'account_id' : doc.accountID, //req.session.account_id,
+							        	'amount' : templatePriceMerchant,
+							        	'short_description' : 'Services rendered by freelancer',
+							        	'type' : 'service',
+							        	'currency' :'USD',
+							        	'payment_method' : {
+							        		'type' : 'preapproval',
+							        		'preapproval' : {
+							        			'id' : preapproval_id
+							        		}
+							        	},
+							        },
+							        function(response2){
+							        	console.log(response2);
+							        	return res.redirect('/orderComplete');
+							        	
+
+							    }); // end of wepay 'checkout/create' call 2 (template author)
+
+					        }); // end of wepay 'checkout/create' call 1 (ahmed)
+
+			});
+
+
+
 
 
 /*

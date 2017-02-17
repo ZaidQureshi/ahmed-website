@@ -905,7 +905,7 @@ app.post('/render_purchased_template', function(req, res){
 		        	'period' : 'once',
 		        	'currency' :'USD',
 				//"redirect_uri": "http://localhost/order?",
-			    	"redirect_uri": "http://leaflate/order?",
+			    	"redirect_uri": "http://leaflate.com/order?",
 			    		
 		        },
 		        function(payment) {

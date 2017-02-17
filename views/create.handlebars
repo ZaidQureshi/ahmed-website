@@ -70,6 +70,46 @@
 						<div class="template-form">
 						{{#if isActive}}
 
+						<form action="/create_preview_template" method="post"  enctype="multipart/form-data">
+						
+						<br>
+						
+					
+
+						<label for="width" class="cols-sm-2 control-label">Enter the width in pixels for your Template</label>
+						<input type="number" placeholder="512" name="width" id="width" ng-model="createCtrl.width" step="any" max="4096" required>
+						<br>
+						
+						<label for="height" class="cols-sm-2 control-label">Enter the height in pixels for your Template</label>
+						<input type="number" placeholder="512" name="height" id="height" ng-model="createCtrl.height" step="any"max="1024" required>
+						<br>
+						<!--<label for="icon" class="cols-sm-2 control-label">Enter the url of the icon for your Template</label>
+						<input type="text" placeholder="" name="icon" id="icon" ng-model="createCtrl.icon" required>-->
+						
+						<br>
+						<input type="file" placeholder="Upload File" name="file" id="file" required>
+						<br>
+						
+						
+						<input type="hidden" placeholder="" name="author" id="author" value="{{username}}">
+						<input type="hidden" placeholder="" name="icon" id="icon" value="https://upload.wikimedia.org/wikipedia/commons/a/a4/Magnifying_glass_with_focus_on_glass.png">
+						<input type="hidden" placeholder="" name="reviewed" id="reviewed" value="false">
+						<input type="hidden" placeholder="" name="approved" id="approved" value="false">
+						
+						<button type="submit" value="submit" class="btn btn-primary btn-lg btn-block">Preview Template</button>
+						
+						</form>	
+
+
+						<br>
+						<br>
+
+
+
+
+
+
+
 						<form action="/create" method="post"  enctype="multipart/form-data">
 						<label for="name" class="cols-sm-2 control-label">Enter the name for your Template</label>
 						<input type="text" placeholder="Template One" name ="name" id="name" ng-model="createCtrl.name" maxlength="20" autofocus required>

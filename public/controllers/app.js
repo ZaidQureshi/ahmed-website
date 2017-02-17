@@ -3,6 +3,8 @@
 var app = angular.module('Lates', ['ngCookies', 'ngRoute']); 
 
 
+
+
 app.config(function($interpolateProvider) {
   $interpolateProvider.startSymbol('{[{');
   $interpolateProvider.endSymbol('}]}');
@@ -148,6 +150,7 @@ app.controller('ViewController', ['$http', '$location', function($http, $locatio
 	
 	var x = $location.search();
 	vm.id = x['id'];
+	vm.obj = {};
 	
 	$http.get('/templates/' + vm.id).success(function(response){
 				console.log(response);
@@ -159,7 +162,16 @@ app.controller('ViewController', ['$http', '$location', function($http, $locatio
 					}
 				}*/
 				vm.template = response;
+				/*
+				for(i = 0; i < vm.template.fieldName; i++){
+				vm.obj.push({fieldName: vm.fieldName[i], identifier: vm.identifier[i]});
+				console.log(vm.obj);
+				}
+				*/
 			});
+
+	
+	
 }]);
 
 

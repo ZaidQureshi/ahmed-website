@@ -65,7 +65,7 @@
 	<section id="our-works">
 		<div class="container">
 			<div class="row">
-				<div class="col-md-9">
+				<div class="col-md-6">
 					
 					<div class="single-blog">
 						<article>
@@ -80,6 +80,9 @@
 								<span>Width: {[{viewCtrl.template.width}]}</span>
 								<span>Height: {[{viewCtrl.template.height}]}</span>
 							</div>
+							<span>Email: {[{viewCtrl.template.email}]}</span>
+							<br>
+							<span>Template ID: {[{viewCtrl.template._id}]}</span>
 
 							
 							
@@ -89,15 +92,27 @@
 					<hr>
 				</div>
 				
-				<div class="col-md-3">
-				
-		
+				<div class="col-md-6">
+					
 					<div class="sidebar-widget">
-						<h4 class="sidebar-title">Identifiers</h4>
-						<div class="tagcloud" ng-repeat="identifier in viewCtrl.template.identifier">
-							<a href="">{[{identifier[1]}]}</a>						
-						</div>
-					</div>
+						
+						<div class="clsScroll">
+
+							<h5 class="sidebar-title">Enter the following information for your template</h5>
+							<form method="post" action="/render_template_review">
+								<input type="hidden" name="templateID" value="{[{viewCtrl.template._id}]}">
+								<div class="identifiers" ng-repeat="identifier in viewCtrl.template.identifier track by $index">
+									<label class="cols-sm-2"> {[{viewCtrl.template.fieldName[$index]}]}: </label>
+									<input type="text" name="{[{identifier}]}" placeholder="{[{identifier}]}" required>
+								</div>
+								<input type="hidden" value={[{viewCtrl.template._id}]}>
+	                   			<input type="submit" class="btn btn-primary" value="Download PDF">
+	 						</form>
+
+ 						</div>
+
+		
+					{{> myPartials/displayIdentifier}}
 					
 					<div class="sidebar-widget">
 						<form action="/approve" method="POST" >
@@ -117,7 +132,7 @@
 						</form>
 					</div>
 					
-				</div><!-- end of col 3 -->
+				</div>
 			</div><!-- end of row -->
 		</div><!-- end of container -->
 	</section>

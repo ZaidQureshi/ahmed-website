@@ -129,6 +129,45 @@ Users.remove({}, function(err) {
 });
 */
 
+var nodemailer = require('nodemailer');
+
+// Router to handle contact form being submitted
+app.post('/contact_us', function (req, res){
+	console.log(req.body);
+	var transporter = nodemailer.createTransport({
+		service: 'Gmail',
+		auth: {
+			user: 'Leaflate17@gmail.com',
+			pass: 'Lates2017%'
+		}
+	});
+
+	var text = 'Name: ' + req.body.name + '\nEmail: ' + req.body.email + '\nUser ID: ' + req.body.userId + '\n\n' + req.body.message;
+	var mailOptions = {
+		from: req.body.email, // senders email
+		to: 'testlates@gmail.com', // receivers email
+		subject: req.body.subject, // Subject line
+		text: text // body
+		// html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
+	};
+
+	transporter.sendMail(mailOptions, function (error, info) {
+		if(error) {
+			console.log(error);
+			res.json({message: error});
+			//return res.redirect('/');
+
+		}
+		else {
+			console.log('Message sent:' + info.response);
+			console.log(info);
+			//res.json({message: info.response});
+			return res.redirect('/');
+		}
+	});
+
+});
+
 
 
 app.engine('handlebars', exphbs({defaultLayout: 'main', helpers:  {partial: function (name) {
@@ -324,31 +363,67 @@ app.get('/buy_template', function (req, res){
 			layout: false,
 			username: req.session.username
 		});
-		
 	}
-	else{
-		// return since it is an asynchronous call
+	else {
 		res.redirect('/login');
 	}
 });
 
 app.get('/checkout', function (req, res){
 
-	if (req.session.username) {
+
+	//if (req.session.username) {
 		// Send a client token to your client
 		console.log("I got a GET request from" + req.session.username + "\n");
-		gateway.clientToken.generate({}, function (err, response) {
-		 	console.log(response.clientToken);
-		    res.render('checkout', {
-				layout: false,
-				username: req.session.username,
-				clientToken: response.clientToken
-				});
+		console.log(req.query.id);
+		var templateID = req.query.id;
+
+
+		// DELETE HARD CODE
+		templateID = "5888e41b9574671ef42bed35";
+		// Delete HARD CODE
+
+		Users.findOne({'template._id':templateID}, 'template',  function(err, doc){
+			if(err) {
+				console.log(err);
+				return res.send(err);
+			}
+			//console.log("\n This is the resule of the query" + doc + "\n");
+			//console.log(doc._id);
+			
+			//console.log(doc.template);
+			//res.json(doc.template);
+			Users.findOne({'_id': doc._id}, function (err, user) { 
+				if(err) {
+					return callback(err);
+				}
+				else{		
+					//console.log("This is the user" + user + "\n");
+					//console.log(user.template.id(template_id));
+					//res.json(user.template.id(template_id));
+
+					//gateway.clientToken.generate({}, function (err, response) {
+				 	//console.log(response.clientToken);
+				    res.render('checkout', {
+						layout: false,
+						username: req.session.username,
+						template: user.template.id(templateID),
+						//clientToken: response.clientToken,
+						checkout_uri: req.session.checkout_uri
+						});
+				//});
+
+
+					
+				}
+			});	
 		});
-	}
-	else {
-		res.redirect('/');
-	}
+
+		
+	//}
+	//else {
+	//	res.redirect('/');
+	//}
 });
 
 
@@ -486,21 +561,7 @@ app.get('/templates/:id', function (req, res){
 	// find each person with a last name matching 'Ghost', selecting the `name` and `occupation` fields
 	// Person.findOne({ 'name.last': 'Ghost' }, 'name occupation', function (err, person) {
 	
-	/*
-		
-	Users.distinct('template', {'template._id':template_id}, function (err, docs){
-		console.log(docs);
-		res.json(docs);
-	});
 	
-	Users.find({
-    'template._id': { $in: [
-        mongoose.Types.ObjectId(template_id)
-    ]}
-	}, function(err, docs){
-		 console.log(docs);
-});
-	*/
 	//if (template_id != 'undefined') {
 		Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
 			if(err) {
@@ -599,43 +660,6 @@ app.post('/login', function (req, res) {
 });
 
 
-app.get('/testFile', function(req, res){
-	/*
-	var readline = require('linebyline');
-	var iList = [];
-	rl = readline('views/templates/5888e41b9574671ef42bed354/example_template_identifier.txt');
-	rl.on('line', function(line, lineCount, byteCount) {
-	// do something with the line of text 
-		console.log(line);
-		console.log(lineCount);
-		var identifierList = line.toString().split("\t");
-		console.log(identifierList);
-		console.log("\n");
-		iList.push(identifierList);
-		console.log("After push: " + iList);
-	})
-	*/
-	var temp = '{{full_Name}} {{address}} >{{job_Title}} {{phone}}</span></p>'
-
-	//var re = new RegExp('/({{.*?}})/');
-	var r = temp.match(/{{.*?}}/g)
-	//var r  = temp.match(re);
-	if (r){
-    	console.log(r[1]);
-    	console.log(r);
-    }
-
-    var iList = [];
-    for(i = 0; i < r.length; i++){
-    	var x = r[i].length - 4;
-    	//console.log(r[i].substr(2, x));
-    	iList.push(r[i].substr(2, x)); 
-    	//console.log(r[i].length);
-    	console.log(iList[i]);
-    }
-
-
-});
 
 
 
@@ -666,6 +690,8 @@ app.post('/create', function(req, res){
 	var iconPath = "";
 	// Get the author
 	var author = req.body.author;
+	// Initialize empty array to contain the list of field names
+	var fieldName = [];
 
 	//Store the author in the session to edit after the creation of the template is done
 	req.session.author = author;
@@ -712,30 +738,44 @@ app.post('/create', function(req, res){
 											if (err) {
 												return res.send(err);
 											}
+											console.log(f);
+											fs.readFile('views/partials/' + response  + '.handlebars', 'utf8', function(err, data) {
+												  if (err) return  res.send(err);
+												  console.log('OK: ' + f);
+												  console.log(data);
+												  //var temp = '{{full_Name}} {{address}} >{{job_Title}} {{phone}}</span></p>'
+
+													//var re = new RegExp('/({{.*?}})/');
+													var r = data.match(/{{.*?}}/g)
+													//var r  = temp.match(re);
+													if (r){
+												    	console.log(r[1]);
+												    	console.log(r);
+												    }
+
+												    //var iList = [];
+												    for(i = 0; i < r.length; i++){
+												    	var x = r[i].length - 4;
+												    	//console.log(r[i].substr(2, x));
+												    	iList.push(r[i].substr(2, x)); 
+												    	//console.log(r[i].length);
+												    	console.log(iList[i]);
+												    }
+
+												    for(i = 0; i < iList.length; i++){
+														var str = iList[i].toLowerCase().split('_');
+														for(j = 0; j < str.length; j++){
+															str[j] = str[j].charAt(0).toUpperCase() + str[j].substring(1);
+														}
+													   	fieldName.push(str.join(' '));
+													  	console.log(fieldName[i]);	
+													}
+
+												});
 											sawHTML = true;
 										});		
 										}
 									}	
-									
-									// Handle reading the identifier list/html
-									if((f.substr(f.length - 3)) == "txt"){
-										if(!sawTXT){
-										var readline = require('linebyline');
-										rl = readline('views/templates/' + response + '/' + f);
-										rl.on('line', function(line, lineCount, byteCount) {
-										    // do something with the line of text 
-										    console.log(line);
-										    console.log(lineCount);
-										    var identifierList = line.toString().split("\t");
-										    console.log(identifierList);
-										    console.log("\n");
-										    iList.push(identifierList);
-										    sawTXT = true;
-										  })
-										}
-										
-									}
-
 									
 									if((f.substr(f.length -3)) ==  "png"){
 										if(!sawPNG){
@@ -754,7 +794,7 @@ app.post('/create', function(req, res){
 													 .quality(100)                 // set JPEG quality 
 													 //.greyscale()                 // set greyscale 
 													 .write(resizePath); // save
-												Users.EditTemplate(author, response, iList, iconPath, function (err, user) {
+												Users.EditTemplate(author, response, iList, iconPath, fieldName, function (err, user) {
 												if (err) {
 													 return res.status(400).send(err);
 												} 
@@ -771,51 +811,7 @@ app.post('/create', function(req, res){
 										});
 									}
 									}
-									
 
-									/*
-									Users.findOne({'username': author}, function (err, user) { 
-										if(err) {
-											return callback(err);
-										}
-										// Find the user's template and edit
-										else {
-											//console.log(user);
-											// Edit the identifier list
-											console.log(user.template.id(response));
-											console.log(iList);
-											for(var i = 0; i < iList.length; i++){
-												console.log(iList[i][0] + "\n");
-												user.template.id(response).identifier.push(iList[i]);
-											}
-											
-											// Edit the icon
-											console.log(iconPath);
-											user.template.id(response).icon = iconPath;
-											console.log(user.template.id(response).icon);
-											
-											// Save the changes and return the user
-											user.save(function(err) {
-												if(err) { 
-													//return callback(err); 
-													console.log(err);
-												}
-												/*
-												else {
-													//return callback(null, user);
-													return res.redirect("/my_template");
-												}/
-											});	
-										}	 	  
-									});
-										*/
-
-
-
-
-
-								 //store the iList for editing 
-								//req.session.iList = iList;
 								}); // end of filesForEach
 
 								
@@ -832,34 +828,7 @@ app.post('/create', function(req, res){
 	}	
 });
 
-/*
-app.get('/editCreatedTemplate', function(req, res){
-	var author = req.session.author;
-	var response = req.session.createdTemplateID;
-	var iList = req.session.iList || [];
-	var iconPath = req.session.iconPath;
-	console.log("I am in edit created template");
-	console.log(author);
-	console.log(response);
-	console.log(iList);
-	console.log(iconPath);
 
-	Users.EditTemplate(author, response, iList, iconPath, function (err, user) {
-		if (err) {
-			res.status(400).send(err);
-		} 
-		else {
-			res.redirect('/my_template');
-		}
-	});	
-
-	req.session.author = null;
-	req.session.createdTemplateID = null;
-	req.session.iList = null;
-	req.session.iconPath = null;
-
-});
-*/
 
 
 // Approve or Disapprove a template by changing it's field in the database
@@ -892,42 +861,244 @@ app.post('/approve', function(req, res){
 // Create transaction subdocument to store templates infomration to be rendered and redirect to the checkout page
 // Store the template information that the user submitted for the template they want to purchase in a session
 app.post('/render_purchased_template', function(req, res){
+
 	if(req.session.username) {
 		console.log("Got POST request");
 		console.log(req.body);
+
+		// Assign layout to be false when rendered with the template and template data
 		req.body['layout'] = false;
-
 		req.session.templateData = req.body;
-		return res.redirect("/checkout" + "?id=" + req.body.templateID);
 
-		/*
+		// Template ID to be stored in the transaction field of the user 
 		var templateID = req.body.templateID;
+		// Template Data that was entered by the user
 		var templateData = req.body;
-		var orderComplete = false;
-		// Needed to search for the user's transaction list in order to push this data into the databases
+		// Author of the template to search for the author's access_token and account_id for the transaction
+		var templateAuthor = req.body.templateAuthor;
+		// The user (buyer) that is purchasing the template, used to append the transaction information to the user's account
 		var currentUser = req.session.username;
 
-		Users.CreateTransaction(templateID, templateData, orderComplete, currentUser, function (err, response) {
-	            if (err) {
-	                res.send(err.message);
-	            } else {
-					console.log(response);
-	                return res.redirect("/checkout" + "?id=" + templateID);
-	            }
-	        });
-	    //res.render('templates/' + req.body['id'] + '/' + req.body['id'], req.body );
-	    */
-	}
+		// Search for the author of the template to retrieve accesc_token and accound_id to process the transaction
+		Users.findOne({ username: templateAuthor},  function(err, doc) {
+			if(err) { return res.send(err.message); }
 
+			console.log(doc.accessToken);
+			console.log(doc.accountID);
+			console.log("Printing template for sale: ");
+			console.log(doc.template.id(templateID));
+			console.log(doc.template.id(templateID).price);
+			var templatePrice = doc.template.id(templateID).price;
+	
+			// Assign settings for wepay instance
+			var wepay_settings = {
+				'client_id'     : '181327',
+		    	'client_secret' : '059b31fd34',
+			    //'access_token' : doc.accessToken //author's access_token
+			}
+
+			var wp = new wepay(wepay_settings);
+			wp.use_staging(); // use staging environment (payments are not charged)
+
+			/*
+			wp.call('/checkout/create', {
+		        	'account_id' : doc.accountID, //req.session.account_id,
+		        	'amount' : templatePrice,
+		        	'short_description' : 'Services rendered by freelancer',
+		        	'type' : 'service',
+		        	'currency' :'USD',
+		        	"hosted_checkout": {
+				      "redirect_uri": "http://localhost/order?"
+		       		},
+
+		        },
+		    */
+		    wp.call('/preapproval/create', {
+		        	'client_id' : '181327',
+		        	'client_secret' : '059b31fd34',
+		        	'amount' : templatePrice,
+		        	'short_description' : 'Template ID: ' + templateID +  ' Author: '+ templateAuthor,
+		        	'period' : 'once',
+		        	'currency' :'USD',
+				    "redirect_uri": "http://localhost/order?",
+		        },
+		        function(payment) {
+		        	console.log("Creating WePay Transaction.");
+		        	if(payment) {
+		        		console.log(payment);
+		        		req.session.checkout_uri = payment.preapproval_uri;
+		        		var preapproval_id = payment.preapproval_id;
+		        		console.log(req.session.checkout_uri);
+		        		req.session.transaction = payment;
+
+				       	var wepay_settings = {
+					       	'account_id' : '69241989',
+							'client_id' : '181327',
+					    	'client_secret' : '059b31fd34',
+						    'access_token' :  'STAGE_898b945443a6a489b8f2ed07d1b8ee0d9096b2ae1cc66209bed6e821ce4846f2',
+						    'preapproval_id' : preapproval_id
+						}
+
+						var wp1 = new wepay(wepay_settings);
+						wp1.use_staging(); // use staging environment (payments are not charged)
+
+
+						var templatePriceAhmed = templatePrice *10;
+						wp1.call('/checkout/create', {
+					        	'account_id' : '69241989',
+					        	'amount' : '1.49',
+					        	'short_description' : 'Services rendered by freelancer',
+					        	'type' : 'service',
+					        	'currency' :'USD',
+					        	'payment_method' : {
+					        		'type' : 'preapproval',
+					        		'preapproval' : {
+					        			'id' : preapproval_id
+					        		}
+					        	},
+					        },
+					        function(response1){
+					        	console.log(response1);
+
+					        	var wepay_settings = {
+							       	'account_id' : doc.accountID,
+									'client_id' : '181327',
+							    	'client_secret' : '059b31fd34',
+								    'access_token' :  doc.accessToken,
+								    'preapproval_id' : preapproval_id
+								}
+
+								var wp2 = new wepay(wepay_settings);
+								wp2.use_staging(); // use staging environment (payments are not charged)
+
+
+								var templatePriceAhmed = templatePrice *10;
+								wp2.call('/checkout/create', {
+							        	'account_id' : doc.accountID, //req.session.account_id,
+							        	'amount' : '2.59',
+							        	'short_description' : 'Services rendered by freelancer',
+							        	'type' : 'service',
+							        	'currency' :'USD',
+							        	'payment_method' : {
+							        		'type' : 'preapproval',
+							        		'preapproval' : {
+							        			'id' : preapproval_id
+							        		}
+							        	},
+							        },
+							        function(response2){
+							        	console.log(response2);
+							        	Users.CreateTransaction(templateID, templateData, currentUser, payment, payment.preapproval_id, function (err, response) {
+											if (err) {
+												res.send(err.message);
+											} 
+											else {
+												console.log(response);
+												//req.session.templateData = null; 
+												//req.session.transactionID = result.transaction.id;
+								              	//return res.redirect("/order" + "?id=" + transactionID);
+								              	return res.redirect("/checkout" + "?id=" + req.body.templateID);
+										    }
+										}); // end of storing the transaction into the database
+
+
+							    }); // end of wepay 'checkout/create' call 2 (template author)
+
+					        }); // end of wepay 'checkout/create' call 1 (ahmed)
+
+						/*
+
+		        		Users.CreateTransaction(templateID, templateData, currentUser, payment, payment.preapproval_id, function (err, response) {
+							if (err) {
+								res.send(err.message);
+							} 
+							else {
+								console.log(response);
+								//req.session.templateData = null; 
+								//req.session.transactionID = result.transaction.id;
+				              	//return res.redirect("/order" + "?id=" + transactionID);
+				              	return res.redirect("/checkout" + "?id=" + req.body.templateID);
+						    }
+						}); */
+
+
+					}	
+		        	else {
+		        		return res.redirect('/index');
+		        	}
+		    }); // end of wp.call('/checkout/create')
+    	}); // end of finding the author of template
+	}
 	else {
 		return res.redirect('/');
 	}
 });
 
 
+app.get('/orderComplete', function(req, res){
+
+	var transactionID = req.session.transactionID;
+	currentUser = 'b';
+
+	Users.findOne({ username: currentUser},  function(err, doc){
+			//console.log("\n This is the resule of the query" + doc + "\n");
+			console.log(doc + "\n");
+			for(i = 0; i < doc.transaction.length; i++){
+				if (doc.transaction[i].transactionID == transactionID){
+					console.log(doc.transaction[i]);
+					transaction = doc.transaction[i];
+				}
+			}
+		
+			res.render("order", {
+				layout: false,
+				transaction: transaction,
+				username: req.session.username
+			});
+	  	//req.session.transactionID = null;
+		});
+
+
+
+});
+
+
 
 app.get('/order', function (req, res) {
 
+	console.log(req.query.preapproval_id);
+	//var transaction = req.session.transaction;	
+	//console.log(transaction);
+	var transactionID = req.query.preapproval_id;
+	req.session.transactionID = transactionID;
+
+	res.redirect('/orderComplete');
+
+
+/*
+	currentUser = 'b';
+
+	Users.findOne({ username: currentUser},  function(err, doc){
+			//console.log("\n This is the resule of the query" + doc + "\n");
+			console.log(doc + "\n");
+			for(i = 0; i < doc.transaction.length; i++){
+				if (doc.transaction[i].transactionID == transactionID){
+					console.log(doc.transaction[i]);
+					transaction = doc.transaction[i];
+				}
+			}
+		
+			res.render("order", {
+				layout: false,
+				transaction: transaction,
+				username: req.session.username
+			});
+	  	//req.session.transactionID = null;
+		});
+*/
+
+	/*
+	
 	if(req.session.username) {
 	  var transaction;
 	  var transactionID = req.session.transactionID;
@@ -947,11 +1118,7 @@ app.get('/order', function (req, res) {
 			}
 		
 
-	  res.render("order", {
-					layout: false,
-					transaction: transaction,
-					username: req.session.username
-				});
+	  
 	  req.session.transactionID = null;
 
 	  //gateway.transaction.find(transactionID, function (err, transaction) {
@@ -961,8 +1128,10 @@ app.get('/order', function (req, res) {
 	}
 
 	else{
-		res.redirect('/');
+		//res.redirect('/');
 	}
+	*/
+	
 
 });
 
@@ -992,7 +1161,7 @@ app.post('/checkout', function(req, res) {
 		console.log(serviceAmount);
 
 		if(merchantAccountId == "ahmed"){
-					// Create the Transaction
+				// Create the Transaction
 				gateway.transaction.sale({
 				  //merchantAccountId: merchantAccountId,
 				  amount: templatePrice,
@@ -1090,12 +1259,9 @@ app.post('/checkout', function(req, res) {
 
 		}
 		
-		
-	else {
-		res.redirect('/');
-	}
-
-
+		else {
+			res.redirect('/');
+		}
 
 });
 
@@ -1109,9 +1275,11 @@ var htmlToPdf = require('html-to-pdf');
 var pdf = require('html-pdf');
 
 app.post('/render_template', function(req, res) {
-	if(req.session.username) {
+	//if(req.session.username) {
 
-		var currentUser = req.session.username;
+		//var currentUser = req.session.username;
+		var currentUser = 'b';
+		console.log(currentUser + " is the user");
 		console.log(req.body);
 		//var currentUser = req.session.username;
 		//var currentUser = "c";
@@ -1126,7 +1294,9 @@ app.post('/render_template', function(req, res) {
 			}
 			if(doc) {
 				for(i = 0; i < doc.transaction.length; i++){
-					if (doc.transaction[i].transactionID == transactionID){
+					console.log("Printing the Transactions");
+					console.log(doc.transaction.id);
+					if (doc.transaction[i].id == transactionID){
 						console.log(doc.transaction[i]);
 						transaction = doc.transaction[i];
 					}
@@ -1137,7 +1307,7 @@ app.post('/render_template', function(req, res) {
 			}
 
 			//console.log(transaction);
-
+			console.log("This is the transaction: /n" + transaction);
 			var templateData = transaction.templateData;
 			var templateID = templateData.templateID;
 			console.log(templateData);
@@ -1165,11 +1335,8 @@ app.post('/render_template', function(req, res) {
 					var options = { 
 					//"height": template.height,         
 	  				//"width": template.width
-	  					//height: template.height+"px",
-	  					//width: template.width+"px",
-	  					//height: "0",
-	  					//width: "0",
-	  					type: "pdf"
+	  				height: template.height+"px",
+	  				width: template.width+"px"
 					};
 					console.log(options.height);
 					console.log(options.width);
@@ -1188,84 +1355,138 @@ app.post('/render_template', function(req, res) {
 					});
 
 				});
-			
-				/*
-				Users.findOne({'username':currentUser},  function(err, user){
-					console.log(user);
-					console.log(user.template.id(templateID));
-					template = user.template.id(templateID);
-
-					var options = { 
-					//"height": template.height,         
-	  				//"width": template.width
-	  					height: template.height+"px",
-	  					width: template.width+"px"
-					};
-				 
-					pdf.create(html, options).toFile('views/pdf/' + transactionID + '.pdf', function(err, templatePDF) {
-					  if (err) {
-					  	return res.send(err);
-					  }
-
-					  console.log(templatePDF); // { filename: '/app/businesscard.pdf' } 
-
-					  //return res.sendFile(templatePDF); 
-					  var downloadtemplate = 'views/pdf/' + transactionID + '.pdf';
-					  return res.download(downloadtemplate);
-
-					});
-
-				});*/
-
-				/*
-				var options = { 
-					"height": "256px",         
-	  				"width": "256px"
-				};
-				 
-				pdf.create(html, options).toFile('views/pdf/' + transactionID + '.pdf', function(err, templatePDF) {
-				  if (err) return console.log(err);
-				  console.log(templatePDF); // { filename: '/app/businesscard.pdf' } 
-
-				  //return res.sendFile(templatePDF); 
-				  var downloadtemplate = 'views/pdf/' + transactionID + '.pdf';
-				  res.download(downloadtemplate);
-				});*/
-
-	 			/*
-				htmlToPdf.convertHTMLString(html, 'views/pdf/' + transactionID + '.pdf',
-				    function (error, success) {
-				        if (error) {
-				            console.log('Oh noes! Errorz!');
-				            console.log(error);
-				        } else {
-				            console.log('Woot! Success!');
-				            console.log(success);
-				        }
-				    }
-				);*/
-     /*
-			     // Save the rendered html into a html file and store it locally temporarily
-				 fs.writeFile("tmp/" + transactionID + ".html", html, function(err) {
-				    if(err) {
-				        return console.log(err);
-				    }
-
-				    console.log("The file was saved!");
-				 }); 
-				*/
-
-				//var html = fs.readFileSync("tmp/" + transactionID + ".html", 'utf8');
-				//console.log(html);
 
 			});
 		});
+	//}
+
+	//else {
+	//	return res.redirect('/');
+	//}
+});
+
+
+
+// load in your modules
+var wepay = require('wepay').WEPAY;       // if wepay.js is installed globally/locally
+// var wepay = require('./wepay').WEPAY;  // if wepay.js is in the same directory as your script
+
+app.post('/createWepayToken', function(req, res) {
+	console.log(req.body);
+	console.log("Creating WePay access token.");
+
+	// local variables
+	var wepay_settings = {
+	    'client_id'     : '181327',
+	    'client_secret' : '059b31fd34', // used for oAuth2
+	    // 'api_version': 'API_VERSION'
 	}
 
-	else {
-		redirect('/');
-	}
+	var wp = new wepay(wepay_settings);
+	wp.use_staging(); // use staging environment (payments are not charged)
+
+	wp.call('/oauth2/token',
+    {
+    	'client_id'     : '181327',
+    	'client_secret' : '059b31fd34',
+        "redirect_uri": "http://localhost:80/",
+        "code": req.body.data
+    },
+
+    function(response) {
+        console.log(response);
+        req.session.access_token = response.access_token;
+        return res.redirect('/createWepayAccount');
+    	}
+	);
 });
+
+app.get('/createWepayAccount', function(req, res){
+	// local variables
+	var wepay_settings = {
+	    'access_token' : req.session.access_token
+	}
+
+	var wp = new wepay(wepay_settings);
+	wp.use_staging(); // use staging environment (payments are not charged)
+
+	wp.call('/account/create', {
+        	'name' : req.session.username,
+        	'description' : req.session.username + " seller's account"
+        },
+
+        function(account) {
+        	console.log("Creating WePay Account.");
+        	if(account.account_id) {
+        		console.log(account);
+        		req.session.account_id = account.account_id;
+        		Users.CreateMerchantAccount(req.session.username, account.account_id, req.session.access_token, function(err, response){
+        			if(err){
+        				res.send(err.message);
+        			}
+        			else{
+        				console.log(response);
+        				//return res.redirect();
+        			}
+        		});
+        	}
+        	else {
+        		return res.redirect('/index');
+        	}
+    });
+});
+
+
+app.get('/createWepayTransaction', function(req, res){
+	var currentUser = 'a';
+
+	Users.findOne({ username: currentUser},  function(err, doc){
+			//console.log("the user is: " + doc);
+		if(err) {
+			return res.send(err.message);
+			}
+
+	console.log(doc);
+	console.log(doc.accessToken);
+	console.log(doc.accountID);
+
+	// local variables
+	var wepay_settings = {
+		'client_id'     : '181327',
+    	'client_secret' : '059b31fd34',
+	    'access_token' : doc.accessToken //req.session.access_token
+	}
+
+	var wp = new wepay(wepay_settings);
+	wp.use_staging(); // use staging environment (payments are not charged)
+
+	wp.call('/checkout/create', {
+        	'account_id' : doc.accountID, //req.session.account_id,
+        	'amount' : 10,
+        	'short_description' : 'Services rendered by freelancer',
+        	'type' : 'service',
+        	'currency' :'USD',
+        	"hosted_checkout": {
+		      "redirect_uri": "http://localhost/order?"
+       		},
+
+        },
+        function(payment) {
+        	console.log("Creating WePay Transaction.");
+        	if(payment) {
+        		console.log(payment);
+        		req.session.checkout_uri = payment.hosted_checkout.checkout_uri;
+        		console.log(req.session.checkout_uri);
+        		return res.redirect('/checkout');
+        	}
+        	else {
+        		return res.redirect('/index');
+        	}
+    });
+    	});
+});
+
+
 
 
 app.post('/submerchant', function(req, res) {
@@ -1273,6 +1494,7 @@ app.post('/submerchant', function(req, res) {
 	if(req.session.username) { 
 		var currentUser = req.session.username;
 		//var currentUser = "d";
+		console.log(req.data);
 
 		console.log(req.body);
 
@@ -1344,293 +1566,69 @@ app.post('/submerchant', function(req, res) {
 });
 
 
+app.post('/render_template_review', function(req, res) {
+	if(req.session.username) {
+
+		//var templateUser = req.body.author;
+		req.body['layout'] = false;
+		console.log(req.body);
 
 
-
-
-// Create a transaction
-// The sale call returns a Transaction Result Object which contains the transaction and information about the request
-/*
-gateway.transaction.sale({
-  amount: "10.00",
-  paymentMethodNonce: "fake-valid-no-billing-address-nonce",
-  options: {
-    submitForSettlement: true
-  }
-}, function (err, result) {
-	console.log(result.success);
-	console.log(result);
-});*/
-
-/*Send a client token to your client
-app.get("/client_token", function (req, res) {
-  gateway.clientToken.generate({}, function (err, response) {
-    res.send(response.clientToken);
-  });
-});
-
-// Receive a payment method nonce from your client
-app.post("/checkout", function (req, res) {
-  var nonceFromTheClient = req.body.payment_method_nonce;
-  // Use payment method nonce here
-});
-
-
-
-
-/*
+		var templateData = req.body;
+		var templateID = req.body.templateID;
 	
-	var Paypal = require('paypal-adaptive')
-	var paypalSdk = new Paypal({
-		userId: 'userId',
-		password: 'password',
-		signature: 'signature',
-		sandbox: true //defaults to false
-	});
-
-	var requestData = {
-	    requestEnvelope: {
-	        errorLanguage:  'en_US',
-	        detailLevel:    'ReturnAll'
-	    },
-	    payKey: 'AP-1234567890'
-	};
-	 
-	paypalSdk.callApi('AdaptivePayments/PaymentDetails', requestData, function (err, response) {
-	    if (err) {
-	        // You can see the error 
-	        console.log(err);
-	        //And the original Paypal API response too 
-	        console.log(response);
-	    } else {
-	        // Successful response 
-	        console.log(response);
-	    }
-	});
+			res.render('partials/' + templateID, templateData, function(err, hbsTemplate){
+			     // hbsTemplate contains the rendered html, do something with it...
+			     if(err){
+			     	return res.send(err.message);
+			     	//res.status(500).send(err);
+			     }
+			     console.log("Printing template html code");
+			     console.log(hbsTemplate);
+			     var html = hbsTemplate; //Some HTML String from code above 
 
 
+			     Users.findOne({'template._id':templateID}, 'template',  function(err, user){
+			     	if(err) {
+			     		return res.send(err);
+			     	}
 
-	
-	console.log("Got POST request");
-	console.log(req.file);
-	console.log(req.file.path);
-	
-	var zip = new admZip(req.file.path);
-	console.log(zip.getZipComment());
-	
-	var zipEntries = zip.getEntries();
-	
-	zipEntries.forEach(function(zipEntry) {
-        console.log(zipEntry.toString()); // outputs zip entries information
-		//zipEntry.entryName = req.file.filename;
-    });
-	
-	zip.extractAllTo("upload/templates/", true);
+					//console.log(user);
+					//console.log(user.template.id(templateID));
+					template = user.template.id(templateID);
 
+					var options = { 
+					"height": template.height,         
+	  				"width": template.width
+					};
+					console.log(options.height);
+					console.log(options.width);
+				 
+					pdf.create(html, options).toFile('views/review_pdf/' + templateID + '.pdf', function(err, templatePDF) {
+					  if (err) {
+					  	return res.send(err);
+					  }
 
+					  console.log(templatePDF); // { filename: '/app/businesscard.pdf' } 
 
+					  //return res.sendFile(templatePDF); 
+					  var downloadtemplate = 'views/review_pdf/' + templateID + '.pdf';
+					  return res.download(downloadtemplate);
 
-
-
-/*
-app.post("/", function (req, res) {
-    //console.log(req.body.user.name)
-    //console.log(req.body.user.email)
-	console.log(req.body.user);
-});
-
-<form method="post" action="/">
-<input type="text" name="user[name]">
-<input type="text" name="user[email]">
-<input type="submit" value="Submit">
-</form>
-*/
-
-
-				/*
-										fs.readFile('views/templates/' + response + '/' + f, "utf-8", function (err, data) {
-										  if (err) {
-											return console.log(err);
-											//throw err;
-										  }
-										  //var identifierList = data.split("\r\n");
-										  var identifierList = data.toString().split("\n");
-										
-										  //var identifierList = identifierList.split("\t");
-										  for(var i = 0; i < identifierList.length; i++){
-											  x = identifierList[i].split("\t");
-											  iList.push(x);
-										  }
-										
-										});
-										*/
-
-
-
-/*
-// Redirect to links requested from GET
-app.get('/', function (req, res){
-    //res.sendfile('public/index.html');
-	console.log("Hello World");
-	console.log("The username is: " + req.session.username);
-	res.sendFile('public/home.html', { root: __dirname });
-});
-	
-app.get('/store', function (req, res){
-    //res.sendfile('public/store.html');
-	res.sendFile('public/store.html', { root: __dirname });
-});
-
-app.get('/view', function (req, res){
-    //res.sendfile('public/view.html');
-	//var template_id = req.params.id;
-	res.sendFile('public/view.html', { root: __dirname });
-	
-});
-
-app.get('/register', function (req, res){
-    //res.sendfile('public/register.html');
-	res.sendFile('public/register.html', { root: __dirname });
-});
-	
-app.get('/login', function (req, res){
-    //res.sendfile('public/login.html');
-	res.sendFile('public/login.html', { root: __dirname });
-});
-
-app.get('/create', function (req, res){
-    //res.sendfile('public/login.html');
-	res.sendFile('public/create.html', { root: __dirname });
-});
-
-
-
-app.get('/create_template', function (req, res){
-    //res.sendfile('public/login.html');
-	//res.sendFile('upload/templates/5/example_template.html', { root: __dirname });
-	//res.render('5', { layout: false });
-	tid = "5820c6c13de7b320f8dfd8b8";
-	
-	fs.realpath(__dirname, function(err, path) {
-		if (err) {
-			console.log(err);
-		 return;
-		}
-		console.log('Path is : ' + path);
-	});
-	
-	fs.readdir(__dirname + "/views/templates/5820c6c13de7b320f8dfd8b8", function(err, files) {
-		if (err) return;
-		files.forEach(function(f) {
-			console.log('Files: ' + f);
-			if(f.length > 5){
-					console.log(f.substr(f.length - 4));
-					if((f.substr(f.length -4)) ==  "html"){
-						fs.rename('views/templates/5820c6c13de7b320f8dfd8b8/' + f, 'views/5.handlebars', function(err) {
-							if ( err ) console.log('ERROR: ' + err);
-						});
-						//res.sendFile('views/templates/5820c6c13de7b320f8dfd8b8/' + f, { root: __dirname }); 
-						
-					}
-			}
-			if((f.substr(f.length - 3)) == "txt"){
-				fs.readFile('views/templates/' + '5820c6c13de7b320f8dfd8b8' + '/' + f, "utf-8", function (err,data) {
-										  if (err) {
-											return console.log(err);
-										  }
-										  console.log(data);
-										  var identifierList = data.split("\r\n");
-										  var iList = [];
-										  //var identifierList = identifierList.split("\t");
-										  for(var i = 0; i < identifierList.length; i++){
-											  x = identifierList[i].split("\t");
-											  iList.push(x);
-										  }
-										  console.log(iList);
-										  templateID = "5817bc792df6ef2bf8362b87";
-										  author = "a";
-										  Users.EditTemplate(author, tid, iList, function (err, user) {
-												if (err) {
-													res.status(400).send(err);
-												} else {
-													//res.redirect('/login');
-													
-												}
-											});
-			
 					});
-			}
-			
-		});
-	});
-	
-	res.render('templates/5820c6c13de7b320f8dfd8b8/5820c6c13de7b320f8dfd8b8', {
-							layout: false,
-							company_Name: "Zaid's Hairy Chest",
-							full_name: "Starboy",
-							address: "P9 cleaner than your church shoes" ,
-							job_Title: "Professional Fantasy Player",
-							phone: "You wish you can get these digits"
-							});
-	
-	
-	
-});
 
-
-app.post('/upload', function(req, res){
-		
-		var template_id = 5;
-		var sampleFile;
-		sampleFile = req.files.file;
-		//console.log(req.files);
-		//console.log(req.files.file);
-		sampleFile.mv('upload/zips/' + template_id + '.zip', function(err) {
-			if (err) {
-				res.status(500).send(err);
-			}
-			else {
-			   
-			    extract('upload/zips/'+template_id+'.zip', {dir: 'views/templates/'+template_id}, function (err) {
-				//extract('upload/zips/' + template_id + '.zip', {dir: 'upload/templates/'}, function (err) {
-					if (err) {
-						res.status(500).send(err);
-					}
-					else{
-						res.send('File uploaded!');
-					}
 				});
-			   
-			}
-		});
+
+			});
+		
+	}
+
+	else {
+		redirect('/');
+	}
 });
-	
-
-/* Request to display the specific template that is in the process of being purchased
-app.get('/templates_buy', function (req, res){
-	var template_id = req.params.id;
-
-	console.log("\n This is the template id: " + template_id + "\n");
-
-	
-	Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
-		Users.findOne({'_id': doc._id}, function (err, user) { 
-			if(err) {
-				return callback(err);
-			}
-			else{		
-				console.log("This is the user" + user + "\n");
-				console.log(user.template.id(template_id));
-				res.json(user.template.id(template_id));	
-			}
-		});	
-	})
-});
-
-*/
-
 
 
 
 app.listen(80);
-console.log("Server running on port 3000");
+console.log("Server running on port 80");

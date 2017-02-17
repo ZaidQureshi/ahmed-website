@@ -24,11 +24,13 @@ var TemplateSchema = new mongoose.Schema({
   icon: {type: String},
   price: {type: Number, required: true},
   author: {type: String, required: true},
-  identifier: [[{type: String}]],
+  identifier: [{type: String}],
+  fieldName: [{type: String}],
   reviewed: {type: Boolean, required: true},
   approved: {type: Boolean, required: true},
   width: {type: Number, required: true},
   height: {type: Number, required: true},
+  email: {type: String},
 },{
     timestamps: true
 });
@@ -41,7 +43,9 @@ var UserSchema = new mongoose.Schema({
   username: {type: String, required: true, index: {unique: true}},
   password: {type: String, required: true},
   template: [TemplateSchema],
-  transaction: [TransactionSchema]
+  transaction: [TransactionSchema],
+  accountID: {type: String},
+  accessToken: {type: String}
 });
 
 
@@ -282,7 +286,7 @@ UserSchema.statics.CreateTemplate = function (template, callback) {
 };
 
 
-UserSchema.statics.EditTemplate = function (author, templateID, iList, iconPath,  callback) {
+UserSchema.statics.EditTemplate = function (author, templateID, iList, iconPath, fieldName, callback) {
 
 	//Find the user with the author that is passed in
 	this.findOne({'username': author}, function (err, user) { 
@@ -295,8 +299,13 @@ UserSchema.statics.EditTemplate = function (author, templateID, iList, iconPath,
 		// Edit the identifier list
 		console.log(user.template.id(templateID));
 		console.log(iList);
+
+    // Assign the email of the user to the template
+    user.template.id(templateID).email = user.email;
+    console.log("Printing email:" + user.template.id(templateID).email)
 		for(var i = 0; i < iList.length; i++){
-			console.log(iList[i][0] + "\n");
+			//console.log(iList[i][0] + "\n");
+      console.log(iList[i] + "\n");
 			user.template.id(templateID).identifier.push(iList[i]);
 		}
 		
@@ -305,6 +314,9 @@ UserSchema.statics.EditTemplate = function (author, templateID, iList, iconPath,
 		user.template.id(templateID).icon = iconPath;
 		console.log(user.template.id(templateID).icon);
 		
+    // Save field name list
+    user.template.id(templateID).fieldName = fieldName;
+
 		// Save the changes and return the user
 		user.save(function(err) {
 			if(err) { return callback(err); }
@@ -386,11 +398,33 @@ UserSchema.statics.CreateTransaction = function (templateID, templateData, curre
         return callback(null, user);
       });
 
-
-
     }     
   });
 };
+
+
+
+// Set User account id and access token
+UserSchema.statics.CreateMerchantAccount = function (currentUser, accountID, accessToken, callback) {
+
+  this.findOne({'username': currentUser}, function (err, user) { 
+    if(err) {
+      return callback(err);
+    }
+    else {   
+      console.log("This is the user that we are going to assign accountID and accessToken: " + user + "\n");
+      user.accountID = accountID;
+      user.accessToken = accessToken;
+
+      user.save(function (err, user){
+        if (err) return callback(err);
+        console.log("This is the user after being saved" + user + '\n');
+        return callback(null, user);
+      });
+    }     
+  });
+};
+
 
 
 

@@ -30,7 +30,7 @@
 	  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
 </head>
-<body>
+<body id="homepage">
 
 	<!-- PRELOADER -->
 	<div id="st-preloader">
@@ -58,14 +58,17 @@
 				<div class="collapse navbar-collapse" id="st-navbar-collapse" ng-controller="NavController">
 					<ul class="nav navbar-nav navbar-right">	
 				    	<li><a href="#header">Home</a></li>
-				    	<li><a href="#instruction">Instructions</a></li>
+				    	
 				    	<li><a href="#our-works">Samples</a></li>
 				    	<li><a href="#services">Services</a></li>
 				    	<li><a href="#about-us">About Us</a></li>
+
 						<!--
 				    	<li><a href="#about-us">About Me</a></li>
 						<li><a href="#pricing">Pricing</a></li>-->
 						<li><a href="/store">Store</a></li>
+						<li><a href="#contact">Contact Us</a></li>
+
 						{{#unless username}}
 							<li><a href="/login" >Log In</a></li>
 						{{else}}						
@@ -310,7 +313,7 @@
 				</div>
 					<div class="col-md-12">
 						<div class="about-us">
-							<p>Leaflate is an easy, cost efficient and convenient way for businesses to increase their advertising and growth. It is designed to help businesses develop and create their own advertisements. With a large variety of templates and pictures to choose from, Leaflate will build your ad with you. It will automatically combine your pictures and the template of your choice. Just type any details you'd like to add and you'll be ready to print. Leaflate will supply your business with numerous ways to advertise and help build your marketing strategy. It will allow you to build your business presence within your community and expand your market.</p>
+							<p>Leaflate is an easy, cost efficient and convenient way for businesses to increase their advertising and growth. It is designed to help businesses explore different categories of templates and create their own advertisements. With a large variety of templates to choose from, Leaflate will build your ad with you. After selecting a template design, just input the pictures and text of your choice and Leaflate will automatically combine the two to create your ready to print ad!</p>
 						</div>
 					</div>
 				</div>		
@@ -319,7 +322,7 @@
 	</section>
 	<!-- /About Us -->
 	
-	<!-- CONTACT ->
+	<!-- CONTACT -->
 	<section id="contact">
 		<div class="container">
 			<div class="row">
@@ -338,7 +341,7 @@
 				
 				</div>
 				<div class="col-sm-7 col-sm-offset-1">
-					<form action="php/send-contact.php" class="contact-form" name="contact-form" method="post">
+					<form action="/contact_us" class="contact-form" name="contact-form" method="post">
 						<div class="row">
 							<div class="col-sm-6">
 								<input type="text" name="name" required="required" placeholder="Name*">
@@ -350,7 +353,7 @@
 								<input type="text" name="subject" placeholder="Subject">
 							</div>
 							<div class="col-sm-6">
-								<input type="text" name="website" placeholder="Website">
+								<input type="text" name="userId" placeholder="User ID">
 							</div>
 							<div class="col-sm-12">
 								<textarea name="message" required="required" cols="30" rows="7" placeholder="Message*"></textarea>

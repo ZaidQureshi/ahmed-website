@@ -67,13 +67,57 @@
 			<div class="row">
 				<div class="col-md-8">
 					<div class="create-template">
+
+							<a id="start_oauth2">Click here to create your WePay account</a>
+
+						<script src="https://static.wepay.com/min/js/wepay.v2.js" type="text/javascript"></script>
+						<script type="text/javascript">
+
+						WePay.set_endpoint("stage"); // stage or production
+
+						WePay.OAuth2.button_init(document.getElementById('start_oauth2'), {
+						    "client_id":"181327",
+						     "scope":["manage_accounts","collect_payments","view_user","send_money","preapprove_payments"],
+						    "redirect_uri":"http://localhost:80/",
+						    "top":100, // control the positioning of the popup with the top and left params
+						    "left":100,
+						    "state":"robot", // this is an optional parameter that lets you persist some state value through the flow
+						    "callback":function(data) {
+								/** This callback gets fired after the user clicks "grant access" in the popup and the popup closes. The data object will include the code which you can pass to your server to make the /oauth2/token call **/
+								if (data.code.length !== 0) {
+									// send the data to the server
+									console.log("Sending data to the server");
+									console.log(data);
+
+									newForm = document.createElement('form');
+								    newForm.setAttribute("method", "POST");
+								    newForm.setAttribute("action", "/createWepayToken");
+
+								    var input = document.createElement('input');
+								    input.type = "hidden";
+								    input.name = "data";
+								    input.value = data.code;
+
+								    newForm.appendChild(input);
+
+								    document.body.appendChild(newForm);
+								    newForm.submit();
+
+								} else {
+									// an error has occurred and will be in data.error
+									console.log(data.error);
+								}
+							}
+						});
+
+						</script>
 						
 						{{#if submerchantError}}
 						<h3 font-color="red">Error: {{submerchantError}}</h3>
 						{{/if}}
 
 
-
+						
 						<p>Sign up for Venmo Account: <a href="https://venmo.com/signup">https://venmo.com/signup</a></p>
 						<br>
 
@@ -98,8 +142,7 @@
 						<br>
 
 						<label for="name" class="cols-sm-2 control-label">Enter your date of birth</label>
-						<input type="date" placeholder="1981-11-19" name ="dateOfBirth" required>
-						<br>
+						<input style="width: 178px; height: 31px;" type="date" placeholder="1981-11-19" name ="dateOfBirth" required>
 						<br>
 
 						<label for="name" class="cols-sm-2 control-label">Enter your street address</label>	
@@ -123,13 +166,17 @@
 						<input type="text" placeholder="joedoe@gmail.com" name ="venmoEmail" required>
 						<br>
 						<br>
-
+						<br>
+						<br>
+						<br>
 						<h5>Terms & Conditions</h5>
-						<p>Lates uses Braintree, a division of PayPal, Inc. (Braintree) for payment processing services. By using the Braintree payment processing services you agree to the Braintree Payment Services Agreement available at <a href="https://www.braintreepayments.com/legal/gateway-agreement">https://www.braintreepayments.com/legal/gateway-agreement</a>, and the applicable bank agreement available at 
+						<p>Leaflate uses Braintree, a division of PayPal, Inc. (Braintree) for payment processing services. By using the Braintree payment processing services you agree to the Braintree Payment Services Agreement available at <a href="https://www.braintreepayments.com/legal/gateway-agreement">https://www.braintreepayments.com/legal/gateway-agreement</a>, and the applicable bank agreement available at 
 						<a href="https://www.braintreepayments.com/legal/cea-wells">https://www.braintreepayments.com/legal/cea-wells</a>.</p>
 
-						<label for="name" class="cols-sm-2 control-label">I agree to these Terms & Conditions</label>	
-						<input type="checkbox" name ="tosAccepted" required>
+						<div class="conditions">
+							<label for="condition" class="cols-sm-2 control-label">I agree to these Terms & Conditions</label>
+							<input type="checkbox" name ="tosAccepted" required>
+						</div>
 						<br>
 						<br>
 											
@@ -138,6 +185,7 @@
 						</form>		
 						
 						</div>
+
 					</div>
 					<hr>
 				</div>

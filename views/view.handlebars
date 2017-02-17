@@ -103,12 +103,7 @@
                    
 						</ul>
 					</div>
-					<div class="sidebar-widget">
-						<h4 class="sidebar-title">Identifiers</h4>
-							<div class="tagcloud" ng-repeat="identifier in viewCtrl.template.identifier">
-								<a href="">{[{identifier[1]}]}</a>						
-							</div>
-					</div>	
+					{{> myPartials/displayIdentifier}}
 					
 				</div><!-- end of col 3 -->
 			</div><!-- end of row -->

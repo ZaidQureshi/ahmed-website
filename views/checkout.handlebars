@@ -27,8 +27,15 @@
 	  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 	  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
+	<!-- Angular JS Content Delivery Network -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
+	<!-- Controllers -->
+	<script src="controllers/app.js"></script>
 	
 </head>
+
 <body ng-controller="ViewController as viewCtrl">
 	<!-- PRELOADER -->
 	<div id="st-preloader">
@@ -72,6 +79,81 @@
 						<h5 class="sidebar-title">Enter the requested payment information</h5>
 						<hr>
 						</div>
+
+						<form action="/your-server-side-code" method="POST">
+						  <script
+						    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+						    data-key="pk_test_lqzfsPu3GLT0KgdYBJcFVKzp"
+						    data-amount= "{{username}}"
+						    data-name="Demo Site"
+						    data-description="Widget"
+						    data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+						    data-locale="auto">
+						  </script>
+						</form>
+
+						<input type="hidden" id="price" ng-value="viewCtrl.template.price"/>
+
+						
+						<div id="wepay_checkout"></div>
+						<script type="text/javascript" src="https://www.wepay.com/min/js/iframe.wepay.js">
+						</script>
+
+						<script type="text/javascript">
+    						WePay.iframe_checkout("wepay_checkout", "{{checkout_uri}}");
+						</script>
+
+						{{checkout_uri}}
+						{{template}}
+
+						<!--
+						<script src="https://checkout.stripe.com/checkout.js"></script>
+						<button id="customButton">Purchase</button>
+
+		
+						<script>
+							var handler = StripeCheckout.configure({
+							  key: 'pk_test_lqzfsPu3GLT0KgdYBJcFVKzp',
+							  image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
+							  locale: 'auto',
+							  token: function(token) {
+							    // You can access the token ID with `token.id`.
+							    // Get the token ID to your server-side code for use.
+							    console.log(token.id);
+							    console.log(token);
+
+
+							    newForm = document.createElement('form');
+							    newForm.setAttribute("method", "POST");
+							    newForm.setAttribute("action", "/checkout");
+							    document.body.appendChild(newForm);
+							    newForm.submit();
+
+							  }
+							});
+
+							document.getElementById('customButton').addEventListener('click', function(e) {
+							  // Open Checkout with further options:
+							  handler.open({
+							    name: 'Demo Site',
+							    description: '2 widgets',
+							    amount: "{{template.price}}"*100
+							  });
+							  e.preventDefault();
+							});
+
+							// Close Checkout on page navigation:
+							window.addEventListener('popstate', function() {
+							  handler.close();
+							});
+						</script>
+					-->
+
+
+						
+<!--
+
+						
 						<form id="checkout" method="post" action="/checkout">
 						  <div id="payment-form"></div>
 						  <input type="hidden" name="templateID" value="{[{viewCtrl.template._id}]}">
@@ -79,25 +161,23 @@
 						  <input type="hidden" name="price" value="{[{viewCtrl.template.price}]}">
 						  <input type="submit" class="btn btn-primary" value="Pay ${[{viewCtrl.template.price}]}">
 						</form>
-						<br>
-						<h5 class="sidebar-title">If you are logged out and redirected to the home page, there was an error with the transaction.
-						Please try again</h5>
-						<br>
-						<h5 class="sidebar-title"> Upon successful transaction, you will be redirected to a confirmation page with your purchased template's details can be found.</h5>
-						<br>
+
 
 						<script src="https://js.braintreegateway.com/js/braintree-2.30.0.min.js"></script>
 						<script>
+							var token = "{{{clientToken}}}";
 
-						var token = "{{{clientToken}}}";
-						
-
-						braintree.setup(token, "dropin", {
-						  container: "payment-form"
-						});
-
+							braintree.setup(token, "dropin", {
+							  container: "payment-form"
+							});
 						</script>
+
+-->s
+
+
+
 					</div>
+				
 					<hr>
 				</div>
 					
@@ -105,6 +185,15 @@
 			</div><!-- end of row -->
 		</div><!-- end of container -->
 	</section>
+
+	<!--
+						<br>
+						<h5 class="sidebar-title">If you are logged out and redirected to the home page, there was an error with the transaction.
+						Please try again</h5>
+						<br>
+						<h5 class="sidebar-title"> Upon successful transaction, you will be redirected to a confirmation page with your purchased template's details can be found.</h5>
+						<br>
+-->
 
 
 	<!-- FOOTER -->
@@ -130,12 +219,7 @@
 	<script type="text/javascript" src="js/jquery.magnific-popup.min.js"></script><!-- magnific-popup -->
 	<script type="text/javascript" src="js/scripts.js"></script><!-- Scripts -->
 	
-	<!-- Angular JS Content Delivery Network -->
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
-	<!-- Controllers -->
-	<script src="controllers/app.js"></script>
+
 	
 	<script type="text/javascript" src="/js/minicart.js"></script>
 	<script

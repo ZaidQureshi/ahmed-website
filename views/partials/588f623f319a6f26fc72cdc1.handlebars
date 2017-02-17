@@ -1,0 +1,63 @@
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <style>
+
+
+
+.imgA1{
+	position: absolute;
+    left: 0px;
+    top: 0px;
+	z-index: -1;
+	width: 900px;
+	height: 450px;
+}
+
+.business-name {
+	font-weight: bold;
+	font-family: arial;
+	margin-top: 160px;
+	margin-left: 100px;
+
+	text-align: left;
+}
+
+.business-info{
+	margin-left: 390px;
+	margin-top: -180px;
+}
+.business-address{
+	margin-left: 390px;
+	margin-top: 10px;
+}
+.business-connection{
+	margin-left: 390px;
+	margin-top: 30px;
+}
+.container9 {
+	width: 900px;
+	height: 450px;
+}
+</style>
+<div class="container9">
+<div class="business-card">
+	<span><img class="imgA1" src="http://wallpapercave.com/wp/07kILzG.png"></span>
+	<div class="business-name">
+		<h1><strong>{{FullName}}</strong></h1>
+		<h1>{{Position}}</h1>
+	</div>
+	<div class="business-info">
+		<h2> <span><img src="{{imageOne}}" style="width: 50px; height: 50px;"> {{PhoneNumber}}</span></h2>
+	</div>
+	<div class="business-address">
+		<h2> <span><img src="{{imageTwo}}" style="width: 50px; height: 50px;"> {{Address}}</span></h2>
+	</div>
+	<div class="business-connection">
+		<h2> <span><img src="{{imageThree}}" style="width: 50px; height: 50px;"> {{Connection}}</span></h2>
+	</div>
+</div>
+</div>
+
+
+
+

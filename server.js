@@ -63,8 +63,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -378,10 +378,6 @@ app.get('/checkout', function (req, res){
 		console.log(req.query.id);
 		var templateID = req.query.id;
 
-
-		// DELETE HARD CODE
-		templateID = "5888e41b9574671ef42bed35";
-		// Delete HARD CODE
 
 		Users.findOne({'template._id':templateID}, 'template',  function(err, doc){
 			if(err) {
@@ -885,8 +881,7 @@ app.post('/render_purchased_template', function(req, res){
 		Users.findOne({ username: templateAuthor},  function(err, doc) {
 			if(err) { return res.send(err.message); }
 
-			console.log(doc.accessToken);
-			console.log(doc.accountID);
+		
 			console.log("Printing template for sale: ");
 			console.log(doc.template.id(templateID));
 			console.log(doc.template.id(templateID).price);
@@ -913,6 +908,7 @@ app.post('/render_purchased_template', function(req, res){
 		        },
 		        function(payment) {
 		        	console.log("Creating WePay Transaction.");
+		        	payment = JSON.parse(payment.toString('utf8'));
 		        	if(payment) {
 		        		console.log(payment);
 		        		req.session.checkout_uri = payment.preapproval_uri;
@@ -926,30 +922,13 @@ app.post('/render_purchased_template', function(req, res){
 												res.send(err.message);
 											} 
 											else {
-												console.log(response);
+												console.log(payment);
 												//req.session.templateData = null; 
 												//req.session.transactionID = result.transaction.id;
 								              	//return res.redirect("/order" + "?id=" + transactionID);
 								              	return res.redirect("/checkout" + "?id=" + req.body.templateID);
 										    }
 										}); // end of storing the transaction into the database
-
-
-
-						/*
-
-		        		Users.CreateTransaction(templateID, templateData, currentUser, payment, payment.preapproval_id, function (err, response) {
-							if (err) {
-								res.send(err.message);
-							} 
-							else {
-								console.log(response);
-								//req.session.templateData = null; 
-								//req.session.transactionID = result.transaction.id;
-				              	//return res.redirect("/order" + "?id=" + transactionID);
-				              	return res.redirect("/checkout" + "?id=" + req.body.templateID);
-						    }
-						}); */
 
 
 					} // end of if statemnet
@@ -1046,7 +1025,9 @@ app.get('/order', function (req, res) {
 					        	},
 					        },
 					        function(response1){
+					        	response1 = JSON.parse(response1.toString('utf8'));
 					        	console.log(response1);
+
 
 					        	var wepay_settings = {
 							       	'account_id' : doc.accountID,
@@ -1075,6 +1056,7 @@ app.get('/order', function (req, res) {
 							        	},
 							        },
 							        function(response2){
+							        	response2 = JSON.parse(response2.toString('utf8'));
 							        	console.log(response2);
 							        	return res.redirect('/orderComplete');
 							        	
@@ -1445,7 +1427,7 @@ app.get('/createWepayAccount', function(req, res){
         		});
         	}
         	else {
-        		return res.redirect('/index');
+        		return res.redirect('/');
         	}
     });
 });

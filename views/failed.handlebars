@@ -58,7 +58,7 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="section-title">
-						<h1>Checkout</h1>
+						<h1 style="color: red;">Failed Payment</h1>
 						<span class="st-border"></span>
 					</div>
 				</div>
@@ -73,22 +73,16 @@
 	<section id="our-works">
 		<div class="container">
 			<div class="row">
-				<div class="col-md-6">
+				<div class="col-md-3">
 					<div class="single-blog">
-						<div class="sidebar-widget">
-						<h5 class="sidebar-title">Enter the requested payment information</h5>
-						<hr>
-						</div>
+			
 
 
-						<div id="wepay_checkout"></div>
-						<script type="text/javascript" src="https://www.wepay.com/min/js/iframe.wepay.js">
-						</script>
-
-						<script type="text/javascript">
-    						WePay.iframe_checkout("wepay_checkout", "{{checkout_uri}}");
-						</script>
-						{{checkout_uri}}
+						<form action="/checkout" method="GET">
+							<p>Failed payment attempt, click the button below to try again.</p>
+							<button type="submit"  value="submit" class="btn btn-primary btn-lg btn-block login-button">Try Again</button>
+						</form>
+					</div>
 				
 					<hr>
 				</div>
@@ -97,15 +91,6 @@
 			</div><!-- end of row -->
 		</div><!-- end of container -->
 	</section>
-
-	<!--
-						<br>
-						<h5 class="sidebar-title">If you are logged out and redirected to the home page, there was an error with the transaction.
-						Please try again</h5>
-						<br>
-						<h5 class="sidebar-title"> Upon successful transaction, you will be redirected to a confirmation page with your purchased template's details can be found.</h5>
-						<br>
--->
 
 
 	<!-- FOOTER -->

@@ -21,6 +21,10 @@ var fs = require('fs');
 //var admZip = require('adm-zip');
 //var multer = require('multer');
 
+var wepay = require('wepay').WEPAY;       // if wepay.js is installed globally/locally
+// var wepay = require('./wepay').WEPAY;  // if wepay.js is in the same directory as your script
+
+
 var fileUpload = require('express-fileupload');
 var extract = require('extract-zip')
 	 
@@ -63,8 +67,8 @@ app.use('/private/*', expressJwt({secret: 'supersecret'}));
 var mongojs = require('mongojs');
 
 // Authenticate into the database in the server
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
+var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
+//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
 
 //var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
 
@@ -369,58 +373,7 @@ app.get('/buy_template', function (req, res){
 	}
 });
 
-app.get('/checkout', function (req, res){
 
-
-	//if (req.session.username) {
-		// Send a client token to your client
-		console.log("I got a GET request from" + req.session.username + "\n");
-		console.log(req.query.id);
-		var templateID = req.query.id;
-
-
-		Users.findOne({'template._id':templateID}, 'template',  function(err, doc){
-			if(err) {
-				console.log(err);
-				return res.send(err);
-			}
-			//console.log("\n This is the resule of the query" + doc + "\n");
-			//console.log(doc._id);
-			
-			//console.log(doc.template);
-			//res.json(doc.template);
-			Users.findOne({'_id': doc._id}, function (err, user) { 
-				if(err) {
-					return callback(err);
-				}
-				else{		
-					//console.log("This is the user" + user + "\n");
-					//console.log(user.template.id(template_id));
-					//res.json(user.template.id(template_id));
-
-					//gateway.clientToken.generate({}, function (err, response) {
-				 	//console.log(response.clientToken);
-				    res.render('checkout', {
-						layout: false,
-						username: req.session.username,
-						template: user.template.id(templateID),
-						//clientToken: response.clientToken,
-						checkout_uri: req.session.checkout_uri
-						});
-				//});
-
-
-					
-				}
-			});	
-		});
-
-		
-	//}
-	//else {
-	//	res.redirect('/');
-	//}
-});
 
 
 app.get('/get_transactions', function (req, res){
@@ -827,6 +780,7 @@ app.post('/create', function(req, res){
 
 
 
+
 // Approve or Disapprove a template by changing it's field in the database
 app.post('/approve', function(req, res){
 	if(req.session.username){
@@ -861,6 +815,7 @@ app.post('/render_purchased_template', function(req, res){
 	if(req.session.username) {
 		console.log("Got POST request");
 		console.log(req.body);
+		//req.session.paymentFailed = false;
 
 		// Assign layout to be false when rendered with the template and template data
 		req.body['layout'] = false;
@@ -904,7 +859,8 @@ app.post('/render_purchased_template', function(req, res){
 		        	'short_description' : 'Template ID: ' + templateID +  ' Author: '+ templateAuthor,
 		        	'period' : 'once',
 		        	'currency' :'USD',
-				    "redirect_uri": "http://localhost/order?",
+				    //"redirect_uri": "http://localhost/order?",
+				    "redirect_uri": "http://leaflate.com/order?",
 		        },
 		        function(payment) {
 		        	console.log("Creating WePay Transaction.");
@@ -933,6 +889,7 @@ app.post('/render_purchased_template', function(req, res){
 
 					} // end of if statemnet
 		        	else {
+		        		//req.session.paymentFailed = true;
 		        		return res.redirect('/index');
 		        	}
 		    }); // end of wp.call('/checkout/create')
@@ -944,322 +901,200 @@ app.post('/render_purchased_template', function(req, res){
 });
 
 
+app.get('/checkout', function (req, res){
+	if(req.session.username){ 
+		res.render('checkout', {
+			layout: false,
+			checkout_uri: req.session.checkout_uri
+		});
+	}
+	else {
+		res.redirect('/');
+	}
+});
+
+
+
 app.get('/orderComplete', function(req, res){
 
-	var transactionID = req.session.transactionID;
-	var transaction;
-	currentUser = 'b';
-
-	Users.findOne({ username: currentUser},  function(err, doc){
-			//console.log("\n This is the resule of the query" + doc + "\n");
-			console.log(doc + "\n");
-			for(i = 0; i < doc.transaction.length; i++){
-				if (doc.transaction[i].transactionID == transactionID){
-					console.log(doc.transaction[i]);
-					transaction = doc.transaction[i];
-				}
-			}
-		
-			res.render("order", {
-				layout: false,
-				transaction: transaction,
-				username: req.session.username
-			});
-	  	//req.session.transactionID = null;
-		});
-
-
-
+	if(req.session.username) { 
+		if(req.session.failedPayment){
+			return res.redirect('/failed');
+		}
+		else { 
+			var transactionID = req.session.transactionID;
+			var transaction;
+			currentUser = req.session.username;
+			Users.findOne({ username: currentUser},  function(err, doc){
+					//console.log("\n This is the resule of the query" + doc + "\n");
+					console.log(doc + "\n");
+					for(i = 0; i < doc.transaction.length; i++){
+						if (doc.transaction[i].transactionID == transactionID){
+							console.log(doc.transaction[i]);
+							transaction = doc.transaction[i];
+						}
+					}
+				
+					res.render("order", {
+						layout: false,
+						transaction: transaction,
+						username: req.session.username
+					});
+				});
+		}
+	}
+	else {
+		res.redirect('/');
+	}
 });
 
 
 
 app.get('/order', function (req, res) {
 
-	console.log(req.query.preapproval_id);
-	//var transaction = req.session.transactdion;	
-	//console.log(transaction);
-	var transactionID = req.query.preapproval_id;
-	req.session.transactionID = transactionID;
-	var preapproval_id = req.session.preapproval_id;
-	var templateID = req.session.templateID;
+
+	if(req.session.username){
+		console.log(req.query.preapproval_id);
+		var transactionID = req.query.preapproval_id;
+
+ 		var wepay_settings = {
+			'account_id' : '69241989',
+			'client_id' : '181327',
+	    	'client_secret' : '059b31fd34',
+		    'access_token' :  'STAGE_898b945443a6a489b8f2ed07d1b8ee0d9096b2ae1cc66209bed6e821ce4846f2'
+		}
+		var wpTest = new wepay(wepay_settings);
+		wpTest.use_staging(); // use staging environment (payments are not charged)
+
+		wpTest.call('/preapproval', {
+			'preapproval_id' : transactionID
+			},
+			 function(response){
+			 	response = JSON.parse(response.toString('utf8'));
+			 	console.log(response);
+			 	req.session.failedPayment = false;
+				if(response.status == "new" || response.status == "approved" || response.status == "completed") {
+
+					req.session.transactionID = transactionID;
+					var preapproval_id = req.session.preapproval_id;
+					var templateID = req.session.templateID;
+					var templateAuthor = req.session.templateAuthor;
+						// Search for the author of the template to retrieve accesc_token and accound_id to process the transaction
+						Users.findOne({ username: templateAuthor},  function(err, doc) {
+							if(err) { return res.send(err.message); }
+
+							console.log(doc.accessToken);
+							console.log(doc.accountID);
+							console.log("Printing template for sale: ");
+							console.log(doc.template.id(templateID));
+							console.log(doc.template.id(templateID).price);
+							var templatePrice = doc.template.id(templateID).price;
+							
+								       	var wepay_settings = {
+									       	'account_id' : '69241989',
+											'client_id' : '181327',
+									    	'client_secret' : '059b31fd34',
+										    'access_token' :  'STAGE_898b945443a6a489b8f2ed07d1b8ee0d9096b2ae1cc66209bed6e821ce4846f2',
+										    'preapproval_id' : preapproval_id
+										}
+
+										var wp1 = new wepay(wepay_settings);
+										wp1.use_staging(); // use staging environment (payments are not charged)
 
 
-	var templateAuthor = req.session.templateAuthor;
-		// Search for the author of the template to retrieve accesc_token and accound_id to process the transaction
-		Users.findOne({ username: templateAuthor},  function(err, doc) {
-			if(err) { return res.send(err.message); }
-
-			console.log(doc.accessToken);
-			console.log(doc.accountID);
-			console.log("Printing template for sale: ");
-			console.log(doc.template.id(templateID));
-			console.log(doc.template.id(templateID).price);
-			var templatePrice = doc.template.id(templateID).price;
-	
-			
-				       	var wepay_settings = {
-					       	'account_id' : '69241989',
-							'client_id' : '181327',
-					    	'client_secret' : '059b31fd34',
-						    'access_token' :  'STAGE_898b945443a6a489b8f2ed07d1b8ee0d9096b2ae1cc66209bed6e821ce4846f2',
-						    'preapproval_id' : preapproval_id
-						}
-
-						var wp1 = new wepay(wepay_settings);
-						wp1.use_staging(); // use staging environment (payments are not charged)
+										var templatePriceAhmed = Math.floor(templatePrice *.5);
+										wp1.call('/checkout/create', {
+									        	'account_id' : '69241989',
+									        	'amount' : templatePriceAhmed,
+									        	'short_description' : 'Services rendered by freelancer',
+									        	'type' : 'service',
+									        	'currency' :'USD',
+									        	'payment_method' : {
+									        		'type' : 'preapproval',
+									        		'preapproval' : {
+									        			'id' : preapproval_id
+									        		}
+									        	},
+									        },
+									        function(response1){
+									        	response1 = JSON.parse(response1.toString('utf8'));
+									        	console.log(response1);
 
 
-						var templatePriceAhmed = Math.floor(templatePrice *.5);
-						wp1.call('/checkout/create', {
-					        	'account_id' : '69241989',
-					        	'amount' : templatePriceAhmed,
-					        	'short_description' : 'Services rendered by freelancer',
-					        	'type' : 'service',
-					        	'currency' :'USD',
-					        	'payment_method' : {
-					        		'type' : 'preapproval',
-					        		'preapproval' : {
-					        			'id' : preapproval_id
-					        		}
-					        	},
-					        },
-					        function(response1){
-					        	response1 = JSON.parse(response1.toString('utf8'));
-					        	console.log(response1);
+									        	var wepay_settings = {
+											       	'account_id' : doc.accountID,
+													'client_id' : '181327',
+											    	'client_secret' : '059b31fd34',
+												    'access_token' :  doc.accessToken,
+												    'preapproval_id' : preapproval_id
+												}
+
+												var wp2 = new wepay(wepay_settings);
+												wp2.use_staging(); // use staging environment (payments are not charged)
 
 
-					        	var wepay_settings = {
-							       	'account_id' : doc.accountID,
-									'client_id' : '181327',
-							    	'client_secret' : '059b31fd34',
-								    'access_token' :  doc.accessToken,
-								    'preapproval_id' : preapproval_id
-								}
+												var templatePriceMerchant = templatePrice - templatePriceAhmed;
+												wp2.call('/checkout/create', {
+											        	'account_id' : doc.accountID, //req.session.account_id,
+											        	'amount' : templatePriceMerchant,
+											        	'short_description' : 'Services rendered by freelancer',
+											        	'type' : 'service',
+											        	'currency' :'USD',
+											        	'payment_method' : {
+											        		'type' : 'preapproval',
+											        		'preapproval' : {
+											        			'id' : preapproval_id
+											        		}
+											        	},
+											        },
+											        function(response2){
+											        	response2 = JSON.parse(response2.toString('utf8'));
+											        	console.log(response2);
+											        	return res.redirect('/orderComplete');
+											        	
 
-								var wp2 = new wepay(wepay_settings);
-								wp2.use_staging(); // use staging environment (payments are not charged)
+											    }); // end of wepay 'checkout/create' call 2 (template author)
 
+									        }); // end of wepay 'checkout/create' call 1 (ahmed)
 
-								var templatePriceMerchant = templatePrice - templatePriceAhmed;
-								wp2.call('/checkout/create', {
-							        	'account_id' : doc.accountID, //req.session.account_id,
-							        	'amount' : templatePriceMerchant,
-							        	'short_description' : 'Services rendered by freelancer',
-							        	'type' : 'service',
-							        	'currency' :'USD',
-							        	'payment_method' : {
-							        		'type' : 'preapproval',
-							        		'preapproval' : {
-							        			'id' : preapproval_id
-							        		}
-							        	},
-							        },
-							        function(response2){
-							        	response2 = JSON.parse(response2.toString('utf8'));
-							        	console.log(response2);
-							        	return res.redirect('/orderComplete');
-							        	
+							});
 
-							    }); // end of wepay 'checkout/create' call 2 (template author)
-
-					        }); // end of wepay 'checkout/create' call 1 (ahmed)
-
-			});
-
-
-
-
-
-/*
-	currentUser = 'b';
-
-	Users.findOne({ username: currentUser},  function(err, doc){
-			//console.log("\n This is the resule of the query" + doc + "\n");
-			console.log(doc + "\n");
-			for(i = 0; i < doc.transaction.length; i++){
-				if (doc.transaction[i].transactionID == transactionID){
-					console.log(doc.transaction[i]);
-					transaction = doc.transaction[i];
+				} // end of if statement of checking the preapproval id
+				else {
+					// failed
+					console.log("Failed payment");
+					//return res.redirect('/failed'); 	
+					req.session.failedPayment = true;
+					return res.redirect('/orderComplete');
 				}
-			}
-		
-			res.render("order", {
-				layout: false,
-				transaction: transaction,
-				username: req.session.username
-			});
-	  	//req.session.transactionID = null;
+
+
 		});
-*/
 
-	/*
-	
-	if(req.session.username) {
-	  var transaction;
-	  var transactionID = req.session.transactionID;
-	  //var transactionID = "g2z6xbe2";
-	  console.log(transactionID);
-	  var currentUser = req.session.username;
-	  //var currentUser = "c";
-
-	  Users.findOne({ username: currentUser},  function(err, doc){
-			//console.log("\n This is the resule of the query" + doc + "\n");
-			console.log(doc + "\n");
-			for(i = 0; i < doc.transaction.length; i++){
-				if (doc.transaction[i].transactionID == transactionID){
-					console.log(doc.transaction[i]);
-					transaction = doc.transaction[i];
-				}
-			}
 		
-
-	  
-	  req.session.transactionID = null;
-
-	  //gateway.transaction.find(transactionID, function (err, transaction) {
-	    //result = createResultObject(transaction);
-	  //});
-	  });
 	}
 
-	else{
-		//res.redirect('/');
+	else {
+		res.redirect('/');	
 	}
-	*/
-	
 
 });
 
 
-app.post('/checkout', function(req, res) {
-
+app.get('/failed', function(req, res){
 	if(req.session.username) {
-		console.log(req.body);
-		// Receive a payment method nonce from the client
-		var nonce = req.body.payment_method_nonce;
-		console.log(nonce);
-		//res.send("Success");
-
-		var currentUser = req.session.username;
-		console.log(currentUser);
-		var templateID = req.body.templateID; 
-		var templateData = req.session.templateData;
-		var merchantAccountId = req.body.templateAuthor;
-		console.log("This is the seller: " + merchantAccountId);
-		console.log("This is the buyer: " + currentUser);
-
-		var templatePrice = req.body.price;
-		var serviceFee = 0.1;
-		var serviceAmount = (templatePrice*serviceFee);
-		serviceAmount = Math.ceil(serviceAmount);
-		console.log(templatePrice);
-		console.log(serviceAmount);
-
-		if(merchantAccountId == "ahmed"){
-				// Create the Transaction
-				gateway.transaction.sale({
-				  //merchantAccountId: merchantAccountId,
-				  amount: templatePrice,
-				  //serviceFeeAmount: serviceAmount,
-				  paymentMethodNonce: nonce,
-				  options: {
-				    submitForSettlement: true
-				  }
-				}, function (err, result) {
-					if (err) {
-						res.send(err.message);
-					}
-					else {
-						if(result.success){
-							console.log(result.success);
-							console.log(result.transaction);
-							var transaction = result.transaction;
-							var transactionID = result.transaction.id;
-							//console.log(result); 	
-
-							// If transaction is successful, render template that was requested for purcahse with the data stored in transaction
-							if(result.success){
-								Users.CreateTransaction(templateID, templateData, currentUser, transaction, transactionID, function (err, response) {
-						            if (err) {
-						                res.send(err.message);
-						            } else {
-										console.log(response);
-										req.session.templateData = null; 
-										req.session.transactionID = result.transaction.id;
-						                return res.redirect("/order" + "?id=" + transactionID);
-						            }
-						        });
-								
-								
-							}
-						}
-						else{
-							console.log(result.success);
-							return res.redirect("/");
-						}
-					}
-
-				});
-				//res.send("Success");
-			}
-			else {
-			// Create the Transaction
-				gateway.transaction.sale({
-				  merchantAccountId: merchantAccountId,
-				  amount: templatePrice,
-				  serviceFeeAmount: serviceAmount,
-				  paymentMethodNonce: nonce,
-				  options: {
-				    submitForSettlement: true
-				  }
-				}, function (err, result) {
-					if (err) {
-						res.send(err.message);
-					}
-					else {
-						if(result.success){
-							console.log(result.success);
-							console.log(result.transaction);
-							var transaction = result.transaction;
-							var transactionID = result.transaction.id;
-							//console.log(result); 	
-
-							// If transaction is successful, render template that was requested for purcahse with the data stored in transaction
-							if(result.success){
-								Users.CreateTransaction(templateID, templateData, currentUser, transaction, transactionID, function (err, response) {
-						            if (err) {
-						                res.send(err.message);
-						            } else {
-										console.log(response);
-										req.session.templateData = null; 
-										req.session.transactionID = result.transaction.id;
-						                return res.redirect("/order" + "?id=" + transactionID);
-						            }
-						        });
-								
-								
-							}
-						}
-						else{
-							console.log(result.success);
-							console.log("Something went wrong here");
-							console.log(result);
-							return res.redirect("/");
-						}
-					}
-
-				});
-				//res.send("Success");
-			}
-
-		}
-		
-		else {
-			res.redirect('/');
-		}
-
+		return res.render("failed", {
+			layout: false,
+			//transaction: transaction,
+			username: req.session.username
+		});
+	}
+	else {
+		res.redirect('/');
+	}
 });
+
+
 
 
 var hbs = exphbs.create({
@@ -1271,14 +1106,12 @@ var htmlToPdf = require('html-to-pdf');
 var pdf = require('html-pdf');
 
 app.post('/render_template', function(req, res) {
-	//if(req.session.username) {
+	if(req.session.username) {
 
-		//var currentUser = req.session.username;
-		var currentUser = 'b';
+		var currentUser = req.session.username;
 		console.log(currentUser + " is the user");
 		console.log(req.body);
-		//var currentUser = req.session.username;
-		//var currentUser = "c";
+
 		var transactionID = req.body.transactionID; 
 		console.log(transactionID);
 		var transaction;
@@ -1354,134 +1187,12 @@ app.post('/render_template', function(req, res) {
 
 			});
 		});
-	//}
-
-	//else {
-	//	return res.redirect('/');
-	//}
-});
-
-
-
-// load in your modules
-var wepay = require('wepay').WEPAY;       // if wepay.js is installed globally/locally
-// var wepay = require('./wepay').WEPAY;  // if wepay.js is in the same directory as your script
-
-app.post('/createWepayToken', function(req, res) {
-	console.log(req.body);
-	console.log("Creating WePay access token.");
-
-	// local variables
-	var wepay_settings = {
-	    'client_id'     : '181327',
-	    'client_secret' : '059b31fd34', // used for oAuth2
-	    // 'api_version': 'API_VERSION'
 	}
 
-	var wp = new wepay(wepay_settings);
-	wp.use_staging(); // use staging environment (payments are not charged)
-
-	wp.call('/oauth2/token',
-    {
-    	'client_id'     : '181327',
-    	'client_secret' : '059b31fd34',
-        "redirect_uri": "http://localhost:80/",
-        "code": req.body.data
-    },
-
-    function(response) {
-        console.log(response);
-        req.session.access_token = response.access_token;
-        return res.redirect('/createWepayAccount');
-    	}
-	);
-});
-
-app.get('/createWepayAccount', function(req, res){
-	// local variables
-	var wepay_settings = {
-	    'access_token' : req.session.access_token
+	else {
+		return res.redirect('/');
 	}
-
-	var wp = new wepay(wepay_settings);
-	wp.use_staging(); // use staging environment (payments are not charged)
-
-	wp.call('/account/create', {
-        	'name' : req.session.username,
-        	'description' : req.session.username + " seller's account"
-        },
-
-        function(account) {
-        	console.log("Creating WePay Account.");
-        	if(account.account_id) {
-        		console.log(account);
-        		req.session.account_id = account.account_id;
-        		Users.CreateMerchantAccount(req.session.username, account.account_id, req.session.access_token, function(err, response){
-        			if(err){
-        				res.send(err.message);
-        			}
-        			else{
-        				console.log(response);
-        				//return res.redirect();
-        			}
-        		});
-        	}
-        	else {
-        		return res.redirect('/');
-        	}
-    });
 });
-
-
-app.get('/createWepayTransaction', function(req, res){
-	var currentUser = 'a';
-
-	Users.findOne({ username: currentUser},  function(err, doc){
-			//console.log("the user is: " + doc);
-		if(err) {
-			return res.send(err.message);
-			}
-
-	console.log(doc);
-	console.log(doc.accessToken);
-	console.log(doc.accountID);
-
-	// local variables
-	var wepay_settings = {
-		'client_id'     : '181327',
-    	'client_secret' : '059b31fd34',
-	    'access_token' : doc.accessToken //req.session.access_token
-	}
-
-	var wp = new wepay(wepay_settings);
-	wp.use_staging(); // use staging environment (payments are not charged)
-
-	wp.call('/checkout/create', {
-        	'account_id' : doc.accountID, //req.session.account_id,
-        	'amount' : 10,
-        	'short_description' : 'Services rendered by freelancer',
-        	'type' : 'service',
-        	'currency' :'USD',
-        	"hosted_checkout": {
-		      "redirect_uri": "http://localhost/order?"
-       		},
-
-        },
-        function(payment) {
-        	console.log("Creating WePay Transaction.");
-        	if(payment) {
-        		console.log(payment);
-        		req.session.checkout_uri = payment.hosted_checkout.checkout_uri;
-        		console.log(req.session.checkout_uri);
-        		return res.redirect('/checkout');
-        	}
-        	else {
-        		return res.redirect('/index');
-        	}
-    });
-    	});
-});
-
 
 
 

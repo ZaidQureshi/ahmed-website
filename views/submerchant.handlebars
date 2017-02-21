@@ -68,17 +68,25 @@
 				<div class="col-md-8">
 					<div class="create-template">
 
-							<a id="start_oauth2">Click here to create your WePay account</a>
+						<br>
+						<h5>Terms & Conditions</h5>
+						<p>Leaflate uses WePay for payment processing services. By using the WePay payment processing services you agree to the WePay Payment Services Agreement available at <a href="https://go.wepay.com/terms-of-service-us">https://go.wepay.com/terms-of-service-us</a>.</p>
 
+						<div class="conditions">
+							<label for="condition" class="cols-sm-2 control-label">By clicking on the button, you have agreed to all the terms and conditions</label>
+						</div>
+						<br>
+
+						<a id="start_oauth2">Click here to create your WePay account</a>		
 						<script src="https://static.wepay.com/min/js/wepay.v2.js" type="text/javascript"></script>
 						<script type="text/javascript">
 
-						WePay.set_endpoint("stage"); // stage or production
+						WePay.set_endpoint("production"); // stage or production
 
 						WePay.OAuth2.button_init(document.getElementById('start_oauth2'), {
-						    "client_id":"181327",
+						    "client_id":"134576",
 						     "scope":["manage_accounts","collect_payments","view_user","send_money","preapprove_payments"],
-						    "redirect_uri":"http://localhost:80/",
+						    "redirect_uri":"http://leaflate.com",
 						    "top":100, // control the positioning of the popup with the top and left params
 						    "left":100,
 						    "state":"robot", // this is an optional parameter that lets you persist some state value through the flow
@@ -111,101 +119,14 @@
 						});
 
 						</script>
-						
-						{{#if submerchantError}}
-						<h3 font-color="red">Error: {{submerchantError}}</h3>
-						{{/if}}
 
 
-						
-						<p>Sign up for Venmo Account: <a href="https://venmo.com/signup">https://venmo.com/signup</a></p>
-						<br>
 
-						
 
-						<div class="template-form">
-						
-						<form action="/submerchant" method="post">
-
-						
-
-						<label for="name" class="cols-sm-2 control-label">Enter your first name</label>
-						<input type="text" placeholder="Jane" name ="firstName" required>
-						<br>
-
-						<label for="name" class="cols-sm-2 control-label">Enter your last name</label>
-						<input type="text" placeholder="Doe" name ="lastName" required>
-						<br>
-
-						<label for="name" class="cols-sm-2 control-label">Enter your email</label>
-						<input type="text" placeholder="janeDoe@gmail.com" name ="email" required>
-						<br>
-
-						<label for="name" class="cols-sm-2 control-label">Enter your date of birth</label>
-						<input style="width: 178px; height: 31px;" type="date" placeholder="1981-11-19" name ="dateOfBirth" required>
-						<br>
-
-						<label for="name" class="cols-sm-2 control-label">Enter your street address</label>	
-						<input type="text" placeholder="111 Main St" name ="streetAddress" required>
-						<br>
-
-						<label for="name" class="cols-sm-2 control-label">Enter your locality (city)</label>	
-						<input type="text" placeholder="Chicago" name ="locality" required minlength=3>
-						<br>
-
-						<label for="name" class="cols-sm-2 control-label">Enter your region (state)</label>	
-						<input type="text" placeholder="IL" name ="region" required>
-						<br>
-						
-						<label for="name" class="cols-sm-2 control-label">Enter your postal code</label>	
-						<input type="text" placeholder="60622" name ="postalCode" required>
-						<br>
-						<br>
-
-						<label for="name" class="cols-sm-2 control-label">Enter your Venmo Account email address</label>	
-						<input type="text" placeholder="joedoe@gmail.com" name ="venmoEmail" required>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<h5>Terms & Conditions</h5>
-						<p>Leaflate uses Braintree, a division of PayPal, Inc. (Braintree) for payment processing services. By using the Braintree payment processing services you agree to the Braintree Payment Services Agreement available at <a href="https://www.braintreepayments.com/legal/gateway-agreement">https://www.braintreepayments.com/legal/gateway-agreement</a>, and the applicable bank agreement available at 
-						<a href="https://www.braintreepayments.com/legal/cea-wells">https://www.braintreepayments.com/legal/cea-wells</a>.</p>
-
-						<div class="conditions">
-							<label for="condition" class="cols-sm-2 control-label">I agree to these Terms & Conditions</label>
-							<input type="checkbox" name ="tosAccepted" required>
-						</div>
-						<br>
-						<br>
-											
-						<button type="submit" value="submit" class="btn btn-primary btn-lg ">Create Merchant Account</button>
-						
-						</form>		
-						
 						</div>
 
 					</div>
 					<hr>
-				</div>
-
-				
-				<div class="col-md-4">
-					<div class="instructions">
-					<div style="border-left:medium #CC0000 solid; height:100%;" />
-					<ul>
-						<h4>INSTRUCTIONS</h4>
-						<li>You must create a Venmo Account in order to recieve your money from purchased templates. <strong>Note you will not be approved for a merchant account without first having an active Venmo Account.</strong></li>
-						<br>
-						<li>Enter the requested fields. <strong>The information you provide will be tested for validity and will not process if valid information is not provided.</strong></li>
-						<br>
-						<li>Make sure to enter the State's abbreviation (Ex. New York should be NY)</li>
-						<br>
-						<li>If correction information is provided, you should see your merchant status in the profile section under "View My Templates".
-						Once you have an active merchant account, you may begin creating tempaltes in the profile section under "Create A Template".</li>
-					</ul>
-					</div>
 					
 				</div><!-- end of col 3 -->
 				

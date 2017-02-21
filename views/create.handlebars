@@ -73,8 +73,6 @@
 						<form action="/create_preview_template" method="post"  enctype="multipart/form-data">
 						
 						<br>
-						
-					
 
 						<label for="width" class="cols-sm-2 control-label">Enter the width in pixels for your Template</label>
 						<input type="number" placeholder="512" name="width" id="width" ng-model="createCtrl.width" step="any" max="4096" required>
@@ -83,42 +81,29 @@
 						<label for="height" class="cols-sm-2 control-label">Enter the height in pixels for your Template</label>
 						<input type="number" placeholder="512" name="height" id="height" ng-model="createCtrl.height" step="any"max="1024" required>
 						<br>
-						<!--<label for="icon" class="cols-sm-2 control-label">Enter the url of the icon for your Template</label>
-						<input type="text" placeholder="" name="icon" id="icon" ng-model="createCtrl.icon" required>-->
-						
 						<br>
+						<label for="upload" class="cols-sm-2 control-label">Choose file that contains your template's html</label>
 						<input type="file" placeholder="Upload File" name="file" id="file" required>
 						<br>
-						
-						
-						<input type="hidden" placeholder="" name="author" id="author" value="{{username}}">
-						<input type="hidden" placeholder="" name="icon" id="icon" value="https://upload.wikimedia.org/wikipedia/commons/a/a4/Magnifying_glass_with_focus_on_glass.png">
-						<input type="hidden" placeholder="" name="reviewed" id="reviewed" value="false">
-						<input type="hidden" placeholder="" name="approved" id="approved" value="false">
+						<br>
+
 						
 						<button type="submit" value="submit" class="btn btn-primary btn-lg btn-block">Preview Template</button>
 						
 						</form>	
 
-
+			
 						<br>
-						<br>
-
-
-
-
-
-
-
 						<form action="/create" method="post"  enctype="multipart/form-data">
 						<label for="name" class="cols-sm-2 control-label">Enter the name for your Template</label>
 						<input type="text" placeholder="Template One" name ="name" id="name" ng-model="createCtrl.name" maxlength="20" autofocus required>
 						
 						<br>
+						<br>
 						
 						<label for="price" class="cols-sm-2 control-label">Enter the price for your Template</label>
 						<input type="number" placeholder="9.99" name="price" id="price" ng-model="createCtrl.price" step="any" required>
-						
+						<br>
 						<br>
 						
 						<label for="category" class="cols-sm-2 control-label">Select the category for your Template</label>
@@ -142,7 +127,12 @@
 						<input type="text" placeholder="" name="icon" id="icon" ng-model="createCtrl.icon" required>-->
 						
 						<br>
+						<br>
+						<br>
+						<label for="upload" class="cols-sm-2 control-label">Choose the zip file that contains your template's html and png</label>
 						<input type="file" placeholder="Upload File" name="file" id="file" required>
+						<br>
+						<br>
 						<br>
 						
 						
@@ -156,11 +146,12 @@
 						</form>	
 						<br>
 						<ul>
-						<li><strong>If the page returns "{}" you have not followed the instructions and have not uploaded the three correct files (html, png, txt)</strong></li>
+						<li><strong>If the page returns "{}" you have not followed the instructions and have not uploaded the three correct files (html, png)</strong></li>
 						<ul>
 
 						{{else}}	
-							<h5>You must create a merchant account and wait for apporval before creating templates</h5>
+							<h5 style="color:red;">You must create a merchant account before creating templates</h5>
+							<a href="/submerchant">Click here to create merchant account</a>
 						{{/if}}
 						
 						</div>
@@ -175,21 +166,25 @@
 						<!--<div class="instructions" style="border:medium #CC0000 solid">-->
 					<ul>
 						<h4>Instructions</h4>
-						<li>Create and Design your template at:<a href="https://html-online.com/editor">  https://html-online.com/editor</a></li>
-						<li>Save the correct files with the correct extensions and zip it</li>
-						<li>Enter the requested fields and create your template</li>
-						<li>Note, the defualt size for the preview of templates is 512 x 512<li>
-						<li>On the right of the design of your template contains the html</li>
+						<li>Create and design your template using html and css</li>
+						<li>You must use <strong>"&#123&#123"</strong> at the beginning of your identifier and <strong>"&#125&#125"</strong> at the end of it. For example: <strong>"&#123&#123identifier&#125&#125"</strong>
+						<button class="btn btn-primary btn-lg btn-block"><a href="/images/example_html.png" target="_blank">Click here to see an example of the HTML</a></button>
+						<br>
+						<li>You can use an online editor to use html and css at<a href="https://html-online.com/editor" target="_blank">  https://html-online.com/editor</a></li>
 						<li>Save the html code into a file and name it with the extension <strong>".html"</strong></li>
-						<li>Take a screeshot of your template by clicking the "preview" option and save the image with
+						<br>
+						<li>Enter the width and height in pixels for your Template and upload the html file to preview how your template would look like</li>
+						<br>
+						<li>Take an image/screenshot of your template</li>
+						<li>Label the custom images accordingly in your screenshot</li>
+						<button class="btn btn-primary btn-lg btn-block"><a href="/images/example_png.png" target="_blank">Click here to see an example of the PNG</a></button>
+						<br>
+						<li>Enter the requested fields and create your template</li>
+						<li>Note, the defualt size for the preview of templates is 512 x 512</li>
+						<li>Save the image with
 						the extension <strong>".png"</strong></li>
-						<li>Create a text file that will consist of your identifiers that the user will. Follow the
-						following format: name of identifier used in template TAB description of identifier ENTER</li>
-						<li>For example,<br>
-						RestaurantName	&nbsp;&nbsp;&nbsp;&nbsp;Name of restaurant<br>
-						PriceOne	&nbsp;&nbsp;&nbsp;&nbsp;Price of first item</li>
-						<li>Save this file and name it with the extension <strong>".txt"</strong></li>
-						<li>Compress these three files into a zip and upload it. Note, if you do not follow the instructed format, your template will be automatically rejected</li>
+						<br>
+						<li>Compress these two files into a zip and upload it. Note, if you do not follow the instructed format, your template will be automatically rejected</li>
 					</ul>
 
 					</div>
@@ -198,8 +193,13 @@
 				</div><!-- end of col 3 -->
 				
 			</div><!-- end of row -->
+
 		</div><!-- end of container -->
+
 	</section><hr>
+
+
+
 
 
 

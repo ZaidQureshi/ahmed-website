@@ -86,7 +86,7 @@
 					</div>
 					<hr>
 				</div>
-				
+
 				<div class="col-md-6">
 					
 					<div class="sidebar-widget">
@@ -94,22 +94,28 @@
 						<div class="clsScroll">
 
 							<h5 class="sidebar-title">Enter the following information for your template</h5>
-							<form method="post" action="/render_purchased_template">
+							<form class="template-form" method="post" action="/render_purchased_template">
 								<input type="hidden" name="templateID" value="{[{viewCtrl.template._id}]}">
 								<input type="hidden" name="templateAuthor" value="{[{viewCtrl.template.author}]}">
 								<div class="identifiers" ng-repeat="identifier in viewCtrl.template.identifier track by $index">
 									<label class="cols-sm-2"> {[{viewCtrl.template.fieldName[$index]}]}: </label>
 									<input type="text" name="{[{identifier}]}" placeholder="{[{identifier}]}" required>
 								</div>
-								
 	                   			<input type="submit" class="btn btn-primary" value="Submit">
 	 						</form>
 
  						</div>
 
+						<ul>
+							<h4>Instructions</h4>
+							<li>Fill out all the boxes with the information you would like</li>
+							<li>For image boxes, you must provide a valid url for the images</li>
+							<li>If you are using your own images, upload them on imgur and then copy
+							the image address and enter into the box.</li>
+						</ul>
 					</div>
-
-					{{> myPartials/displayIdentifier}}
+				</div>
+				
 					
 				</div><!-- end of col 3 -->
 

@@ -3,54 +3,30 @@ Nodejs server
 - Express model used for organizing web contact, allowing public files to be viewed
 */
 
-
-// Configure the environment and API credentials for braintree
-var braintree = require('braintree');
-var gateway = braintree.connect({
-	environment: braintree.Environment.Sandbox,
-	merchantId: "z23ydwk2t9nkksgx",
-	publicKey: "f8q9ryp4rnbjqpg4",
-	privateKey: "61302bcc9938a0a3e6b9cb3460241302"
-});
-
-
-
 var jimp = require('jimp');
 var path = require('path');
 var fs = require('fs');
-//var admZip = require('adm-zip');
-//var multer = require('multer');
-
-var wepay = require('wepay').WEPAY;       // if wepay.js is installed globally/locally
-// var wepay = require('./wepay').WEPAY;  // if wepay.js is in the same directory as your script
-
-
+var wepay = require('wepay').WEPAY;      
 var fileUpload = require('express-fileupload');
 var extract = require('extract-zip')
-	 
-/*
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'upload/zips')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  }
-});
-//var upload = multer({ dest: 'upload/zips' });
-var upload = multer ({ storage: storage });
-*/
-
-
-// Require express modules to be used
-var express = require('express');
+var express = require('express'); // Require express modules to be used
 var session = require('express-session');
 var exphbs  = require('express-handlebars');
+var expressValidator = require('express-validator');
+var expressJwt = require('express-jwt');
+var bodyParser = require('body-parser');
+
+
+var pdf = require('html-pdf');
+
+var hbs = exphbs.create({
+    defaultLayout: 'main'
+    //helpers: require("path-to-your-helpers-if-any"),
+});
+
 var app = express();
 
 
-
-//app.use(session({ secret: 'ssshhhh'})); 
 app.use(session({
   secret: 'ssshhhh',
   resave: false,
@@ -58,25 +34,12 @@ app.use(session({
 }))
 
 
-var expressValidator = require('express-validator');
-var expressJwt = require('express-jwt');
 app.use('/private/*', expressJwt({secret: 'supersecret'}));
 
 
-// Require mongojs modules to interact with database
-var mongojs = require('mongojs');
-
-// Authenticate into the database in the server
-var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin', ['templates']); 
-//var db = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/templates?authSource=admin', ['templates']); 
-
-//var db_users = mongojs('ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/users?authSource=admin', ['users']); 
-
-
-
-var bodyParser = require('body-parser');
-// Allow public files (html, css, javascript) to be run on the server
+// Allow public files (html, css, javascript) to be run on the servers
 app.use(express.static(__dirname + "/public"));	
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -93,10 +56,6 @@ var mongoose = require('mongoose');
 // Build the connection string
 //var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.21.176:27017/users?authSource=admin'; 
 var dbURI1 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
-//var dbURI3 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin,127.0.0.1:27017/templates?authSource=admin'; 
-
-//var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@104.196.151.170:27017/templates?authSource=admin'; 
-//var dbURI2 = 'mongodb://ahmedapp:i9i14UEM2JYcEyS5T2VZ@127.0.0.1:27017/users?authSource=admin'; 
 
 
 //mongoose.createConnection(dbURI3);
@@ -149,7 +108,7 @@ app.post('/contact_us', function (req, res){
 	var text = 'Name: ' + req.body.name + '\nEmail: ' + req.body.email + '\nUser ID: ' + req.body.userId + '\n\n' + req.body.message;
 	var mailOptions = {
 		from: req.body.email, // senders email
-		to: 'testlates@gmail.com', // receivers email
+		to: 'Leaflate17@gmail.com', // receivers email
 		subject: req.body.subject, // Subject line
 		text: text // body
 		// html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
@@ -171,7 +130,6 @@ app.post('/contact_us', function (req, res){
 	});
 
 });
-
 
 
 app.engine('handlebars', exphbs({defaultLayout: 'main', helpers:  {partial: function (name) {
@@ -232,23 +190,24 @@ app.get('/create', function (req, res){
 	var isActive = false;
 	if(req.session.username){
 		var currentUser = req.session.username;
-	    gateway.merchantAccount.find(currentUser, function (err, result) {
-				if(err){
-					console.log(err.message);
-					//res.status(500).send(err);
+
+		Users.findOne({ username: currentUser},  function(err, doc) {
+			if(err) { return res.send(err.message); }
+
+			console.log(doc.accountID)
+			console.log(doc.accessToken);
+	
+			if(doc.accountID && doc.accessToken){
+					isActive = true;
 				}
-				console.log(result);
-				if(result){
-					if(result.status == "active"){
-						isActive = true;
-					}
-				}
+
 				return res.render('create', {
 					layout: false,
 					isActive: isActive,
-					username: req.session.username});
+					username: req.session.username
+				});
 		
-			});
+		});
 	}
 	else {
 		// return since it is an asynchronous call
@@ -447,8 +406,6 @@ app.get('/templates', function(req, res){
 		res.json(docs)
 	}); */
 	
-	// Get the data from the database
-	
 });
 
 // Return the templates that needs to be reviewed
@@ -478,12 +435,11 @@ app.get('/users_templates', function(req, res){
 	if(req.session.username){
 		console.log("I received a GET request");
 		var user = req.session.username;
-		//Users.collection.distinct
+
 		Users.distinct('template', {"template.author" : user}, function (err, docs){
 			console.log(docs);	
 			res.json(docs);
 		});
-		// Get the data from the database
 	}
 	else{
 		res.redirect('/login');
@@ -510,18 +466,12 @@ app.get('/templates/:id', function (req, res){
 	// find each person with a last name matching 'Ghost', selecting the `name` and `occupation` fields
 	// Person.findOne({ 'name.last': 'Ghost' }, 'name occupation', function (err, person) {
 	
-	
-	//if (template_id != 'undefined') {
 		Users.findOne({'template._id':template_id}, 'template',  function(err, doc){
 			if(err) {
 				console.log(err);
 				return res.send(err);
 			}
-			//console.log("\n This is the resule of the query" + doc + "\n");
-			//console.log(doc._id);
-			
-			//console.log(doc.template);
-			//res.json(doc.template);
+
 			Users.findOne({'_id': doc._id}, function (err, user) { 
 				if(err) {
 					return callback(err);
@@ -543,14 +493,6 @@ app.get('/templates/:id', function (req, res){
 app.post('/registration', function(req, res){
 	console.log("Got POST request");
 	console.log(req.body);
-	
-	//req.check('username').isAlphanumeric(); // check to see if not empty
-
-    //var errors = req.validationErrors();
-
-    //if (errors){
-     //   res.status(400).send(errors);
-    //} else {
 
     Users.Create(req.body, function (err, user) {
             if (err) {
@@ -558,8 +500,7 @@ app.post('/registration', function(req, res){
             } else {
                 res.redirect('/login');
             }
-        });
-   // }
+    });
 });
 
 
@@ -590,11 +531,8 @@ app.post('/login', function (req, res) {
     Users.getAuthenticated(req.body, function (err, token) {
         if (err) {
             console.log(err.message);
-			console.log("The token is: " + token);
 			//res.send(false);
             //res.status(400).send(err.message);
-			//res.send(false);
-			//res.status(400).send(err.message);
 			req.session.error = err.message;
 			console.log(req.session.error);
 			return res.redirect('/login');
@@ -607,8 +545,6 @@ app.post('/login', function (req, res) {
         }
     });
 });
-
-
 
 
 
@@ -778,9 +714,6 @@ app.post('/create', function(req, res){
 });
 
 
-
-
-
 // Approve or Disapprove a template by changing it's field in the database
 app.post('/approve', function(req, res){
 	if(req.session.username){
@@ -805,6 +738,75 @@ app.post('/approve', function(req, res){
 	else {
 		return res.redirect('/');
 	}
+});
+
+
+app.post('/createWepayToken', function(req, res) {
+	console.log(req.body);
+	console.log("Creating WePay access token.");
+
+	// local variables
+	var wepay_settings = {
+	    'client_id'     : '134576',
+	    'client_secret' : '54bca59ee7', // used for oAuth2
+	    // 'api_version': 'API_VERSION'
+	}
+
+	var wp = new wepay(wepay_settings);
+	wp.use_production(); // use staging environment (payments are not charged)
+
+	wp.call('/oauth2/token',
+    {
+    	'client_id'     : '134576',
+    	'client_secret' : '54bca59ee7',
+        "redirect_uri": "http://leaflate.com",
+        "code": req.body.data
+    },
+
+    function(response) {
+    	response = JSON.parse(response.toString('utf8'));
+        console.log(response);
+        req.session.access_token = response.access_token;
+        return res.redirect('/createWepayAccount');
+    	}
+	);
+});
+
+app.get('/createWepayAccount', function(req, res){
+	// local variables
+	var wepay_settings = {
+	    'access_token' : req.session.access_token
+	}
+
+	var wp = new wepay(wepay_settings);
+	wp.use_production(); // use staging environment (payments are not charged)
+
+	wp.call('/account/create', {
+        	'name' : req.session.username,
+        	'description' : req.session.username + " seller's account"
+        },
+
+        function(account) {
+        	console.log("Creating WePay Account.");
+        	account = JSON.parse(account.toString('utf8'));
+        	if(account.account_id) {
+        		console.log(account);
+        		req.session.account_id = account.account_id;
+        		Users.CreateMerchantAccount(req.session.username, account.account_id, req.session.access_token, function(err, response){
+        			if(err){
+        				return res.send(err.message);
+        			}
+        			else{
+        				console.log(response);
+        				//return res.redirect();
+        				return res.redirect('/create')
+        			}
+        		});
+        	}
+        	else {
+        		return res.redirect('/');
+        	}
+    });
 });
 
 
@@ -844,17 +846,17 @@ app.post('/render_purchased_template', function(req, res){
 	
 			// Assign settings for wepay instance
 			var wepay_settings = {
-				'client_id'     : '181327',
-		    	'client_secret' : '059b31fd34',
+				'client_id'     : '134576',
+		    	'client_secret' : '54bca59ee7',
 			    //'access_token' : doc.accessToken //author's access_token
 			}
 
 			var wp = new wepay(wepay_settings);
-			wp.use_staging(); // use staging environment (payments are not charged)
+			wp.use_production(); // use staging environment (payments are not charged)
 
 		    wp.call('/preapproval/create', {
-		        	'client_id' : '181327',
-		        	'client_secret' : '059b31fd34',
+		        	'client_id' : '134576',
+		        	'client_secret' : '54bca59ee7',
 		        	'amount' : templatePrice,
 		        	'short_description' : 'Template ID: ' + templateID +  ' Author: '+ templateAuthor,
 		        	'period' : 'once',
@@ -882,7 +884,7 @@ app.post('/render_purchased_template', function(req, res){
 												//req.session.templateData = null; 
 												//req.session.transactionID = result.transaction.id;
 								              	//return res.redirect("/order" + "?id=" + transactionID);
-								              	return res.redirect("/checkout" + "?id=" + req.body.templateID);
+								              	return res.redirect('/checkout');
 										    }
 										}); // end of storing the transaction into the database
 
@@ -958,13 +960,13 @@ app.get('/order', function (req, res) {
 		var transactionID = req.query.preapproval_id;
 
  		var wepay_settings = {
-			'account_id' : '69241989',
-			'client_id' : '181327',
-	    	'client_secret' : '059b31fd34',
-		    'access_token' :  'STAGE_898b945443a6a489b8f2ed07d1b8ee0d9096b2ae1cc66209bed6e821ce4846f2'
+			'account_id' : '239055286',
+			'client_id' : '134576',
+	    	'client_secret' : '54bca59ee7',
+		    'access_token' :  'PRODUCTION_0a8186e811ebb8b8f2a503f7835c4b90407cd798f8946d3af94b80be0eb23e69'
 		}
 		var wpTest = new wepay(wepay_settings);
-		wpTest.use_staging(); // use staging environment (payments are not charged)
+		wpTest.use_production(); // use staging environment (payments are not charged)
 
 		wpTest.call('/preapproval', {
 			'preapproval_id' : transactionID
@@ -991,20 +993,20 @@ app.get('/order', function (req, res) {
 							var templatePrice = doc.template.id(templateID).price;
 							
 								       	var wepay_settings = {
-									       	'account_id' : '69241989',
-											'client_id' : '181327',
-									    	'client_secret' : '059b31fd34',
-										    'access_token' :  'STAGE_898b945443a6a489b8f2ed07d1b8ee0d9096b2ae1cc66209bed6e821ce4846f2',
+									       	'account_id' : '239055286',
+											'client_id' : '134576',
+									    	'client_secret' : '54bca59ee7',
+										    'access_token' :  'PRODUCTION_0a8186e811ebb8b8f2a503f7835c4b90407cd798f8946d3af94b80be0eb23e69',
 										    'preapproval_id' : preapproval_id
 										}
 
 										var wp1 = new wepay(wepay_settings);
-										wp1.use_staging(); // use staging environment (payments are not charged)
+										wp1.use_production(); // use staging environment (payments are not charged)
 
 
 										var templatePriceAhmed = Math.floor(templatePrice *.5);
 										wp1.call('/checkout/create', {
-									        	'account_id' : '69241989',
+									        	'account_id' : '239055286',
 									        	'amount' : templatePriceAhmed,
 									        	'short_description' : 'Services rendered by freelancer',
 									        	'type' : 'service',
@@ -1023,14 +1025,14 @@ app.get('/order', function (req, res) {
 
 									        	var wepay_settings = {
 											       	'account_id' : doc.accountID,
-													'client_id' : '181327',
-											    	'client_secret' : '059b31fd34',
+													'client_id' : '134576',
+											    	'client_secret' : '54bca59ee7',
 												    'access_token' :  doc.accessToken,
 												    'preapproval_id' : preapproval_id
 												}
 
 												var wp2 = new wepay(wepay_settings);
-												wp2.use_staging(); // use staging environment (payments are not charged)
+												wp2.use_production(); // use staging environment (payments are not charged)
 
 
 												var templatePriceMerchant = templatePrice - templatePriceAhmed;
@@ -1062,15 +1064,13 @@ app.get('/order', function (req, res) {
 				} // end of if statement of checking the preapproval id
 				else {
 					// failed
-					console.log("Failed payment");
-					//return res.redirect('/failed'); 	
+					console.log("Failed payment");	
 					req.session.failedPayment = true;
 					return res.redirect('/orderComplete');
 				}
 
 
 		});
-
 		
 	}
 
@@ -1083,10 +1083,11 @@ app.get('/order', function (req, res) {
 
 app.get('/failed', function(req, res){
 	if(req.session.username) {
+		console.log(req.session.templateID);
 		return res.render("failed", {
 			layout: false,
-			//transaction: transaction,
-			username: req.session.username
+			username: req.session.username,
+			templateID: req.session.templateID
 		});
 	}
 	else {
@@ -1097,13 +1098,6 @@ app.get('/failed', function(req, res){
 
 
 
-var hbs = exphbs.create({
-    defaultLayout: 'main'
-    //helpers: require("path-to-your-helpers-if-any"),
-});
-
-var htmlToPdf = require('html-to-pdf');
-var pdf = require('html-pdf');
 
 app.post('/render_template', function(req, res) {
 	if(req.session.username) {
@@ -1195,84 +1189,6 @@ app.post('/render_template', function(req, res) {
 });
 
 
-
-app.post('/submerchant', function(req, res) {
-
-	if(req.session.username) { 
-		var currentUser = req.session.username;
-		//var currentUser = "d";
-		console.log(req.data);
-
-		console.log(req.body);
-
-		merchantAccountParams = {
-		  individual: {
-		    firstName: req.body.firstName,
-		    lastName: req.body.lastName,
-		    email: req.body.email,
-		    dateOfBirth: req.body.dateOfBirth,
-		    //dateOfBirth: "1981-11-19",
-		    address: {
-		      streetAddress: req.body.streetAddress,
-		      locality: req.body.locality,
-		      region: req.body.region,
-		      //region: "IL",
-		      postalCode: req.body.postalCode
-		    }
-		  },
-		  funding: {
-		    destination: braintree.MerchantAccount.FundingDestination.Email,
-		    email: req.body.venmoEmail,
-		  },
-		  tosAccepted: true,
-		  masterMerchantAccountId: "lates",
-		  id: currentUser
-		};
-
-		/*
-		gateway.merchantAccount.find(currentUser, function (err, result) {
-			if(err){
-				console.log(err.message);
-			}
-			console.log(result);
-		});*/
-
-		gateway.merchantAccount.create(merchantAccountParams, function (err, result) {
-			if(err) {
-				console.log("This is the error:" + err);
-				return res.redirect('/submerchant');
-				//res.status(500).send(err);
-			}
-			else {
-				/*
-				console.log(result);
-				console.log(result.message);
-				var errors = result.errors.deepErrors();
-				console.log(errors);
-				console.log(result.merchantAccount);*/
-				if(result.merchantAccount){
-					console.log(result.merchantAccount.status);
-					console.log(result.merchantAccount.id);
-					console.log(result.merchantAccount.masterMerchantAccount.id);	
-					return res.redirect('/my_template');
-				}
-				else {
-					req.session.submerchantError = result.message;
-					return res.redirect('/submerchant');
-				}
-
-			}
-			
-		});
-	}
-
-	else {
-		res.redirect('/');
-	}
-
-});
-
-
 app.post('/render_template_review', function(req, res) {
 	if(req.session.username) {
 
@@ -1334,6 +1250,40 @@ app.post('/render_template_review', function(req, res) {
 		redirect('/');
 	}
 });
+
+
+/* Request handler to render a pdf for the user to view their template */
+app.post('/create_preview_template', function(req, res){
+
+	if(req.session.username) { 
+		console.log(req.files.file);
+		var html = req.files.file;
+
+		console.log("Printing the html");
+		console.log(html.data.toString());
+		var html = html.data.toString();
+		
+		var options = { 
+			"height": req.body.height,         
+		  	"width": req.body.width
+		};
+
+		console.log(options.height);
+		console.log(options.width);
+		pdf.create(html, options).toFile('views/review_pdf/' + 'review' + '.pdf', function(err, templatePDF) {
+			if (err) {
+				return res.send(err);
+		  	}
+			console.log(templatePDF); 
+			var downloadtemplate = 'views/review_pdf/' + 'review' + '.pdf';
+			return res.download(downloadtemplate);
+		});
+	}
+	else {
+		return res.redirect('/');
+	}
+});
+/* End of request handler to render a pdf for the user to view their template */
 
 
 
